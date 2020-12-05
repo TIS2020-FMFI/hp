@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="mainContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.screen.controller.MainScreenController">
+   <children>
+      <HBox fx:id="mainContainerMenu" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="50.0" prefWidth="1200.0">
+         <children>
+            <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="1200.0" HBox.hgrow="ALWAYS">
+              <items>
+                  <Label text="Super machine 1.0.0">
+                     <padding>
+                        <Insets left="15.0" right="15.0" />
+                     </padding>
+                  </Label>
+                <Button fx:id="gpibMenuBtn" mnemonicParsing="false" styleClass="menuBtn" stylesheets="@styles/mainScreenStyles.css" text="GPIB connection: ACTIVE">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button fx:id="calibrationMenuBtn" mnemonicParsing="false" onMouseReleased="#openCalibration" text="Calibration">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <ToggleButton fx:id="autoSaveMenuBtn" mnemonicParsing="false" text="Auto save: OFF">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ToggleButton>
+                  <Button fx:id="savingDirMenuBtn" mnemonicParsing="false" text="Saving directiory:  'C:\\downloads..'">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button fx:id="restartInstrumentMenuBtn" mnemonicParsing="false" text="Restart instrument">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button fx:id="helpMenuBtn" mnemonicParsing="false" text="Help">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button fx:id="quitMenuBtn" mnemonicParsing="false" text="Quit">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+              </items>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </ToolBar>
+         </children>
+      </HBox>
+   </children>
+</VBox>

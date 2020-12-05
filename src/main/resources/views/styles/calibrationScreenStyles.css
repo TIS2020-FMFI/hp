@@ -1,0 +1,15 @@
+.btn {
+    -fx-min-width: 30px;
+    -fx-start-margin: 10px;
+    -fx-end-margin: 10px;
+}
+
+.menuBtn:hover {
+    cursor: pointer;
+}
+.menuBtn:disabled {
+    color: darkgrey;
+    cursor: default;
+    pointer-events: none;
+}
+

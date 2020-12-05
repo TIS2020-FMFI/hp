@@ -1,0 +1,16 @@
+.menuBtn {
+    display: inline-flex;
+    position: relative;
+    border: solid black 1px;
+    vertical-align: middle;
+}
+
+.menuBtn:hover {
+    cursor: pointer;
+}
+.menuBtn:disabled {
+    color: darkgrey;
+    cursor: default;
+    pointer-events: none;
+}
+
