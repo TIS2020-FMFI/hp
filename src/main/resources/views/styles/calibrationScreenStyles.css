@@ -1,0 +1,22 @@
+.root{
+    -fx-font-size: 13px;
+    -fx-font-family: "Courier New";
+    /*-fx-base: rgb(205, 220, 227);*/
+    -fx-background: rgb(225, 228, 203);
+}
+
+.btn {
+    -fx-min-width: 30px;
+    -fx-start-margin: 10px;
+    -fx-end-margin: 10px;
+}
+
+.menuBtn:hover {
+    cursor: pointer;
+}
+.menuBtn:disabled {
+    color: darkgrey;
+    cursor: default;
+    pointer-events: none;
+}
+

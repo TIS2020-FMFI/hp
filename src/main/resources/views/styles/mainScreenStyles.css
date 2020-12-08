@@ -1,0 +1,58 @@
+.root{
+    -fx-font-size: 11px;
+    -fx-font-family: "Courier New";
+    /*-fx-base: rgb(205, 220, 227);*/
+    -fx-background: rgb(225, 228, 203);
+}
+
+.menuBtn {
+    display: inline-flex;
+    position: relative;
+    border: solid black 1px;
+    vertical-align: middle;
+}
+
+.menuBtn:hover {
+    -fx-cursor: hand;
+}
+.menuBtn:disabled {
+    color: darkgrey;
+    cursor: default;
+    pointer-events: none;
+}
+
+/*.try {*/
+/*    -fx-background-color: pink;*/
+/*}*/
+
+.item-header {
+    -fx-background-color: white;
+    -fx-background-radius: 15px;
+    -fx-pref-width: 100px;
+}
+.item-input {
+    -fx-border-radius: 5px;
+    -fx-pref-height: 25px;
+    -fx-pref-width: 150px;
+}
+.item-desc {
+    -fx-pref-width: 140px;
+    -fx-fill-width: true;
+    -fx-start-margin: 10px;
+    -fx-padding: 0 10px;
+    -fx-end-margin: 10px;
+}
+
+.graph-area {
+    -fx-border-color: black;
+}
+
+.graph-btn {
+    -fx-min-width: 100px;
+}
+
+.graph-btn:hover {
+    -fx-cursor: hand;
+}
+
+
