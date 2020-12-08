@@ -2,11 +2,11 @@ package com.app.screen.controller;
 
 import com.app.screen.handler.ControlledScreen;
 import com.app.screen.handler.ScreensController;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -31,25 +31,21 @@ public class CalibrationScreenController implements Initializable, ControlledScr
     // notificationContainer
 
     // contentContainer
-
+    @FXML
+    ToggleGroup calibrationType;
     // actionContainer
     @FXML
     Button runCalibrationBtn;
-    @FXML
-    Button closeCalibrationBtn;
 
 
-    public void create(ActionEvent event) {
-
-    }
-
-    public void openCalibration() {
+    public void runCalibration() {
 
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        RadioButton rb = (RadioButton) calibrationType.getSelectedToggle();
+        rb.getText();
     }
 
     @Override

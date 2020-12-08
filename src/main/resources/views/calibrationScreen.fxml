@@ -6,7 +6,6 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
 <AnchorPane prefHeight="300.0" prefWidth="600.0" stylesheets="@styles/calibrationScreenStyles.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.screen.controller.CalibrationScreenController">
    <children>
       <VBox fx:id="calibrationContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -92,13 +91,16 @@
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="calibrationType" />
+                                 </toggleGroup>
                               </RadioButton>
-                              <RadioButton mnemonicParsing="false" text="open">
+                              <RadioButton mnemonicParsing="false" text="open" toggleGroup="$calibrationType">
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
                               </RadioButton>
-                              <RadioButton mnemonicParsing="false" text="load">
+                              <RadioButton mnemonicParsing="false" text="load" toggleGroup="$calibrationType">
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
