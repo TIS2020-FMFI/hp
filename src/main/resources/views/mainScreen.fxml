@@ -485,7 +485,10 @@
                         </VBox>
                         <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
                            <children>
-                              <VBox fx:id="notificationContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="70.0" VBox.vgrow="NEVER" />
+                              <VBox fx:id="notificationContainer" alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="70.0" VBox.vgrow="NEVER">
+                                 <VBox.margin>
+                                    <Insets left="30.0" />
+                                 </VBox.margin></VBox>
                               <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="60.0" minWidth="500.0" styleClass="graph-area" VBox.vgrow="ALWAYS">
                                  <VBox.margin>
                                     <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
