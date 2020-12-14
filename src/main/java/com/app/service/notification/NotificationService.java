@@ -1,4 +1,4 @@
-package com.app.service;
+package com.app.service.notification;
 
 import javafx.scene.Cursor;
 import javafx.scene.image.Image;
@@ -17,19 +17,29 @@ public class NotificationService {
     public Notification getNotification() { return notification; }
     public boolean isNotificationContainerEmpty() { return notification == null; }
 
-    public void createNotification(String message, NotificationType type) {
+    public Notification createNotification(String message, NotificationType type) {
+        removeNotification();
         ImageView removeIcon = new ImageView(removeImg);
         removeIcon.getStyleClass().add("border");
         removeIcon.setPreserveRatio(true);
         removeIcon.setCursor(Cursor.HAND);
-        removeIcon.setFitWidth(20);
+        removeIcon.setFitWidth(25);
         removeIcon.setOnMouseReleased(event -> {
             removeNotification();
         });
         notification = new Notification(message, type, removeIcon);
-        notification.show();
         notificationContainer.getChildren().add(notification);
+        return notification;
     }
+
+//    public void showNotification(String containerId) {
+//        if () {
+//            notification.show();
+//        } else {
+//
+//        }
+//
+//    }
 
     public void removeNotification() {
         notificationContainer.getChildren().remove(notification);

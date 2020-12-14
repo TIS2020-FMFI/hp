@@ -1,23 +1,21 @@
 package com.app.screen.controller;
 
-import com.app.screen.handler.ControlledScreen;
-import com.app.screen.handler.ScreensController;
+import com.app.service.AppMain;
+import com.app.service.notification.NotificationType;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class MainScreenController implements Initializable, ControlledScreen {
-
-    ScreensController myController;
+public class MainController implements Initializable {
 
     @FXML
     VBox mainContainer;
@@ -104,14 +102,11 @@ public class MainScreenController implements Initializable, ControlledScreen {
     }
 
     public void triggerCalibration(MouseEvent event) {
-        Stage calibration = new Stage();
-
-        Group root = new Group();
-        root.getChildren().addAll(myController.getScreen("calibrationScreen"));
-        calibration.setTitle("Calibration");
-        calibration.setScene(new Scene(root));
-        calibration.show();
-        // TODO: open calibration window
+        try {
+            AppMain.calibrationService.openCalibration();
+        } catch (Exception e) {
+            AppMain.notificationService.createNotification("Calibration window could not be open! Please, restart the app.", NotificationType.ERROR).show();
+        }
     }
 
     public void quitApp(MouseEvent event) {
@@ -141,11 +136,6 @@ public class MainScreenController implements Initializable, ControlledScreen {
         otherTriggerMode.getItems().addAll("INTERNAL", "EXTERNAL");
         otherTriggerMode.getSelectionModel().select(0);
         // -----
-    }
-
-    @Override
-    public void setScreenParent(ScreensController screenPage) {
-        myController = screenPage;
     }
 
 }

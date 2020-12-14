@@ -6,11 +6,18 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="300.0" prefWidth="600.0" stylesheets="@styles/calibrationScreenStyles.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.screen.controller.CalibrationScreenController">
+<AnchorPane prefHeight="300.0" prefWidth="600.0" stylesheets="@styles/calibrationScreenStyles.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.screen.controller.CalibrationController">
    <children>
       <VBox fx:id="calibrationContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <HBox fx:id="notificationContainer" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="70.0" />
+            <VBox fx:id="notificationContainer" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="70.0" stylesheets="@styles/notificationStyles.css">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <padding>
+                  <Insets left="30.0" />
+               </padding>
+            </VBox>
             <AnchorPane maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                <children>
                   <VBox maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -116,7 +123,7 @@
             </AnchorPane>
             <HBox fx:id="actionContainer" alignment="CENTER" minHeight="50.0" prefHeight="70.0" prefWidth="200.0">
                <children>
-                  <Button fx:id="runCalibrationBtn" mnemonicParsing="false" styleClass="btn" text="Run calibration">
+                  <Button fx:id="runCalibrationBtn" mnemonicParsing="false" onMouseReleased="#runCalibration" styleClass="btn" text="Run calibration">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>

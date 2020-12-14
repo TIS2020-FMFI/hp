@@ -1,8 +1,11 @@
 package com.app.service;
 
-import com.app.screen.handler.ScreensController;
+import com.app.service.calibration.CalibrationService;
+import com.app.service.notification.NotificationService;
+import com.app.service.notification.NotificationType;
 import javafx.application.Application;
-import javafx.scene.Group;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -11,34 +14,29 @@ public class AppMain extends Application {
 
     public static Stage ps;
     public static NotificationService notificationService;
+    public static CalibrationService calibrationService;
 
     @Override
-    public void start(Stage primaryStage) {
-        ScreensController mainContainer = new ScreensController();
-
-        mainContainer.loadScreen("mainScreen", "/views/mainScreen.fxml");
-        mainContainer.loadScreen("calibrationScreen", "/views/calibrationScreen.fxml");
-
-        mainContainer.setScreen("mainScreen");
-
-        Group root = new Group();
-        root.getChildren().addAll(mainContainer);
+    public void start(Stage primaryStage) throws Exception {
+        Parent root = FXMLLoader.load(getClass().getResource("/views/mainScreen.fxml"));
         primaryStage.setTitle("Super machine");
         primaryStage.setScene(new Scene(root));
-        primaryStage.show();
         primaryStage.setResizable(false);
 
         ps = primaryStage;
-        VBox notificationContainer = (VBox) mainContainer.lookup("#notificationContainer");
+        calibrationService = new CalibrationService("/views/calibrationScreen.fxml");
+
+        VBox notificationContainer = (VBox) root.lookup("#notificationContainer");
         if (notificationContainer == null) {
-            System.out.println("shit, notification container not found");
-            return;
+            throw new Exception("Notification container not found in this window!");
         }
         notificationService = new NotificationService(notificationContainer);
-        notificationService.createNotification("First try", NotificationType.SUCCESS);
-    }
+        notificationService.createNotification("First try", NotificationType.SUCCESS).show();
 
-    public static Stage getPrimaryStage() { return ps; }
+
+        // if all runs successfully then show
+        primaryStage.show();
+    }
 
     public static void main(String[] args) {
         launch(args);

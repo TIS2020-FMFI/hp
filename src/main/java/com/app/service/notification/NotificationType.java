@@ -1,4 +1,4 @@
-package com.app.service;
+package com.app.service.notification;
 
 public enum NotificationType {
     SUCCESS,
