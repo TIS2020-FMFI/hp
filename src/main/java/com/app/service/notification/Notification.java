@@ -1,10 +1,9 @@
-package com.app.service;
+package com.app.service.notification;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 
 
 public class Notification extends HBox {
@@ -19,9 +18,10 @@ public class Notification extends HBox {
     }
 
     public void show() {
-        this.getChildren().addAll(new Label(message), removeIcon);
+        Label label = new Label(message);
+        label.setPrefWidth(650);
+        this.getChildren().addAll(label, removeIcon);
         this.setAlignment(Pos.CENTER_RIGHT);
-        this.setSpacing(620);
         this.getStyleClass().addAll("notification", NotificationType.getClassName(type), "border");
     }
 
