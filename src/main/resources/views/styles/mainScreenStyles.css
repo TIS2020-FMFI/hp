@@ -21,10 +21,6 @@
     pointer-events: none;
 }
 
-/*.try {*/
-/*    -fx-background-color: pink;*/
-/*}*/
-
 .item-header {
     -fx-background-color: white;
     -fx-background-radius: 15px;
@@ -45,6 +41,7 @@
 
 .graph-area {
     -fx-border-color: black;
+    -fx-border-radius: 6px;
 }
 
 .graph-btn {
@@ -53,4 +50,14 @@
 
 .graph-btn:hover {
     -fx-cursor: hand;
+}
+
+.static-label-btn {
+    -fx-start-margin: 15px;
+}
+
+.simple-border {
+    -fx-border-color: black;
+    -fx-border-radius: 6px;
+    -fx-border-width: 1px;
 }

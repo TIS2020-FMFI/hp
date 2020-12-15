@@ -50,10 +50,6 @@ public class MainController implements Initializable {
     ChoiceBox<String> otherHighSpeed;
     @FXML
     ChoiceBox<String> otherAutoSweep;
-    @FXML
-    ChoiceBox<String> otherManualSweep;
-    @FXML
-    ChoiceBox<String> otherTriggerMode;
 
     @FXML
     Button upperGraphRun;
@@ -125,16 +121,12 @@ public class MainController implements Initializable {
         // TODO: read config here
 
         // ----- initialize all dropbox -> coz its not possible to do so in sceneBuilder yet
-        otherSweepType.getItems().addAll("OFF", "ON");
+        otherSweepType.getItems().addAll("LINEAR", "LOG");
         otherSweepType.getSelectionModel().select(0);
         otherHighSpeed.getItems().addAll("OFF", "ON");
         otherHighSpeed.getSelectionModel().select(0);
-        otherAutoSweep.getItems().addAll("OFF", "ON");
+        otherAutoSweep.getItems().addAll("ON", "OFF");
         otherAutoSweep.getSelectionModel().select(0);
-        otherManualSweep.getItems().addAll("OFF","ON");
-        otherManualSweep.getSelectionModel().select(0);
-        otherTriggerMode.getItems().addAll("INTERNAL", "EXTERNAL");
-        otherTriggerMode.getSelectionModel().select(0);
         // -----
     }
 
