@@ -1,0 +1,26 @@
+{
+    "displayA": null,
+    "displayB": null,
+    "displayX": null,
+    "frequency": {
+        "start": null,
+        "stop": null,
+        "step": null,
+        "spot": null
+    },
+    "voltage": {
+        "start": null,
+        "stop": null,
+        "step": null,
+        "spot": null
+    },
+    "other": {
+        "capacitance": null,
+        "electricalLength": null,
+        "sweepType": "LINEAR",
+        "highSpeed": false,
+        "autoSweep": false
+    },
+    "autoSave":	false,
+    "saveDir": null
+}
