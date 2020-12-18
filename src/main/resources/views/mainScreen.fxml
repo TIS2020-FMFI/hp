@@ -470,7 +470,7 @@
                                        <children>
                                           <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" prefHeight="20.0" prefWidth="200.0" GridPane.rowIndex="1">
                                              <children>
-                                                <Label styleClass="item-header" text="Capaticitance 'C0'">
+                                                <Label styleClass="item-header" text="Capacitance 'C0'">
                                                    <padding>
                                                       <Insets left="5.0" right="5.0" />
                                                    </padding>
