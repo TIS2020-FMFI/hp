@@ -15,47 +15,50 @@ import java.util.Map;
 
 public class JsonParser {
 
-    public static boolean write(String fileName) throws FileNotFoundException {
+    public static boolean write(String fileName, EnvironmentParameters environmentParameters) throws FileNotFoundException {
         // creating JSONObject
         JSONObject jo = new JSONObject();
 
         // putting data to JSONObject
-        jo.put("firstName", "John");
-        jo.put("lastName", "Smith");
-        jo.put("age", 25);
+        jo.put("displayA", environmentParameters.getDisplayYY().getA());
+        jo.put("displayB", environmentParameters.getDisplayYY().getB());
+        jo.put("displayX", environmentParameters.getDisplayYY().getX()); // netreba tu zmenit typ do String?
 
-        // for address data, first create LinkedHashMap
-        Map<String, java.io.Serializable> m = new LinkedHashMap<>(4);
-        m.put("streetAddress", "21 2nd Street");
-        m.put("city", "New York");
-        m.put("state", "NY");
-        m.put("postalCode", 10021);
+        // for frequency data, create HashMap
+        Map<String, java.io.Serializable> m = new HashMap<>(4);
+        m.put("start", environmentParameters.getFrequencySweep().getStart());
+        m.put("stop", environmentParameters.getFrequencySweep().getStop());
+        m.put("step", environmentParameters.getFrequencySweep().getStep());
+        m.put("spot", environmentParameters.getFrequencySweep().getSpot());
 
-        // putting address to JSONObject
-        jo.put("address", m);
+        // putting frequency to JSONObject
+        jo.put("frequency", m);
 
-        // for phone numbers, first create JSONArray
-        JSONArray ja = new JSONArray();
+        // for voltage data, create HashMap
+        m = new HashMap<>(4);
+        m.put("start", environmentParameters.getVoltageSweep().getStart());
+        m.put("stop", environmentParameters.getVoltageSweep().getStop());
+        m.put("step", environmentParameters.getVoltageSweep().getStep());
+        m.put("spot", environmentParameters.getVoltageSweep().getSpot());
 
-        m = new LinkedHashMap<>(2);
-        m.put("type", "home");
-        m.put("number", "212 555-1234");
+        // putting voltage to JSONObject
+        jo.put("voltage", m);
 
-        // adding map to list
-        ja.add(m);
+        // for other data, create HashMap
+        m = new HashMap<>(5);
+        m.put("electricalLength", environmentParameters.getOther().getElectricalLength());
+        m.put("capacitance", environmentParameters.getOther().getCapacitance());
+        m.put("sweepType", environmentParameters.getOther().getSweepType());   //toString?
+        m.put("highSpeed", environmentParameters.getOther().isHighSpeed());    // boolean dobre sa skonvertuje?
+        m.put("autoSweep", environmentParameters.getOther().isAutoSweep());
 
-        m = new LinkedHashMap<>(2);
-        m.put("type", "fax");
-        m.put("number", "212 555-1234");
 
-        // adding map to list
-        ja.add(m);
+        // putting other to JSONObject
+        jo.put("other", m);
 
-        // putting phoneNumbers to JSONObject
-        jo.put("phoneNumbers", ja);
 
-        // writing JSON to file:"JSONExample.json" in cwd
-        PrintWriter pw = new PrintWriter("JSONExample.json");
+        // writing JSON to file: "filename.json" in cwd
+        PrintWriter pw = new PrintWriter(fileName + ".json");
         pw.write(jo.toJSONString());
 
         pw.flush();
@@ -74,7 +77,7 @@ public class JsonParser {
         displayYY.setA((String) jo.get("displayA"));
         displayYY.setB((String) jo.get("displayB"));
         String tempX = (String) jo.get("displayX");
-        displayYY.setX(tempX != null ? MeasuredQuantity.valueOf((String) jo.get("displayX")):null);
+        displayYY.setX(tempX != null ? MeasuredQuantity.valueOf(tempX):null);
         environmentParameters.setDisplayYY(displayYY);
 
         Map frequency = (HashMap)jo.get("frequency");
