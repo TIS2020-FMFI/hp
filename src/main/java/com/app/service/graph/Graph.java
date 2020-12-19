@@ -1,58 +1,119 @@
 package com.app.service.graph;
 
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.data.time.Millisecond;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.chart.renderer.xy.XYSplineRenderer;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+
+import javax.swing.*;
+import java.awt.*;
 
 
 public class Graph extends ChartPanel implements Runnable
 {
-    private static TimeSeries timeSeries;
     private long value=0;
+    public static XYSeries series1;
+    public static XYSeries series2 ;
+    private static XYSeriesCollection dataset1;
+    private static XYSeriesCollection dataset2;
+//    JFreeChart chart;
 
-    public Graph(String chartContent,String title,String yaxisName)
+    public Graph(String title, String yaxisName1, String yaxisName2, String xaxisName)
     {
-        super(createChart(chartContent,title,yaxisName));
+        super(createChart(title,yaxisName1,yaxisName2,xaxisName));
     }
 
-    private static JFreeChart createChart(String chartContent,String title,String yaxisName){
+    private static JFreeChart createChart(String title, String yaxisName1, String yaxisName2, String xaxisName){
 
-        timeSeries = new TimeSeries(chartContent);
-        TimeSeriesCollection timeseriescollection = new TimeSeriesCollection(timeSeries);
-        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(title, "time (seconds)", yaxisName, timeseriescollection, true, true, false);
-        XYPlot xyplot = jfreechart.getXYPlot();
 
-        ValueAxis valueaxis = xyplot.getDomainAxis();
-        valueaxis.setAutoRange(true);
-        valueaxis.setFixedAutoRange(30000D);
 
-        valueaxis = xyplot.getRangeAxis();
-        //valueaxis.setRange(0.0D,200D);
+        series1 = new XYSeries(yaxisName1);
+        series2 = new XYSeries(yaxisName2);
 
-        return jfreechart;
+        dataset1 = new XYSeriesCollection(series1);
+        dataset2 = new XYSeriesCollection(series2);
+
+
+        //construct the plot
+        XYPlot plot = new XYPlot();
+        plot.setDataset(0, dataset1);
+        plot.setDataset(1, dataset2);
+
+        //customize the plot with renderers and axis
+        plot.setRenderer(0, new XYSplineRenderer());//use default fill paint for first series
+        XYSplineRenderer splinerenderer = new XYSplineRenderer();
+        splinerenderer.setSeriesFillPaint(0, Color.BLUE);
+        plot.setRenderer(1, splinerenderer);
+        plot.setRangeAxis(0, new NumberAxis(yaxisName1));
+        plot.setRangeAxis(1, new NumberAxis(yaxisName2));
+        plot.setDomainAxis(new NumberAxis(xaxisName));
+
+        //Map the data to the appropriate axis
+        plot.mapDatasetToRangeAxis(0, 0);
+        plot.mapDatasetToRangeAxis(1, 1);
+
+        //generate the chart
+        JFreeChart chart = new JFreeChart(title,plot);
+        chart.setBackgroundPaint(Color.WHITE);
+        JPanel chartPanel = new ChartPanel(chart);
+
+        plot.setDomainPannable(true);
+        plot.setRangePannable(true);
+        plot.getDomainAxis().setLowerBound(0);
+        plot.getDomainAxis().setAutoRange(true);
+        plot.getRangeAxis(0).setAutoRange(true);
+        plot.getRangeAxis(1).setAutoRange(true);
+        plot.getDomainAxis().setFixedAutoRange(30D);
+        plot.getRangeAxis(0).setFixedAutoRange(100D);
+        plot.getRangeAxis(1).setFixedAutoRange(100D);
+
+        return chart;
     }
 
     public void run()
     {
+        double poc = 1;
         while(true)
         {
-            try
-            {
-                timeSeries.add(new Millisecond(), randomNum());  // tu budu pribudat values
-                Thread.sleep(300);
+            try {
+
+                //inputChange("String measurement"); //
+
+                series1.add(poc, (double) randomNum());
+                series2.add(poc, (double) randomNum());
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            } finally {
+                poc += 1;
             }
-            catch (InterruptedException e)  {   }
+
         }
     }
 
     private long randomNum()
     {
         System.out.println((Math.random()*20+80));
-        return (long)(Math.random()*20+80);
+        return (long) (Math.random()*20+80);
+    }
+
+
+    private Double[] inputChange(String measurement) {
+
+        measurement = "F 0500.0000,NZN 028.55E+00,NDN-089.77E+00";
+        String[] values = measurement.split(",");
+        for (int i = 0; i < values.length; i++) {
+            if (i == 0) values[i] = values[i].substring(1,values[i].length());
+            else values[i] = values[i].substring(3,values[i].length());
+        }
+
+        Double[] values_long = new Double[3];
+        values_long[0] = Double.parseDouble(values[0]);
+        values_long[1] = Double.parseDouble(values[1]);
+        values_long[2] = Double.parseDouble(values[2]);
+
+        return values_long;
     }
 }
