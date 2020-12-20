@@ -1,14 +1,12 @@
 package com.app.service.graph;
 
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
-
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.*;
+import org.jfree.chart.fx.ChartViewer;
 
 public class Test
 {
@@ -20,6 +18,9 @@ public class Test
     {
         JFrame frame=new JFrame("Chart");
         Graph rtcp=new Graph("Chart", "Resistance", "Capacity", "Frequency");
+        ChartViewer chartViewer = new ChartViewer(rtcp.chart);
+        chartViewer.setPrefHeight(400);
+        chartViewer.setPrefWidth(400);
         frame.getContentPane().add(rtcp,new BorderLayout().CENTER);
         frame.pack();
         frame.setVisible(true);

@@ -5,6 +5,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYSplineRenderer;
+import org.jfree.data.Range;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -19,7 +20,7 @@ public class Graph extends ChartPanel implements Runnable
     public static XYSeries series2 ;
     private static XYSeriesCollection dataset1;
     private static XYSeriesCollection dataset2;
-//    JFreeChart chart;
+    public static JFreeChart chart;
 
     public Graph(String title, String yaxisName1, String yaxisName2, String xaxisName)
     {
@@ -56,9 +57,10 @@ public class Graph extends ChartPanel implements Runnable
         plot.mapDatasetToRangeAxis(1, 1);
 
         //generate the chart
-        JFreeChart chart = new JFreeChart(title,plot);
+        chart = new JFreeChart(title,plot);
         chart.setBackgroundPaint(Color.WHITE);
         JPanel chartPanel = new ChartPanel(chart);
+
 
         plot.setDomainPannable(true);
         plot.setRangePannable(true);
@@ -67,8 +69,15 @@ public class Graph extends ChartPanel implements Runnable
         plot.getRangeAxis(0).setAutoRange(true);
         plot.getRangeAxis(1).setAutoRange(true);
         plot.getDomainAxis().setFixedAutoRange(30D);
-        plot.getRangeAxis(0).setFixedAutoRange(100D);
-        plot.getRangeAxis(1).setFixedAutoRange(100D);
+//        plot.getDomainAxis().setLowerBound(0);
+//        plot.getRangeAxis(0).setFixedAutoRange(50);
+//        plot.getRangeAxis(1).setFixedAutoRange(50);
+        plot.getRangeAxis(0).setUpperMargin(0.1);
+        plot.getRangeAxis(1).setUpperMargin(1.5);
+//        plot.getRangeAxis(0).setLowerMargin(0.1);
+//        plot.getRangeAxis(0).set
+//        plot.getRangeAxis(0).setLowerMargin(1);
+//        plot.getRangeAxis(0).setDefaultAutoRange(new Range(50,110));
 
         return chart;
     }
