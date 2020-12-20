@@ -19,13 +19,13 @@ import org.jfree.chart.fx.ChartCanvas;
 import org.jfree.chart.fx.ChartViewer;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.net.URL;
+import java.util.Date;
 import java.util.ResourceBundle;
+import java.util.TimerTask;
+
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Tab;
@@ -130,7 +130,7 @@ public class MainController implements Initializable {
     public void runMeasurement(MouseEvent event) {
         // TODO: run measurement and graph
 //        VBox1 = new VBox();
-        JFrame frame=new JFrame("Chart");
+//        JFrame frame=new JFrame("Chart");
         Graph rtcp=new Graph("Chart", "Resistance", "Capacity", "Frequency");
 //        ChartViewer chartViewer = new ChartViewer(rtcp.chart);
 //        chartViewer.setPrefHeight(680);
@@ -144,8 +144,8 @@ public class MainController implements Initializable {
 //        canvas.widthProperty().bind(lowerPane.widthProperty());
 //        lowerPane.getChildren().addAll(canvas);
 //
-//        ChartPanel chartPanel = new ChartPanel(rtcp.chart);
-////        chartPanel.setPreferredSize(new java.awt.Dimension(680, 260));
+        ChartPanel chartPanel = new ChartPanel(rtcp.chart);
+        chartPanel.setPreferredSize(new java.awt.Dimension(680, 260));
 //
 //        upperPane = new AnchorPane();
 //        upperPane.setPrefSize(680, 260);
@@ -155,35 +155,50 @@ public class MainController implements Initializable {
 //        Scene primaryScene = new Scene(VBox1);
 
 
-//        final SwingNode swingNode = new SwingNode();
-//        swingNode.setContent(chartPanel);
-//        upperPane.getChildren().addAll(swingNode);
+        final SwingNode swingNode = new SwingNode();
+        swingNode.setContent(chartPanel);
+        upperPane.getChildren().addAll(swingNode);
 //
 //        Stage stage = new Stage();
 //        stage.setScene(new Scene(upperPane, 0, 0));
 //        stage.show();
 
 
-        frame.getContentPane().add(rtcp,new BorderLayout().CENTER);
-        frame.pack();
-        frame.setVisible(true);
+//        frame.getContentPane().add(rtcp,new BorderLayout().CENTER);
+//        frame.pack();
+//        frame.setVisible(true);
 
 //        (new Thread(rtcp)).start(); 1st version
+
+
+
+//        TimerTask task = new TimerTask() {
+//            public void run() {
+//                System.out.println("Task performed on: " + new Date() + "n" + "Thread's name: " + Thread.currentThread().getName()); }
+//                };
+//        Timer timer = new Timer("Timer");
+//        long delay = 1000L;
+//        timer.schedule(task, delay);
 
         // real-time plotting
         final double[] poc = {0};
         //now make your timer
         int delay = 500; //milliseconds
-        ActionListener timerAction = new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                //add new data point and actualize graph
-                rtcp.series1.add(poc[0], (double) (Math.random()*20+80));  // tu budu pribudat values
-                rtcp.series2.add(poc[0], (double) (Math.random()*20+80));  // tu budu pribudat values
-                poc[0]++;
+        try {
 
-            }
-        };
-        new Timer(delay, timerAction).start();
+
+            ActionListener timerAction = new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    //add new data point and actualize graph
+                    rtcp.series1.add(poc[0], (double) (Math.random() * 20 + 80));  // tu budu pribudat values
+                    rtcp.series2.add(poc[0], (double) (Math.random() * 20 + 80));  // tu budu pribudat values
+                    poc[0]++;
+
+                }
+            };
+            new Timer(delay, timerAction).start();
+        } catch (NoSuchMethodError e) {
+        }
 
 //        frame.addWindowListener(new WindowAdapter()
 //        {
