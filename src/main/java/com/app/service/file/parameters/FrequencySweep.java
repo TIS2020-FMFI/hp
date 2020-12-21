@@ -3,14 +3,14 @@ package com.app.service.file.parameters;
 
 public class FrequencySweep extends Sweep {
 
-    double minStart = 1;
-    double maxStart = 1000;
-    double minStop = 1;
-    double maxStop = 1000;
-    double minStep = 0.1;
-    double maxStep = 999;
-    double minSpot = 1;
-    double maxSpot = 1000;
+    static final double minStart = 1;
+    static final double maxStart = 1000;
+    static final double minStop = 1;
+    static final double maxStop = 1000;
+    static final double minStep = 0.1;
+    static final double maxStep = 999;
+    static final double minSpot = 1;
+    static final double maxSpot = 1000;
 
     private double start;
     private double stop;

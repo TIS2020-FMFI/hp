@@ -1,14 +1,14 @@
 package com.app.service.file.parameters;
 
 public class VoltageSweep extends Sweep {
-    double minStart = -40;
-    double maxStart = 40;
-    double minStop = -40;
-    double maxStop = 40;
-    double minStep = 0.01;
-    double maxStep = 40;
-    double minSpot = -40;
-    double maxSpot = 40;
+    static final double minStart = -40;
+    static final double maxStart = 40;
+    static final double minStop = -40;
+    static final double maxStop = 40;
+    static final double minStep = 0.01;
+    static final double maxStep = 40;
+    static final double minSpot = -40;
+    static final double maxSpot = 40;
 
     private double start;
     private double stop;
