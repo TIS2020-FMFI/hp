@@ -2,10 +2,10 @@ package com.app.service.file.parameters;
 
 public abstract class Sweep {
 
-    private double start;
-    private double stop;
-    private double step;
-    private double spot;
+    protected double start;
+    protected double stop;
+    protected double step;
+    protected double spot;
 
 
 
@@ -25,17 +25,4 @@ public abstract class Sweep {
         return spot;
     }
 
-    public void setStart(Double start) { this.start = start; }
-
-    public void setStop(Double stop) {
-        this.stop = stop;
-    }
-
-    public void setStep(Double step) {
-        this.step = step;
-    }
-
-    public void setSpot(Double spot) {
-        this.spot = spot;
-    }
 }

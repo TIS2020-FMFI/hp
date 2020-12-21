@@ -10,51 +10,29 @@ public class VoltageSweep extends Sweep {
     static final double minSpot = -40;
     static final double maxSpot = 40;
 
-    private double start;
-    private double stop;
-    private double step;
-    private double spot;
-
-
-
-    public double getStart() {
-        return start;
-    }
-
-    public double getStop() {
-        return stop;
-    }
-
-    public double getStep() {
-        return step;
-    }
-
-    public double getSpot() {
-        return spot;
-    }
 
     public void setStart(Double start) {
         if(start < minStart || start > maxStart){
-            this.start = minStart;
-        }else this.start = start;
+            super.start = minStart;
+        }else super.start = start;
     }
 
 
     public void setStop(Double stop) {
         if(stop < minStop || stop > maxStop){
-            this.stop = minStop;
-        }else this.stop = stop;
+            super.stop = minStop;
+        }else super.stop = stop;
     }
 
 
     public void setStep(Double step) {
-        if(step < minStep || step > maxStep){this.step = minStep;}
-        else this.step = step;
+        if(step < minStep || step > maxStep){super.step = minStep;}
+        else super.step = step;
     }
 
 
     public void setSpot(Double spot) {
-        if(spot < minSpot || spot > maxSpot){this.spot = minSpot;}
-        else this.spot = spot;
+        if(spot < minSpot || spot > maxSpot){super.spot = minSpot;}
+        else super.spot = spot;
     }
 }
