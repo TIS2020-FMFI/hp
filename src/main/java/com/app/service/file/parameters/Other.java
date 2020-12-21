@@ -1,26 +1,34 @@
 package com.app.service.file.parameters;
 
 public class Other {
-    private String electricalLength;
-    private String capacitance;
+    private double electricalLength;
+    private double capacitance;
+    private static final double minElectricalLength = 0;
+    private static final double maxElectricalLength = 99.99;
+    private static final double minCapacitance = -1;
+    private static final double maxCapacitance = 1;
     private SweepType sweepType;
     private boolean highSpeed;
     private boolean autoSweep;
 
-    public String getElectricalLength() {
+    public double getElectricalLength() {
         return electricalLength;
     }
 
-    public void setElectricalLength(String electricalLength) {
-        this.electricalLength = electricalLength;
+    public void setElectricalLength(double electricalLength) {
+        if(electricalLength < minElectricalLength || electricalLength > maxElectricalLength){
+            this.electricalLength = minElectricalLength;
+        }else{ this.electricalLength = electricalLength;}
     }
 
-    public String getCapacitance() {
+    public double getCapacitance() {
         return capacitance;
     }
 
-    public void setCapacitance(String capacitance) {
-        this.capacitance = capacitance;
+    public void setCapacitance(double capacitance) {
+        if(capacitance < minCapacitance || capacitance > maxCapacitance){
+            this.capacitance = minCapacitance;
+        }else { this.capacitance = capacitance; }
     }
 
     public SweepType getSweepType() {
