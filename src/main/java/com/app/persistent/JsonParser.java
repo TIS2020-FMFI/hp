@@ -17,7 +17,7 @@ import static com.app.service.file.parameters.MeasuredQuantity.FREQUENCY;
 
 public class JsonParser {
 
-    public static boolean write(String fileName, EnvironmentParameters environmentParameters) throws FileNotFoundException {
+    public static boolean writeConfig(String fileName, EnvironmentParameters environmentParameters) throws FileNotFoundException {
 
         environmentParameters = checkParameters(environmentParameters);
 
@@ -73,44 +73,81 @@ public class JsonParser {
     }
 
     public static EnvironmentParameters readConfig(String fileName) throws Exception {
-        Object obj = new JSONParser().parse(new FileReader(fileName));
+        try {
+            Object obj = new JSONParser().parse(new FileReader(fileName + ".json"));
 
-        EnvironmentParameters environmentParameters = new EnvironmentParameters();
+            EnvironmentParameters environmentParameters = new EnvironmentParameters();
 
-        JSONObject jo = (JSONObject) obj;
-        DisplayYY displayYY = new DisplayYY();
-        displayYY.setA((String) jo.get("displayA"));
-        displayYY.setB((String) jo.get("displayB"));
-        String tempX = (String) jo.get("displayX");
-        displayYY.setX(tempX != null ? MeasuredQuantity.valueOf(tempX):null);
-        environmentParameters.setDisplayYY(displayYY);
+            JSONObject jo = (JSONObject) obj;
+            DisplayYY displayYY = new DisplayYY();
+            displayYY.setA((String) jo.get("displayA"));
+            displayYY.setB((String) jo.get("displayB"));
+            String tempX = (String) jo.get("displayX");
+            displayYY.setX(tempX != null ? MeasuredQuantity.valueOf(tempX) : null);
+            environmentParameters.setDisplayYY(displayYY);
 
-        Map frequency = (HashMap)jo.get("frequency");
-        FrequencySweep frequencySweep = new FrequencySweep();
-        frequencySweep.setStart((Double)frequency.get("start"));
-        frequencySweep.setStop((Double)frequency.get("stop"));
-        frequencySweep.setStep((Double)frequency.get("step"));
-        frequencySweep.setSpot((Double)frequency.get("spot"));
-        environmentParameters.setFrequencySweep(frequencySweep);
+            Map frequency = (HashMap) jo.get("frequency");
+            FrequencySweep frequencySweep = new FrequencySweep();
+            frequencySweep.setStart((Double) frequency.get("start"));
+            frequencySweep.setStop((Double) frequency.get("stop"));
+            frequencySweep.setStep((Double) frequency.get("step"));
+            frequencySweep.setSpot((Double) frequency.get("spot"));
+            environmentParameters.setFrequencySweep(frequencySweep);
 
-        Map voltage = (HashMap)jo.get("voltage");
-        VoltageSweep voltageSweep = new VoltageSweep();
-        voltageSweep.setStart((Double)voltage.get("start"));
-        voltageSweep.setStop((Double)voltage.get("stop"));
-        voltageSweep.setStep((Double)voltage.get("step"));
-        voltageSweep.setSpot((Double)voltage.get("spot"));
-        environmentParameters.setVoltageSweep(voltageSweep);
+            Map voltage = (HashMap) jo.get("voltage");
+            VoltageSweep voltageSweep = new VoltageSweep();
+            voltageSweep.setStart((Double) voltage.get("start"));
+            voltageSweep.setStop((Double) voltage.get("stop"));
+            voltageSweep.setStep((Double) voltage.get("step"));
+            voltageSweep.setSpot((Double) voltage.get("spot"));
+            environmentParameters.setVoltageSweep(voltageSweep);
 
-        Map o = (HashMap)jo.get("other");
-        Other other = new Other();
-        other.setCapacitance((Double) o.get("capacitance"));
-        other.setElectricalLength((Double) o.get("electricalLength"));
-        String tempSweepType = (String) o.get("sweepType");
-        other.setSweepType(tempSweepType != null ? SweepType.valueOf(tempSweepType):null);
-        other.setHighSpeed((Boolean) o.get("highSpeed"));
-        other.setAutoSweep((Boolean) o.get("autoSweep"));
-        environmentParameters.setOther(other);
+            Map o = (HashMap) jo.get("other");
+            Other other = new Other();
+            other.setCapacitance((Double) o.get("capacitance"));
+            other.setElectricalLength((Double) o.get("electricalLength"));
+            String tempSweepType = (String) o.get("sweepType");
+            other.setSweepType(tempSweepType != null ? SweepType.valueOf(tempSweepType) : null);
+            other.setHighSpeed((Boolean) o.get("highSpeed"));
+            other.setAutoSweep((Boolean) o.get("autoSweep"));
+            environmentParameters.setOther(other);
+            return environmentParameters;
+        }catch (Exception e){
+            EnvironmentParameters parameters = new EnvironmentParameters();
 
+            DisplayYY displayYY = new DisplayYY();
+            displayYY.setX(FREQUENCY);
+            displayYY.setB("R");
+            displayYY.setA("L");
+
+            parameters.setDisplayYY(displayYY);
+
+            Other other = new Other();
+
+            other.setSweepType(SweepType.LOG);
+            other.setHighSpeed(true);
+            other.setAutoSweep(true);
+            other.setCapacitance(other.getMinCapacitance());
+            other.setElectricalLength(other.getMinElectricalLength());
+
+            parameters.setOther(other);
+
+            FrequencySweep frequencySweep = new FrequencySweep();
+            frequencySweep.setStart(frequencySweep.getMinStart());
+            frequencySweep.setStop(frequencySweep.getMinStop());
+            frequencySweep.setStep(frequencySweep.getMinStep());
+            frequencySweep.setSpot(frequencySweep.getMinSpot());
+
+            parameters.setFrequencySweep(frequencySweep);
+
+            VoltageSweep voltageSweep = new VoltageSweep();
+            voltageSweep.setStart(voltageSweep.getMinStart());
+            voltageSweep.setStop(voltageSweep.getMinStop());
+            voltageSweep.setStep(voltageSweep.getMinStep());
+            voltageSweep.setSpot(voltageSweep.getMinSpot());
+            parameters.setVoltageSweep(voltageSweep);
+            return parameters;
+        }
         // TODO: add reading saving dir + auto save
 
         // getting map
@@ -134,7 +171,6 @@ public class JsonParser {
 //                System.out.println(pair.getKey() + " : " + pair.getValue());
 //            }
 //        }
-        return environmentParameters;
     }
 
     public static EnvironmentParameters checkParameters(EnvironmentParameters environmentParameters){

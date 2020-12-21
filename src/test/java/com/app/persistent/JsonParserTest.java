@@ -19,7 +19,7 @@ class JsonParserTest {
         parameters.setFrequencySweep(new FrequencySweep());
         parameters.setVoltageSweep(new VoltageSweep());
 
-        JsonParser.write("config", parameters);
+        JsonParser.writeConfig("config", parameters);
     }
 
     @Test
@@ -57,7 +57,42 @@ class JsonParserTest {
         voltageSweep.setSpot(-3.);
         parameters.setVoltageSweep(voltageSweep);
 
-        JsonParser.write("config-with-val", parameters);
+        JsonParser.writeConfig("config-with-val", parameters);
+    }
+
+    @Test
+    void readTestException() throws Exception {
+
+        JsonParser.readConfig("empty");
+    }
+
+    @Test
+    void readTest() throws Exception {
+
+        EnvironmentParameters param = JsonParser.readConfig("config-with-val");
+
+        assertEquals(FREQUENCY, param.getDisplayYY().getX());
+        assertEquals("R", param.getDisplayYY().getB());
+        assertEquals("L", param.getDisplayYY().getA());
+
+
+        assertEquals(SweepType.LOG, param.getOther().getSweepType());
+        assertFalse(param.getOther().isHighSpeed());
+        assertTrue(param.getOther().isAutoSweep());
+        assertEquals(0.0, param.getOther().getCapacitance());
+        assertEquals(1.0, param.getOther().getElectricalLength());
+
+        assertEquals(100., param.getFrequencySweep().getStart());
+        assertEquals(600., param.getFrequencySweep().getStop());
+        assertEquals(20., param.getFrequencySweep().getStep());
+        assertEquals(30.1, param.getFrequencySweep().getSpot());
+
+        assertEquals(0., param.getVoltageSweep().getStart());
+        assertEquals(40., param.getVoltageSweep().getStop());
+        assertEquals(1., param.getVoltageSweep().getStep());
+        assertEquals(-3., param.getVoltageSweep().getSpot());
+
+
     }
 
 }
