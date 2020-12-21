@@ -29,14 +29,11 @@ public class Graph extends ChartPanel implements Runnable
 
     private static JFreeChart createChart(String title, String yaxisName1, String yaxisName2, String xaxisName){
 
-
-
         series1 = new XYSeries(yaxisName1);
         series2 = new XYSeries(yaxisName2);
 
         dataset1 = new XYSeriesCollection(series1);
         dataset2 = new XYSeriesCollection(series2);
-
 
         //construct the plot
         XYPlot plot = new XYPlot();
@@ -59,12 +56,11 @@ public class Graph extends ChartPanel implements Runnable
         //generate the chart
         chart = new JFreeChart(title,plot);
         chart.setBackgroundPaint(Color.WHITE);
-        JPanel chartPanel = new ChartPanel(chart);
 
-
+        //configure the chart
         plot.setDomainPannable(true);
         plot.setRangePannable(true);
-        plot.getDomainAxis().setLowerBound(0);
+//        plot.getDomainAxis().setLowerBound(0);
         plot.getDomainAxis().setAutoRange(true);
         plot.getRangeAxis(0).setAutoRange(true);
         plot.getRangeAxis(1).setAutoRange(true);
@@ -75,7 +71,6 @@ public class Graph extends ChartPanel implements Runnable
         plot.getRangeAxis(0).setUpperMargin(0.1);
         plot.getRangeAxis(1).setUpperMargin(1.5);
 //        plot.getRangeAxis(0).setLowerMargin(0.1);
-//        plot.getRangeAxis(0).set
 //        plot.getRangeAxis(0).setLowerMargin(1);
 //        plot.getRangeAxis(0).setDefaultAutoRange(new Range(50,110));
 
