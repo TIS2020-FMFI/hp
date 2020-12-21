@@ -13,9 +13,14 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static com.app.service.file.parameters.MeasuredQuantity.FREQUENCY;
+
 public class JsonParser {
 
     public static boolean write(String fileName, EnvironmentParameters environmentParameters) throws FileNotFoundException {
+
+        environmentParameters = checkParameters(environmentParameters);
+
         // creating JSONObject
         JSONObject jo = new JSONObject();
 
@@ -129,6 +134,18 @@ public class JsonParser {
 //                System.out.println(pair.getKey() + " : " + pair.getValue());
 //            }
 //        }
-        return new EnvironmentParameters();
+        return environmentParameters;
+    }
+
+    public static EnvironmentParameters checkParameters(EnvironmentParameters environmentParameters){
+        if(environmentParameters.getDisplayYY().getA() == null) environmentParameters.getDisplayYY().setA("L");
+
+        if(environmentParameters.getDisplayYY().getB() == null) environmentParameters.getDisplayYY().setB("R");
+
+        if(environmentParameters.getDisplayYY().getX() == null) environmentParameters.getDisplayYY().setX(FREQUENCY);
+
+        if(environmentParameters.getOther().getSweepType() == null) environmentParameters.getOther().setSweepType(SweepType.LOG);
+
+        return environmentParameters;
     }
 }
