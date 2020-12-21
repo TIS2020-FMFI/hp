@@ -22,7 +22,7 @@ public class JsonParser {
         // putting data to JSONObject
         jo.put("displayA", environmentParameters.getDisplayYY().getA());
         jo.put("displayB", environmentParameters.getDisplayYY().getB());
-        jo.put("displayX", environmentParameters.getDisplayYY().getX()); // netreba tu zmenit typ do String?
+        jo.put("displayX", environmentParameters.getDisplayYY().getX().toString());
 
         // for frequency data, create HashMap
         Map<String, java.io.Serializable> m = new HashMap<>(4);
@@ -48,8 +48,8 @@ public class JsonParser {
         m = new HashMap<>(5);
         m.put("electricalLength", environmentParameters.getOther().getElectricalLength());
         m.put("capacitance", environmentParameters.getOther().getCapacitance());
-        m.put("sweepType", environmentParameters.getOther().getSweepType());   //toString?
-        m.put("highSpeed", environmentParameters.getOther().isHighSpeed());    // boolean dobre sa skonvertuje?
+        m.put("sweepType", environmentParameters.getOther().getSweepType().toString());
+        m.put("highSpeed", environmentParameters.getOther().isHighSpeed());
         m.put("autoSweep", environmentParameters.getOther().isAutoSweep());
 
 
@@ -98,8 +98,8 @@ public class JsonParser {
 
         Map o = (HashMap)jo.get("other");
         Other other = new Other();
-        other.setCapacitance((String) o.get("capacitance"));
-        other.setElectricalLength((String) o.get("electricalLength"));
+        other.setCapacitance((Double) o.get("capacitance"));
+        other.setElectricalLength((Double) o.get("electricalLength"));
         String tempSweepType = (String) o.get("sweepType");
         other.setSweepType(tempSweepType != null ? SweepType.valueOf(tempSweepType):null);
         other.setHighSpeed((Boolean) o.get("highSpeed"));

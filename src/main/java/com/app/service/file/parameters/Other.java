@@ -15,7 +15,7 @@ public class Other {
         return electricalLength;
     }
 
-    public void setElectricalLength(double electricalLength) {
+    public void setElectricalLength(Double electricalLength) {
         if(electricalLength < minElectricalLength || electricalLength > maxElectricalLength){
             this.electricalLength = minElectricalLength;
         }else{ this.electricalLength = electricalLength;}
@@ -25,7 +25,7 @@ public class Other {
         return capacitance;
     }
 
-    public void setCapacitance(double capacitance) {
+    public void setCapacitance(Double capacitance) {
         if(capacitance < minCapacitance || capacitance > maxCapacitance){
             this.capacitance = minCapacitance;
         }else { this.capacitance = capacitance; }
