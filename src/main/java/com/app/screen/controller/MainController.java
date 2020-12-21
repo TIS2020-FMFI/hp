@@ -1,5 +1,6 @@
 package com.app.screen.controller;
 
+import com.app.machineCommunication.Connection;
 import com.app.service.AppMain;
 import com.app.service.graph.Graph;
 import com.app.service.notification.NotificationType;
@@ -120,6 +121,8 @@ public class MainController implements Initializable {
     @FXML
     VBox VBox1;
 
+
+
     private Node useWorkaround(ChartViewer viewer) {
         if (true) {
             return new StackPane(viewer);
@@ -237,4 +240,10 @@ public class MainController implements Initializable {
         // -----
     }
 
+    public void runConnection(MouseEvent mouseEvent) throws Exception {
+        if (new Connection().connect())
+            gpibMenu.setText("GPIB connection: ACTIVE");
+        else
+            gpibMenu.setText("GPIB connection: INACTIVE");
+    }
 }
