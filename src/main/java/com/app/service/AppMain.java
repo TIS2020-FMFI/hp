@@ -1,6 +1,7 @@
 package com.app.service;
 
 import com.app.service.calibration.CalibrationService;
+import com.app.service.communication.CommunicationService;
 import com.app.service.file.FileService;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.graph.Graph;
@@ -20,6 +21,7 @@ public class AppMain extends Application {
     public static CalibrationService calibrationService;
     public static FileService fileService;
     public static Graph graphService;
+    public static CommunicationService communicationService;
 
     @Override
     public void start(Stage primaryStage) throws Exception {

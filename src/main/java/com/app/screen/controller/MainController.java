@@ -1,5 +1,6 @@
 package com.app.screen.controller;
 
+import com.app.machineCommunication.Connection;
 import com.app.service.AppMain;
 import com.app.service.graph.Graph;
 import com.app.service.graph.GraphService;
@@ -22,6 +23,11 @@ import org.jfree.chart.fx.ChartViewer;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
+
 import java.net.URL;
 import java.util.Date;
 import java.util.ResourceBundle;
@@ -121,6 +127,7 @@ public class MainController implements Initializable {
     @FXML
     VBox VBox1;
 
+
     private Node useWorkaround(ChartViewer viewer) {
         if (true) {
             return new StackPane(viewer);
@@ -180,4 +187,10 @@ public class MainController implements Initializable {
         // -----
     }
 
+    public void runConnection(MouseEvent mouseEvent) throws Exception {
+        if (AppMain.communicationService.connect())
+            gpibMenu.setText("GPIB connection: ACTIVE");
+        else
+            gpibMenu.setText("GPIB connection: INACTIVE");
+    }
 }
