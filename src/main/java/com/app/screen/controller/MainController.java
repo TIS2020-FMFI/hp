@@ -122,9 +122,6 @@ public class MainController implements Initializable {
     @FXML
     VBox VBox1;
 
-    public MainController() throws IOException {
-    }
-
 
     private Node useWorkaround(ChartViewer viewer) {
         if (true) {
@@ -242,9 +239,9 @@ public class MainController implements Initializable {
         otherAutoSweep.getSelectionModel().select(0);
         // -----
     }
-    Connection con = new Connection();
+
     public void runConnection(MouseEvent mouseEvent) throws Exception {
-        if (con.connect())
+        if (AppMain.communicationService.connect())
             gpibMenu.setText("GPIB connection: ACTIVE");
         else
             gpibMenu.setText("GPIB connection: INACTIVE");
