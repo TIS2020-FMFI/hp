@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.app.service.file.parameters.MeasuredQuantity.FREQUENCY;
 
 public class JsonParser {
 
@@ -116,7 +115,7 @@ public class JsonParser {
             EnvironmentParameters parameters = new EnvironmentParameters();
 
             DisplayYY displayYY = new DisplayYY();
-            displayYY.setX(FREQUENCY);
+            displayYY.setX(MeasuredQuantity.FREQUENCY);
             displayYY.setB("R");
             displayYY.setA("L");
 
@@ -178,7 +177,7 @@ public class JsonParser {
 
         if(environmentParameters.getDisplayYY().getB() == null) environmentParameters.getDisplayYY().setB("R");
 
-        if(environmentParameters.getDisplayYY().getX() == null) environmentParameters.getDisplayYY().setX(FREQUENCY);
+        if(environmentParameters.getDisplayYY().getX() == null) environmentParameters.getDisplayYY().setX(MeasuredQuantity.FREQUENCY);
 
         if(environmentParameters.getOther().getSweepType() == null) environmentParameters.getOther().setSweepType(SweepType.LOG);
 

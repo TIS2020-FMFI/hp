@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
 
-import static com.app.service.file.parameters.MeasuredQuantity.FREQUENCY;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JsonParserTest {
@@ -27,7 +26,7 @@ class JsonParserTest {
         EnvironmentParameters parameters = new EnvironmentParameters();
 
         DisplayYY displayYY = new DisplayYY();
-        displayYY.setX(FREQUENCY);
+        displayYY.setX(MeasuredQuantity.FREQUENCY);
         displayYY.setB("R");
         displayYY.setA("L");
 
@@ -71,7 +70,7 @@ class JsonParserTest {
 
         EnvironmentParameters param = JsonParser.readConfig("config-with-val");
 
-        assertEquals(FREQUENCY, param.getDisplayYY().getX());
+        assertEquals(MeasuredQuantity.FREQUENCY, param.getDisplayYY().getX());
         assertEquals("R", param.getDisplayYY().getB());
         assertEquals("L", param.getDisplayYY().getA());
 
