@@ -37,4 +37,21 @@ public class VoltageSweep extends Sweep {
         else if(spot > maxSpot) super.spot = maxSpot;
         else super.spot = spot;
     }
+
+
+    public double getMinStart() {
+        return minStart;
+    }
+
+    public double getMinStop() {
+        return minStop;
+    }
+
+    public double getMinStep() {
+        return minStep;
+    }
+
+    public double getMinSpot() {
+        return minSpot;
+    }
 }
