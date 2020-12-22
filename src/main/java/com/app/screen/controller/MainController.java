@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.geometry.Insets;
@@ -121,6 +122,8 @@ public class MainController implements Initializable {
     @FXML
     VBox VBox1;
 
+    public MainController() throws IOException {
+    }
 
 
     private Node useWorkaround(ChartViewer viewer) {
@@ -239,9 +242,9 @@ public class MainController implements Initializable {
         otherAutoSweep.getSelectionModel().select(0);
         // -----
     }
-
+    Connection con = new Connection();
     public void runConnection(MouseEvent mouseEvent) throws Exception {
-        if (new Connection().connect())
+        if (con.connect())
             gpibMenu.setText("GPIB connection: ACTIVE");
         else
             gpibMenu.setText("GPIB connection: INACTIVE");
