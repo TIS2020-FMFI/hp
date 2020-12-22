@@ -37,4 +37,21 @@ public class FrequencySweep extends Sweep {
         if(spot < minSpot || spot > maxSpot){super.spot = minSpot;}
         else super.spot = spot;
     }
+
+
+    public double getMinStart() {
+        return minStart;
+    }
+
+    public double getMinStop() {
+        return minStop;
+    }
+
+    public double getMinStep() {
+        return minStep;
+    }
+
+    public double getMinSpot() {
+        return minSpot;
+    }
 }

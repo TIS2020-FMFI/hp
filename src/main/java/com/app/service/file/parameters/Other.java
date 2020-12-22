@@ -54,4 +54,12 @@ public class Other {
     public void setAutoSweep(boolean autoSweep) {
         this.autoSweep = autoSweep;
     }
+
+    public double getMinElectricalLength() {
+        return minElectricalLength;
+    }
+
+    public double getMinCapacitance() {
+        return minCapacitance;
+    }
 }

@@ -16,7 +16,7 @@ public class FileService {
     }
 
     public boolean saveConfig() throws FileNotFoundException {
-        return JsonParser.write(configPath, environmentParameters);
+        return JsonParser.writeConfig(configPath, environmentParameters);
     }
 
     public EnvironmentParameters loadConfig() throws Exception {
