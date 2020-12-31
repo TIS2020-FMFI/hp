@@ -4,13 +4,14 @@ import com.app.service.calibration.CalibrationService;
 import com.app.service.communication.CommunicationService;
 import com.app.service.file.FileService;
 import com.app.service.file.parameters.EnvironmentParameters;
-import com.app.service.graph.Graph;
+import com.app.service.graph.GraphService;
 import com.app.service.notification.NotificationService;
 import com.app.service.notification.NotificationType;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -20,7 +21,7 @@ public class AppMain extends Application {
     public static NotificationService notificationService;
     public static CalibrationService calibrationService;
     public static FileService fileService;
-    public static Graph graphService;
+    public static GraphService graphService;
     public static CommunicationService communicationService;
 
     @Override
@@ -42,9 +43,9 @@ public class AppMain extends Application {
         notificationService = new NotificationService(notificationContainer);
         notificationService.createNotification("First try", NotificationType.SUCCESS).show();
 
-
-        // if all runs successfully then show
+        graphService = new GraphService((AnchorPane) root.lookup("#upperPane"), primaryStage);
         primaryStage.show();
+        // if all runs successfully then show
     }
 
     public static void main(String[] args) {
