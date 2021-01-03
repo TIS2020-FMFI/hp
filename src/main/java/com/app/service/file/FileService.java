@@ -15,6 +15,30 @@ public class FileService {
         this.configPath = configPath;
     }
 
+    public String getAutoSavingDir() {
+        return autoSavingDir;
+    }
+
+    public boolean isAutoSave() {
+        return autoSave;
+    }
+
+    public void setAutoSavingDir(String autoSavingDir) {
+        this.autoSavingDir = autoSavingDir;
+    }
+
+    public void setAutoSave(boolean autoSave) {
+        this.autoSave = autoSave;
+    }
+
+    public EnvironmentParameters getEnvironmentParameters() {
+        return environmentParameters;
+    }
+
+    public void setEnvironmentParameters(EnvironmentParameters environmentParameters) {
+        this.environmentParameters = environmentParameters;
+    }
+
     public boolean saveConfig() throws FileNotFoundException {
         return JsonParser.writeConfig(configPath, environmentParameters);
     }
