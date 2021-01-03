@@ -2,8 +2,11 @@ package com.app.screen.controller;
 
 import com.app.machineCommunication.Connection;
 import com.app.service.AppMain;
+import com.app.service.file.parameters.EnvironmentParameters;
+import com.app.service.file.parameters.SweepType;
 import com.app.service.graph.Graph;
 import com.app.service.graph.GraphService;
+import com.app.service.measurement.Measurement;
 import com.app.service.notification.NotificationType;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
@@ -176,14 +179,47 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // TODO: read config here
+        EnvironmentParameters parameters = null;
+        try {
+            parameters = AppMain.fileService.loadConfig();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            AppMain.measurement = new Measurement(parameters);
+            frequencyStart.setText("" + AppMain.measurement.getParameters().getFrequencySweep().getStart());
+            frequencyStop.setText("" + AppMain.measurement.getParameters().getFrequencySweep().getStop());
+            frequencySpot.setText("" + AppMain.measurement.getParameters().getFrequencySweep().getSpot());
+            frequencyStep.setText("" + AppMain.measurement.getParameters().getFrequencySweep().getStep());
 
-        // ----- initialize all dropbox -> coz its not possible to do so in sceneBuilder yet
-        otherSweepType.getItems().addAll("LINEAR", "LOG");
-        otherSweepType.getSelectionModel().select(0);
-        otherHighSpeed.getItems().addAll("OFF", "ON");
-        otherHighSpeed.getSelectionModel().select(0);
-        otherAutoSweep.getItems().addAll("ON", "OFF");
-        otherAutoSweep.getSelectionModel().select(0);
+            voltageStart.setText("" + AppMain.measurement.getParameters().getVoltageSweep().getStart());
+            voltageStop.setText("" + AppMain.measurement.getParameters().getVoltageSweep().getStop());
+            voltageSpot.setText("" + AppMain.measurement.getParameters().getVoltageSweep().getSpot());
+            voltageStep.setText("" + AppMain.measurement.getParameters().getVoltageSweep().getStep());
+
+            otherCapacitance.setText("" + AppMain.measurement.getParameters().getOther().getCapacitance());
+            otherElectricalLength.setText("" + AppMain.measurement.getParameters().getOther().getElectricalLength());
+
+            // ----- initialize all dropbox -> coz its not possible to do so in sceneBuilder yet
+            otherSweepType.getItems().addAll("LINEAR", "LOG");
+            if(AppMain.measurement.getParameters().getOther().getSweepType() == SweepType.LINEAR){
+                otherSweepType.getSelectionModel().select(0);
+            }else otherSweepType.getSelectionModel().select(1);
+
+            otherHighSpeed.getItems().addAll("ON", "OFF" );
+            if(AppMain.measurement.getParameters().getOther().isHighSpeed()){
+                otherHighSpeed.getSelectionModel().select(0);
+            }else otherHighSpeed.getSelectionModel().select(1);
+
+            otherAutoSweep.getItems().addAll("ON", "OFF");
+            if(AppMain.measurement.getParameters().getOther().isAutoSweep()){
+                otherAutoSweep.getSelectionModel().select(0);
+            }else otherAutoSweep.getSelectionModel().select(1);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         // -----
     }
 
