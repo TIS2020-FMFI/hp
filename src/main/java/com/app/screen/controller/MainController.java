@@ -19,6 +19,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.fx.ChartCanvas;
 import org.jfree.chart.fx.ChartViewer;
@@ -29,9 +31,11 @@ import java.awt.event.ActionListener;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.IOException;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.TimerTask;
@@ -221,6 +225,11 @@ public class MainController implements Initializable {
         }
 
         // -----
+
+        LocalDate localDate = LocalDate.now();
+        AppMain.fileService.setAutoSavingDir("/" + localDate.getYear() + "/" + localDate.getMonth() + "/" + localDate.getDayOfMonth());
+
+        //doplnit text do autoSaveMenu
     }
 
     public void runConnection(MouseEvent mouseEvent) throws Exception {
@@ -228,5 +237,17 @@ public class MainController implements Initializable {
             gpibMenu.setText("GPIB connection: ACTIVE");
         else
             gpibMenu.setText("GPIB connection: INACTIVE");
+    }
+
+    public void AutoSaveDirectory(MouseEvent mouseEvent) {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        File dir = directoryChooser.showDialog(AppMain.ps);
+        if (dir != null) {
+            LocalDate localDate = LocalDate.now();
+            String newAutoSavingDir = dir.getAbsolutePath() + "/" + localDate.getYear() + "/" + localDate.getMonth() + "/" + localDate.getDayOfMonth();
+            AppMain.fileService.setAutoSavingDir(newAutoSavingDir);
+            savingDirMenu.setText(newAutoSavingDir);
+//            System.out.println(dir.getAbsolutePath());
+        }
     }
 }
