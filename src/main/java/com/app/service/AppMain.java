@@ -27,16 +27,15 @@ public class AppMain extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        ps = primaryStage;
+        calibrationService = new CalibrationService("/views/calibrationScreen.fxml");
+        fileService = new FileService("src/main/resources/persistent/config.json");
+
         Parent root = FXMLLoader.load(getClass().getResource("/views/mainScreen.fxml"));
         primaryStage.setTitle("Super machine");
         primaryStage.setScene(new Scene(root));
         primaryStage.setResizable(false);
 
-        ps = primaryStage;
-        calibrationService = new CalibrationService("/views/calibrationScreen.fxml");
-        fileService = new FileService("src/main/resources/persistent/config.json");
-        EnvironmentParameters parameters = fileService.loadConfig();
-        measurement = new Measurement(parameters);
 
         VBox notificationContainer = (VBox) root.lookup("#notificationContainer");
         if (notificationContainer == null) {

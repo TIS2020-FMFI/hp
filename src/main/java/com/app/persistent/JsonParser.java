@@ -62,7 +62,7 @@ public class JsonParser {
 
 
         // writing JSON to file: "filename.json" in cwd
-        PrintWriter pw = new PrintWriter(fileName + ".json");
+        PrintWriter pw = new PrintWriter(fileName);
         pw.write(jo.toJSONString());
 
         pw.flush();
@@ -73,7 +73,7 @@ public class JsonParser {
 
     public static EnvironmentParameters readConfig(String fileName) throws Exception {
         try {
-            Object obj = new JSONParser().parse(new FileReader(fileName + ".json"));
+            Object obj = new JSONParser().parse(new FileReader(fileName));
 
             EnvironmentParameters environmentParameters = new EnvironmentParameters();
 
