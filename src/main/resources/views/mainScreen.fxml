@@ -46,7 +46,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </ToggleButton>
-                  <Button fx:id="savingDirMenu" mnemonicParsing="false" text="Saving directiory:  'C:\\downloads..'">
+                  <Button fx:id="savingDirMenu" mnemonicParsing="false" onMouseReleased="#AutoSaveDirectory" text="Saving directiory:  'C:\\downloads..'">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>

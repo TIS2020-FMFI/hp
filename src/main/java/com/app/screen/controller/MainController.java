@@ -2,8 +2,11 @@ package com.app.screen.controller;
 
 import com.app.machineCommunication.Connection;
 import com.app.service.AppMain;
+import com.app.service.file.parameters.*;
 import com.app.service.graph.Graph;
 import com.app.service.graph.GraphService;
+import com.app.service.measurement.Measurement;
+import com.app.service.measurement.MeasurementState;
 import com.app.service.notification.NotificationType;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
@@ -25,6 +28,8 @@ import java.awt.event.ActionListener;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import java.net.URL;
@@ -241,13 +246,9 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // TODO: read config here
-        EnvironmentParameters parameters = null;
+        EnvironmentParameters parameters;
         try {
             parameters = AppMain.fileService.loadConfig();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
             AppMain.measurement = new Measurement(parameters);
             frequencyStart.setText("" + AppMain.measurement.getParameters().getFrequencySweep().getStart());
             frequencyStop.setText("" + AppMain.measurement.getParameters().getFrequencySweep().getStop());
