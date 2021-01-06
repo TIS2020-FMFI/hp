@@ -13,7 +13,11 @@ public class CommunicationService {
     }
 
     public boolean connect() throws Exception {
-        return connection.connect();
+        try {
+            return connection.connect();
+        } catch (NullPointerException e) {
+            return false;
+        }
     }
 
     public void runMeasurement() throws IOException, InterruptedException {
