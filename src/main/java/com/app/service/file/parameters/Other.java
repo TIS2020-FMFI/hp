@@ -16,9 +16,9 @@ public class Other {
     }
 
     public void setElectricalLength(Double electricalLength) {
-        if(electricalLength < minElectricalLength || electricalLength > maxElectricalLength){
-            this.electricalLength = minElectricalLength;
-        }else{ this.electricalLength = electricalLength;}
+        if(electricalLength < minElectricalLength) this.electricalLength = minElectricalLength;
+        else if(electricalLength > maxElectricalLength) this.electricalLength = maxElectricalLength;
+        else this.electricalLength = electricalLength;
     }
 
     public double getCapacitance() {
@@ -26,9 +26,9 @@ public class Other {
     }
 
     public void setCapacitance(Double capacitance) {
-        if(capacitance < minCapacitance || capacitance > maxCapacitance){
-            this.capacitance = minCapacitance;
-        }else { this.capacitance = capacitance; }
+        if(capacitance < minCapacitance )this.capacitance = minCapacitance;
+        else if(capacitance > maxCapacitance) this.capacitance = maxCapacitance;
+        else { this.capacitance = capacitance; }
     }
 
     public SweepType getSweepType() {

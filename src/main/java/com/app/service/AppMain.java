@@ -5,6 +5,8 @@ import com.app.service.communication.CommunicationService;
 import com.app.service.file.FileService;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.graph.GraphService;
+import com.app.service.graph.Graph;
+import com.app.service.measurement.Measurement;
 import com.app.service.notification.NotificationService;
 import com.app.service.notification.NotificationType;
 import javafx.application.Application;
@@ -23,18 +25,20 @@ public class AppMain extends Application {
     public static FileService fileService;
     public static GraphService graphService;
     public static CommunicationService communicationService;
+    public static Measurement measurement;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        calibrationService = new CalibrationService("/views/calibrationScreen.fxml");
+        fileService = new FileService("src/main/resources/persistent/config.json");
+
         Parent root = FXMLLoader.load(getClass().getResource("/views/mainScreen.fxml"));
         primaryStage.setTitle("Super machine");
         primaryStage.setScene(new Scene(root));
         primaryStage.setResizable(false);
-
         ps = primaryStage;
-        calibrationService = new CalibrationService("/views/calibrationScreen.fxml");
-        fileService = new FileService("src/main/resources/persistent/config.json");
-        EnvironmentParameters parameters = fileService.loadConfig();
+
+
 
         VBox notificationContainer = (VBox) root.lookup("#notificationContainer");
         if (notificationContainer == null) {
