@@ -2,21 +2,18 @@ package com.app.screen.controller;
 
 import com.app.machineCommunication.Connection;
 import com.app.service.AppMain;
-import com.app.service.file.parameters.EnvironmentParameters;
-import com.app.service.file.parameters.SweepType;
+import com.app.service.file.parameters.*;
 import com.app.service.graph.Graph;
 import com.app.service.graph.GraphService;
 import com.app.service.measurement.Measurement;
+import com.app.service.measurement.MeasurementState;
 import com.app.service.notification.NotificationType;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.DirectoryChooser;
@@ -32,6 +29,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import java.net.URL;
@@ -42,8 +40,6 @@ import java.util.TimerTask;
 
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -58,6 +54,12 @@ public class MainController implements Initializable {
     VBox mainContainer;
     @FXML
     VBox notificationContainer;
+
+    @FXML
+    ToggleGroup displayA;
+
+    @FXML
+    ToggleGroup displayB;
 
     @FXML
     TextField frequencyStart;
@@ -145,6 +147,48 @@ public class MainController implements Initializable {
     public void runMeasurement(MouseEvent event) {
         // TODO: run measurement and graph
 
+        EnvironmentParameters newParameters = AppMain.measurement.getParameters();
+
+        //doplnit ABS
+
+        DisplayYY newDisplayYY = newParameters.getDisplayYY();
+        RadioButton selectedDisplayA = (RadioButton) displayA.getSelectedToggle();
+        if(selectedDisplayA != null) newDisplayYY.setA(selectedDisplayA.getText());
+        RadioButton selectedDisplayB = (RadioButton) displayB.getSelectedToggle();
+        if(selectedDisplayB != null) newDisplayYY.setA(selectedDisplayB.getText());
+
+        //doplnit displayX
+
+
+        newParameters.setDisplayYY(newDisplayYY);
+
+        FrequencySweep newFrequencySweep = newParameters.getFrequencySweep();
+        newFrequencySweep.setStart(Double.parseDouble(frequencyStart.getText()));
+        newFrequencySweep.setStop(Double.parseDouble(frequencyStop.getText()));
+        newFrequencySweep.setStep(Double.parseDouble(frequencyStep.getText()));
+        newFrequencySweep.setSpot(Double.parseDouble(frequencySpot.getText()));
+        newParameters.setFrequencySweep(newFrequencySweep);
+
+        VoltageSweep newVoltageSweep = newParameters.getVoltageSweep();
+        newVoltageSweep.setStart(Double.parseDouble(voltageStart.getText()));
+        newVoltageSweep.setStop(Double.parseDouble(voltageStop.getText()));
+        newVoltageSweep.setStep(Double.parseDouble(voltageStep.getText()));
+        newVoltageSweep.setSpot(Double.parseDouble(voltageSpot.getText()));
+        newParameters.setVoltageSweep(newVoltageSweep);
+
+        Other newOther = newParameters.getOther();
+        newOther.setCapacitance(Double.parseDouble(otherCapacitance.getText()));
+        newOther.setElectricalLength(Double.parseDouble(otherElectricalLength.getText()));
+        newOther.setAutoSweep(otherAutoSweep.getValue().equals("ON"));
+        newOther.setHighSpeed(otherHighSpeed.getValue().equals("ON"));
+        if (otherSweepType.getValue().equals("LINEAR")) {
+            newOther.setSweepType(SweepType.LINEAR);
+        } else newOther.setSweepType(SweepType.LOG);
+
+        AppMain.measurement.setParameters(newParameters);
+        AppMain.measurement.setState(MeasurementState.STARTED);
+        AppMain.fileService.setEnvironmentParameters(AppMain.measurement.getParameters());
+
         try {
             GraphService graphService = new GraphService(upperPane);
             graphService.createGraphRun();
@@ -155,6 +199,13 @@ public class MainController implements Initializable {
 
     public void toggleAutoSave(MouseEvent event) {
         // TODO: change autoSaveMode in global props global props
+        if(AppMain.fileService.isAutoSave()){
+            autoSaveMenu.setText("Auto save: OFF");
+            AppMain.fileService.setAutoSave(false);
+        }else {
+            autoSaveMenu.setText("Auto save: ON");
+            AppMain.fileService.setAutoSave(true);
+        }
     }
 
     public void resetInstrument(MouseEvent event) {
@@ -172,8 +223,20 @@ public class MainController implements Initializable {
     public void quitApp(MouseEvent event) {
         // TODO: if not all data saved -> notification and abort quit
         // save global props into config
-        Platform.exit();
-        System.exit(0);
+        if(AppMain.measurement.getState() == MeasurementState.SAVED ||
+                AppMain.measurement.getState() == MeasurementState.ABORTED ||
+                AppMain.measurement.getState() == MeasurementState.WAITING) {
+            try {
+                AppMain.fileService.setEnvironmentParameters(AppMain.measurement.getParameters());
+                AppMain.fileService.saveConfig();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            Platform.exit();
+            System.exit(0);
+        }else{
+
+        }
     }
 
     public void showHelpWindow(MouseEvent event) {
@@ -183,13 +246,9 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // TODO: read config here
-        EnvironmentParameters parameters = null;
+        EnvironmentParameters parameters;
         try {
             parameters = AppMain.fileService.loadConfig();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
             AppMain.measurement = new Measurement(parameters);
             frequencyStart.setText("" + AppMain.measurement.getParameters().getFrequencySweep().getStart());
             frequencyStop.setText("" + AppMain.measurement.getParameters().getFrequencySweep().getStop());

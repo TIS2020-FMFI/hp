@@ -27,7 +27,6 @@ public class AppMain extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        ps = primaryStage;
         calibrationService = new CalibrationService("/views/calibrationScreen.fxml");
         fileService = new FileService("src/main/resources/persistent/config.json");
 
@@ -35,6 +34,8 @@ public class AppMain extends Application {
         primaryStage.setTitle("Super machine");
         primaryStage.setScene(new Scene(root));
         primaryStage.setResizable(false);
+        ps = primaryStage;
+
 
 
         VBox notificationContainer = (VBox) root.lookup("#notificationContainer");
