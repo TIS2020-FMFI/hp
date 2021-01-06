@@ -4,22 +4,23 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.SamplingXYLineRenderer;
 import org.jfree.chart.renderer.xy.XYSplineRenderer;
+import org.jfree.chart.title.LegendTitle;
 import org.jfree.data.Range;
+import org.jfree.data.general.DatasetChangeEvent;
+import org.jfree.data.general.DatasetChangeListener;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.*;
 import java.awt.*;
 
-
-public class Graph extends ChartPanel implements Runnable
+public class Graph extends ChartPanel
 {
     private long value=0;
-    public static XYSeries series1;
-    public static XYSeries series2 ;
-    private static XYSeriesCollection dataset1;
-    private static XYSeriesCollection dataset2;
+    public static AutoUpdatingDataset series1;
+    public static AutoUpdatingDataset series2 ;
     public static JFreeChart chart;
 
     public Graph(String title, String yaxisName1, String yaxisName2, String xaxisName)
@@ -29,20 +30,20 @@ public class Graph extends ChartPanel implements Runnable
 
     private static JFreeChart createChart(String title, String yaxisName1, String yaxisName2, String xaxisName){
 
-        series1 = new XYSeries(yaxisName1);
-        series2 = new XYSeries(yaxisName2);
+        series1 = new AutoUpdatingDataset(yaxisName1,100000, 400, 1000);
+        series2 = new AutoUpdatingDataset(yaxisName2,100000,400, 500);
 
-        dataset1 = new XYSeriesCollection(series1);
-        dataset2 = new XYSeriesCollection(series2);
+        series2.setDelay(250, 1000000000);
+
 
         //construct the plot
         XYPlot plot = new XYPlot();
-        plot.setDataset(0, dataset1);
-        plot.setDataset(1, dataset2);
+        plot.setDataset(0, series1);
+        plot.setDataset(1, series2);
 
         //customize the plot with renderers and axis
-        plot.setRenderer(0, new XYSplineRenderer());//use default fill paint for first series
-        XYSplineRenderer splinerenderer = new XYSplineRenderer();
+        plot.setRenderer(0, new SamplingXYLineRenderer());//use default fill paint for first series
+        SamplingXYLineRenderer splinerenderer = new  SamplingXYLineRenderer();
         splinerenderer.setSeriesFillPaint(0, Color.BLUE);
         plot.setRenderer(1, splinerenderer);
         plot.setRangeAxis(0, new NumberAxis(yaxisName1));
@@ -54,8 +55,8 @@ public class Graph extends ChartPanel implements Runnable
         plot.mapDatasetToRangeAxis(1, 1);
 
         //generate the chart
-        chart = new JFreeChart(title,plot);
-        chart.setBackgroundPaint(Color.WHITE);
+        chart = new JFreeChart(plot);
+//        chart.setBackgroundPaint(Color.WHITE);
 
         //configure the chart
         plot.setDomainPannable(true);
@@ -64,45 +65,26 @@ public class Graph extends ChartPanel implements Runnable
         plot.getDomainAxis().setAutoRange(true);
         plot.getRangeAxis(0).setAutoRange(true);
         plot.getRangeAxis(1).setAutoRange(true);
-        plot.getDomainAxis().setFixedAutoRange(30D);
+        plot.getDomainAxis().setFixedAutoRange(30);
 //        plot.getDomainAxis().setLowerBound(0);
 //        plot.getRangeAxis(0).setFixedAutoRange(50);
 //        plot.getRangeAxis(1).setFixedAutoRange(50);
         plot.getRangeAxis(0).setUpperMargin(0.1);
         plot.getRangeAxis(1).setUpperMargin(1.5);
+        plot.setOutlinePaint(null);
+        chart.setBackgroundPaint(null);
+        chart.setBorderVisible(false);
+        chart.getLegend(0).setItemPaint(Color.BLUE);
+        chart.removeLegend();
+
 //        plot.getRangeAxis(0).setLowerMargin(0.1);
 //        plot.getRangeAxis(0).setLowerMargin(1);
 //        plot.getRangeAxis(0).setDefaultAutoRange(new Range(50,110));
+        series1.start();
+        series2.start();
 
         return chart;
     }
-
-    public void run()
-    {
-        double poc = 1;
-        while(true)
-        {
-            try {
-
-                //inputChange("String measurement"); //
-
-                series1.add(poc, (double) randomNum());
-                series2.add(poc, (double) randomNum());
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            } finally {
-                poc += 1;
-            }
-
-        }
-    }
-
-    private long randomNum()
-    {
-        System.out.println((Math.random()*20+80));
-        return (long) (Math.random()*20+80);
-    }
-
 
     private Double[] inputChange(String measurement) {
 

@@ -1,57 +1,55 @@
 package com.app.service.graph;
 
-import javafx.embed.swing.SwingNode;
+import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
-import org.jfree.chart.ChartPanel;
+import javafx.stage.Stage;
+import org.jfree.chart.fx.ChartViewer;
+import org.jfree.data.xy.XYSeries;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+//import java.awt.event.ActionEvent;
+//import java.awt.event.ActionListener;
+//import java.util.TimerTask;
+
 public class GraphService {
     AnchorPane anchorPane;
+    Stage stage;
+    int poc = 0;
 
-    public GraphService(AnchorPane aP) {
+    public GraphService(AnchorPane aP, Stage s) {
         anchorPane = aP;
+        stage = s;
     }
 
     public void createGraphRun() {
         Graph rtcp = new Graph("Chart", "Resistance", "Capacity", "Frequency");
 
-        ChartPanel chartPanel = new ChartPanel(rtcp.chart);
-        chartPanel.setPreferredSize(new java.awt.Dimension(680, 260));
-        chartPanel.setRangeZoomable(true);
-        chartPanel.setDomainZoomable(true);
+        ChartViewer chartViewer = new ChartViewer(rtcp.chart);
+        chartViewer.setPrefWidth(680);
+        chartViewer.setPrefHeight(260);
 
-        final SwingNode swingNode = new SwingNode();
-        swingNode.setContent(chartPanel);
-        anchorPane.getChildren().addAll(swingNode);
+        AnchorPane.setBottomAnchor(chartViewer, 0.0);
+        AnchorPane.setLeftAnchor(chartViewer, 0.0);
+        AnchorPane.setRightAnchor(chartViewer, 0.0);
+        AnchorPane.setTopAnchor(chartViewer, 0.0);
 
-        // real-time plotting
-        final double[] poc = {0};
+        anchorPane.getChildren().addAll(chartViewer);
+
+//        // real-time plotting
+
         //now make your timer
-        int delay = 500; //milliseconds
+//        int delay = 500; //milliseconds
+//        ActionListener actionListener = e -> {
+//            rtcp.series1.add(poc, (Math.random() * 20 + 80));
+//            rtcp.series2.add(poc, (Math.random() * 20 + 80));
+//            System.out.print(poc);
+//            poc++;
+//
+//        };
+//        new Timer(delay, actionListener).start();
 
-        ActionListener timerAction = new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                //add new data point and actualize graph
-                rtcp.series1.add(poc[0], (double) (Math.random() * 20 + 80));  // tu budu pribudat values
-                rtcp.series2.add(poc[0], (double) (Math.random() * 20 + 80));  // tu budu pribudat values
-                poc[0]++;
-
-            }
-        };
-        new Timer(delay, timerAction).start();
-
-        // da sa to robit aj mimo awt, ale error NoSuchMethod nezmizne
-//        TimerTask task = new TimerTask() {
-//            public void run() {
-//                    rtcp.series1.add(poc[0], (double) (Math.random() * 20 + 80));  // tu budu pribudat values
-//                    rtcp.series2.add(poc[0], (double) (Math.random() * 20 + 80));  // tu budu pribudat values
-//                    poc[0]++;
-//                };
-//        Timer timer = new Timer("Timer");
-//        int delay = 500;
-//        timer.schedule(task, delay);
     }
 }
