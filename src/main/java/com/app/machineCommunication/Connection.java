@@ -16,7 +16,11 @@ public class Connection {
     EnvironmentParameters environmentParameters;
 
     public Connection() throws IOException {
-        p = Runtime.getRuntime().exec("D:/hpctrl-main/src/Debug/hpctrl.exe -i"); // TODO: set to default within project
+        try {
+            p = Runtime.getRuntime().exec("D:/hpctrl-main/src/Debug/hpctrl.exe -i"); // TODO: set to default within project
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
 //        environmentParameters = AppMain.fileService.getEnvironmentParameters();
         environmentParameters = new EnvironmentParameters();
     }

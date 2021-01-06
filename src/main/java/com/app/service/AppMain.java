@@ -47,6 +47,8 @@ public class AppMain extends Application {
         notificationService = new NotificationService(notificationContainer);
         notificationService.createNotification("First try", NotificationType.SUCCESS).show();
 
+        communicationService = new CommunicationService();
+
         graphService = new GraphService((AnchorPane) root.lookup("#upperPane"), primaryStage);
         primaryStage.show();
         // if all runs successfully then show

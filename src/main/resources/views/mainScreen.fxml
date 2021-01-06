@@ -31,7 +31,7 @@
                         <Insets left="15.0" right="15.0" />
                      </padding>
                   </Label>
-                <Button fx:id="gpibMenu" mnemonicParsing="false" styleClass="menuBtn" stylesheets="@styles/mainScreenStyles.css" text="GPIB connection: INACTIVE">
+                <Button fx:id="gpibMenu" mnemonicParsing="false" onMouseReleased="#runConnection" styleClass="menuBtn" stylesheets="@styles/mainScreenStyles.css" text="GPIB connection: INACTIVE">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
