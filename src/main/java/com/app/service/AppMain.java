@@ -3,9 +3,7 @@ package com.app.service;
 import com.app.service.calibration.CalibrationService;
 import com.app.service.communication.CommunicationService;
 import com.app.service.file.FileService;
-import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.graph.GraphService;
-import com.app.service.graph.Graph;
 import com.app.service.measurement.Measurement;
 import com.app.service.notification.NotificationService;
 import com.app.service.notification.NotificationType;
@@ -29,16 +27,15 @@ public class AppMain extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        calibrationService = new CalibrationService("/views/calibrationScreen.fxml");
+        // its important to keep this method in this order!
+        ps = primaryStage;
+
         fileService = new FileService("src/main/resources/persistent/config.json");
 
         Parent root = FXMLLoader.load(getClass().getResource("/views/mainScreen.fxml"));
         primaryStage.setTitle("Super machine");
         primaryStage.setScene(new Scene(root));
         primaryStage.setResizable(false);
-        ps = primaryStage;
-
-
 
         VBox notificationContainer = (VBox) root.lookup("#notificationContainer");
         if (notificationContainer == null) {
@@ -50,8 +47,10 @@ public class AppMain extends Application {
         communicationService = new CommunicationService();
 
         graphService = new GraphService((AnchorPane) root.lookup("#upperPane"), primaryStage);
-        primaryStage.show();
+        calibrationService = new CalibrationService("/views/calibrationScreen.fxml");
+
         // if all runs successfully then show
+        primaryStage.show();
     }
 
     public static void main(String[] args) {

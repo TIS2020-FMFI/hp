@@ -3,6 +3,7 @@ package com.app.machineCommunication;
 
 import com.app.service.AppMain;
 import com.app.service.file.parameters.EnvironmentParameters;
+import com.app.service.notification.NotificationType;
 
 import java.io.*;
 
@@ -11,15 +12,17 @@ public class Connection {
     private boolean connected = false;
     boolean cmd = false;
     Process p;
-    BufferedReader readEnd = new BufferedReader(new InputStreamReader(p.getInputStream()));
-    BufferedWriter writeEnd = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
+    BufferedReader readEnd;
+    BufferedWriter writeEnd;
     EnvironmentParameters environmentParameters;
 
     public Connection() throws IOException {
         try {
             p = Runtime.getRuntime().exec("D:/hpctrl-main/src/Debug/hpctrl.exe -i"); // TODO: set to default within project
-        }catch (Exception e) {
-            e.printStackTrace();
+            readEnd = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            writeEnd = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
+        } catch (IOException e) {
+            AppMain.notificationService.createNotification("hpctrl script missing, read help for more info", NotificationType.ERROR).show();
         }
 //        environmentParameters = AppMain.fileService.getEnvironmentParameters();
         environmentParameters = new EnvironmentParameters();
