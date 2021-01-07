@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.collections.*?>
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="try" stylesheets="@styles/mainScreenStyles.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.screen.controller.MainController">
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="try" stylesheets="@styles/mainScreenStyles.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.screen.controller.MainController">
    <children>
       <VBox fx:id="mainContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -19,7 +31,7 @@
                         <Insets left="15.0" right="15.0" />
                      </padding>
                   </Label>
-                <Button fx:id="gpibMenu" mnemonicParsing="false" styleClass="menuBtn" stylesheets="@styles/mainScreenStyles.css" text="GPIB connection: ACTIVE">
+                <Button fx:id="gpibMenu" mnemonicParsing="false" onMouseReleased="#runConnection" styleClass="menuBtn" stylesheets="@styles/mainScreenStyles.css" text="GPIB connection: INACTIVE">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
@@ -34,7 +46,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </ToggleButton>
-                  <Button fx:id="savingDirMenu" mnemonicParsing="false" text="Saving directiory:  'C:\\downloads..'">
+                  <Button fx:id="savingDirMenu" mnemonicParsing="false" onMouseReleased="#AutoSaveDirectory" text="Saving directiory:  'C:\\downloads..'">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
@@ -298,7 +310,7 @@
                                                    </HBox.margin>
                                                 </Label>
                                                 <TextField fx:id="frequencyStart" styleClass="item-input" />
-                                                <Label maxWidth="1.7976931348623157E308" prefHeight="17.0" prefWidth="105.0" styleClass="item-desc" text="(1.0 - 1000Mhz)" />
+                                                <Label maxWidth="1.7976931348623157E308" prefHeight="17.0" prefWidth="105.0" styleClass="item-desc" text="(1.0 - 1000 Mhz)" />
                                              </children>
                                              <padding>
                                                 <Insets left="10.0" right="10.0" />
@@ -332,7 +344,7 @@
                                                    </HBox.margin>
                                                 </Label>
                                                 <TextField fx:id="frequencyStep" styleClass="item-input" />
-                                                <Label styleClass="item-desc" text="(0.1 - 999Mhz)" />
+                                                <Label styleClass="item-desc" text="(0.1 - 999 Mhz)" />
                                              </children>
                                              <padding>
                                                 <Insets left="10.0" right="10.0" />
@@ -349,7 +361,7 @@
                                                    </HBox.margin>
                                                 </Label>
                                                 <TextField fx:id="frequencySpot" styleClass="item-input" />
-                                                <Label styleClass="item-desc" text="(1.0 - 1000Mhz)" />
+                                                <Label styleClass="item-desc" text="(1.0 - 1000 Mhz)" />
                                              </children>
                                              <padding>
                                                 <Insets left="10.0" right="10.0" />
@@ -382,7 +394,7 @@
                                                    </HBox.margin>
                                                 </Label>
                                                 <TextField fx:id="voltageStart" styleClass="item-input" />
-                                                <Label maxWidth="1.7976931348623157E308" styleClass="item-desc" text="(1.0 - 1000Mhz)" />
+                                                <Label maxWidth="1.7976931348623157E308" styleClass="item-desc" text="(-40.00 - 40.00 Volts)" />
                                              </children>
                                              <padding>
                                                 <Insets left="10.0" right="10.0" />
@@ -399,7 +411,7 @@
                                                    </HBox.margin>
                                                 </Label>
                                                 <TextField fx:id="voltageStop" styleClass="item-input" />
-                                                <Label styleClass="item-desc" text="(1.0 - 1000Mhz)" />
+                                                <Label styleClass="item-desc" text="(-40.00 - 40.00 Volts)" />
                                              </children>
                                              <padding>
                                                 <Insets left="10.0" right="10.0" />
@@ -416,7 +428,7 @@
                                                    </HBox.margin>
                                                 </Label>
                                                 <TextField fx:id="voltageStep" styleClass="item-input" />
-                                                <Label styleClass="item-desc" text="(0.1 - 999Mhz)" />
+                                                <Label styleClass="item-desc" text="(0.01 - 40.00 Volts)" />
                                              </children>
                                              <padding>
                                                 <Insets left="10.0" right="10.0" />
@@ -433,7 +445,7 @@
                                                    </HBox.margin>
                                                 </Label>
                                                 <TextField fx:id="voltageSpot" styleClass="item-input" />
-                                                <Label styleClass="item-desc" text="(1.0 - 1000Mhz)" />
+                                                <Label styleClass="item-desc" text="(-40.00 - 40.00 Volts)" />
                                              </children>
                                              <padding>
                                                 <Insets left="10.0" right="10.0" />
@@ -479,7 +491,7 @@
                                                    </HBox.margin>
                                                 </Label>
                                                 <TextField fx:id="otherCapacitance" styleClass="item-input" />
-                                                <Label maxWidth="1.7976931348623157E308" prefHeight="17.0" prefWidth="105.0" styleClass="item-desc" text="(1.0 - 1000Mhz)" />
+                                                <Label maxWidth="1.7976931348623157E308" prefHeight="17.0" prefWidth="105.0" styleClass="item-desc" text="(-1.000 - 1.000 pf)" />
                                              </children>
                                              <padding>
                                                 <Insets left="10.0" right="10.0" />
@@ -496,7 +508,7 @@
                                                    </HBox.margin>
                                                 </Label>
                                                 <TextField fx:id="otherElectricalLength" styleClass="item-input" />
-                                                <Label styleClass="item-desc" text="(0.00 - 99.00 cm)" />
+                                                <Label styleClass="item-desc" text="(0.00 - 99.99 cm)" />
                                              </children>
                                              <padding>
                                                 <Insets left="10.0" right="10.0" />
@@ -581,13 +593,13 @@
                               <Insets bottom="30.0" left="30.0" top="30.0" />
                            </padding>
                         </VBox>
-                        <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+                        <VBox fx:id="VBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
                            <children>
                               <VBox fx:id="notificationContainer" alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="70.0" stylesheets="@styles/notificationStyles.css" VBox.vgrow="NEVER">
                                  <VBox.margin>
                                     <Insets left="30.0" />
                                  </VBox.margin></VBox>
-                              <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="60.0" minWidth="500.0" styleClass="graph-area" VBox.vgrow="ALWAYS">
+                              <VBox fx:id="VBox1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="60.0" minWidth="500.0" prefHeight="265.0" prefWidth="691.0" styleClass="graph-area" VBox.vgrow="ALWAYS">
                                  <VBox.margin>
                                     <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
                                  </VBox.margin>
@@ -595,14 +607,10 @@
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
                                  <children>
-                                    <Pane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
-                                       <padding>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </padding>
-                                    </Pane>
-                                    <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                                    <AnchorPane fx:id="upperPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="260.0" prefWidth="680.0" />
+                                    <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="38.0" prefWidth="679.0">
                                       <items>
-                                        <Button fx:id="upperGraphRun" mnemonicParsing="false" styleClass="graph-btn" text="Run" />
+                                        <Button fx:id="upperGraphRun" mnemonicParsing="false" onMouseReleased="#runMeasurement" styleClass="graph-btn" text="Run" />
                                           <Button fx:id="upperGraphLoad" mnemonicParsing="false" styleClass="graph-btn" text="Load" />
                                           <Button fx:id="upperGraphExport" mnemonicParsing="false" styleClass="graph-btn" text="Export" />
                                           <Button fx:id="upperGraphSave" mnemonicParsing="false" styleClass="graph-btn" text="Save as" />
@@ -611,7 +619,7 @@
                                     </ToolBar>
                                  </children>
                               </VBox>
-                              <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="60.0" minWidth="500.0" styleClass="graph-area" VBox.vgrow="ALWAYS">
+                              <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="60.0" minWidth="500.0" prefHeight="263.0" prefWidth="688.0" styleClass="graph-area" VBox.vgrow="ALWAYS">
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
@@ -619,11 +627,7 @@
                                     <Insets bottom="30.0" left="30.0" right="30.0" />
                                  </VBox.margin>
                                  <children>
-                                    <Pane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
-                                       <padding>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </padding>
-                                    </Pane>
+                                    <Pane fx:id="lowerPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="260.0" prefWidth="680.0" />
                                     <ToolBar prefHeight="40.0" prefWidth="200.0">
                                       <items>
                                         <Button fx:id="lowerGraphRun" mnemonicParsing="false" styleClass="graph-btn" text="Run" />
