@@ -24,7 +24,7 @@ public class Connection {
             readEnd = new BufferedReader(new InputStreamReader(p.getInputStream()));
             writeEnd = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
         } catch (IOException e) {
-            AppMain.notificationService.createNotification("hpctrl script missing, read help for more info", NotificationType.ERROR).show();
+            AppMain.notificationService.createNotification("hpctrl script missing, read help for more info", NotificationType.ERROR);
         }
         environmentParameters = new EnvironmentParameters();
     }
