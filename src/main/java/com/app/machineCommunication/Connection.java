@@ -17,7 +17,7 @@ public class Connection {
     BufferedWriter writeEnd;
     EnvironmentParameters environmentParameters;
 
-    public Connection() throws IOException {
+    public Connection(){
         try {
             p = Runtime.getRuntime().exec("D:/hpctrl-main/src/Debug/hpctrl.exe -i"); // TODO: set to default within project
             readEnd = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -25,7 +25,6 @@ public class Connection {
         } catch (IOException e) {
             AppMain.notificationService.createNotification("hpctrl script missing, read help for more info", NotificationType.ERROR).show();
         }
-//        environmentParameters = AppMain.fileService.getEnvironmentParameters();
         environmentParameters = new EnvironmentParameters();
     }
 
@@ -115,13 +114,9 @@ public class Connection {
             write("s H1");
         else
             write("s H0");
-
-
-
-
     }
 
-    public void frequencySweep() throws IOException, InterruptedException { //parametre merania ?
+    public void frequencySweep() throws IOException, InterruptedException {
         write("s TF" + environmentParameters.getFrequencySweep().getStart() + "EN");
         write("s PF" + environmentParameters.getFrequencySweep().getStop() + "EN");
         write("s SF" + environmentParameters.getFrequencySweep().getStep() + "EN");
