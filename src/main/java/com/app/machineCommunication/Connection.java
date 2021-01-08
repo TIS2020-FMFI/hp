@@ -1,14 +1,15 @@
 package com.app.machineCommunication;
 
 
+
 import com.app.service.AppMain;
 import com.app.service.calibration.CalibrationType;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.notification.NotificationType;
-
 import java.io.*;
 
 public class Connection {
+
 
     private boolean connected = false;
     boolean cmd = false;
@@ -17,7 +18,7 @@ public class Connection {
     BufferedWriter writeEnd;
     EnvironmentParameters environmentParameters;
 
-    public Connection() throws IOException {
+    public Connection(){
         try {
             p = Runtime.getRuntime().exec("D:/hpctrl-main/src/Debug/hpctrl.exe -i"); // TODO: set to default within project
             readEnd = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -25,35 +26,47 @@ public class Connection {
         } catch (IOException e) {
             AppMain.notificationService.createNotification("hpctrl script missing, read help for more info", NotificationType.ERROR).show();
         }
-//        environmentParameters = AppMain.fileService.getEnvironmentParameters();
         environmentParameters = new EnvironmentParameters();
     }
 
     public boolean connect() throws IOException, InterruptedException {
         //ak sa nepripoji, exception -> pipe is being closed
-        if (connected) {
-            // TODO: check cmd mode before exit
+        if (connected){
+            if(cmd)
+                write(".");
             write("exit");
-        } else {
-            write("connect");
         }
+        else
+            write("connect");
+
+        cmd = false;
         connected = !connected;
+
         return connected;
     }
 
     public void toggleCmdMode() throws IOException, InterruptedException {
         if (connected) {
             write("cmd");
-            StringBuilder result = new StringBuilder();
-            while (readEnd.ready()) {
-                result.append((char) readEnd.read());
-            }
+            StringBuilder result = read();
+
             if (!result.toString().equals("!not ready, try again later (cmd)")) {
                 cmd = !cmd;
+
             } else {/*notifikacia o nepripojeni do cmd modu ? treba odkliknut tie dve chyby na pristroji pomocou hocijakého tlačidla*/}
+
         } else {/*notifikacia ze treba najprv pripojit zariadenie ? */}
+    }
+
+    public StringBuilder read() throws IOException {
+        StringBuilder result = new StringBuilder();
+        while (readEnd.ready()) {
+            result.append((char) readEnd.read());
+        }
+        return result;
 
     }
+
 
     private void write(String text) throws IOException, InterruptedException {
         // TODO: extract to own thread
@@ -66,40 +79,60 @@ public class Connection {
 
     public void startMeasurement() throws IOException, InterruptedException {
         write("s WU");
-        String result = "";
+        StringBuilder result = new StringBuilder();
         while (readEnd.ready()) {
-            //poskladanie znakov do stringu + treba odoslat meranie -> do pola ?
-            if ((char) readEnd.read() == '\n') {
+            char letter = (char) readEnd.read();
+            if (letter == '\n') {
                 // TODO: tu bude posli result
-                result = "";
+                result = new StringBuilder();
             } else
-                result += (char) readEnd.read();
+                result.append(letter);
         }
 
     }
 
-    public void measurement() throws IOException, InterruptedException { //parametre merania ?
+    public void measurement(String sweep) throws IOException, InterruptedException {
         if (connected) {
             if (!cmd)
                 toggleCmdMode();
 
             if (cmd) {
-                //poslanie vsetkych parametrov od janciho do zvoleneho merania + (chýba ->  display functions + others)
-                //example frequency sweep
+                // TODO:function for display functions
+                others();
+                if (sweep == "F")
+                    frequencySweep();
+                if (sweep == "V")
+                    voltageSweep();
 
-                //if frequency sweep
-                write("s TF" + environmentParameters.getFrequencySweep().getStart() + "EN");
-                write("s PF" + environmentParameters.getFrequencySweep().getStop() + "EN");
-                write("s SF" + environmentParameters.getFrequencySweep().getStep() + "EN");
-                write("s FR" + environmentParameters.getFrequencySweep().getSpot() + "EN");
-
-                //if voltage sweep
-                //BI spot SB step TB start PB stop
                 startMeasurement();
-
             }
         }
     }
+
+
+    }
+
+    public void others() throws IOException, InterruptedException {
+        if (environmentParameters.getOther().isHighSpeed())
+            write("s H1");
+        else
+            write("s H0");
+    }
+
+    public void frequencySweep() throws IOException, InterruptedException {
+        write("s TF" + environmentParameters.getFrequencySweep().getStart() + "EN");
+        write("s PF" + environmentParameters.getFrequencySweep().getStop() + "EN");
+        write("s SF" + environmentParameters.getFrequencySweep().getStep() + "EN");
+        write("s FR" + environmentParameters.getFrequencySweep().getSpot() + "EN");
+    }
+
+
+
+    public void voltageSweep()  throws IOException, InterruptedException {
+        write("s TB" + environmentParameters.getVoltageSweep().getStart() + "EN");
+        write("s PB" + environmentParameters.getVoltageSweep().getStop() + "EN");
+        write("s SB" + environmentParameters.getVoltageSweep().getStep() + "EN");
+        write("s BI" + environmentParameters.getVoltageSweep().getSpot() + "EN");
 
     public boolean calibrationHandler(CalibrationType calibrationType) throws IOException {
         return true;
