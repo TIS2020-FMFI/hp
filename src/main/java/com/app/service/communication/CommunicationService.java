@@ -21,6 +21,7 @@ public class CommunicationService {
     }
 
     public void runMeasurement() throws IOException, InterruptedException {
-        connection.measurement();
+        // TODO: frequency or voltage ?
+        connection.measurement("V");
     }
 }
