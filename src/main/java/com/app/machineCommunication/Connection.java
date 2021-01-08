@@ -97,7 +97,8 @@ public class Connection {
                 toggleCmdMode();
 
             if (cmd) {
-                // TODO:function for display functions + others
+                // TODO:function for display functions
+                others();
                 if (sweep == "F")
                     frequencySweep();
                 if (sweep == "V")
@@ -114,6 +115,7 @@ public class Connection {
             write("s H1");
         else
             write("s H0");
+
 
 
 
