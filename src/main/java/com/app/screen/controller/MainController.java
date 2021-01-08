@@ -6,6 +6,8 @@ import com.app.service.measurement.Measurement;
 import com.app.service.measurement.MeasurementState;
 import com.app.service.notification.NotificationType;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -64,6 +66,9 @@ public class MainController implements Initializable {
     ChoiceBox<String> otherAutoSweep;
 
     @FXML
+    TextArea commentInput;
+
+    @FXML
     Button upperGraphRun;
     @FXML
     Button upperGraphLoad;
@@ -108,6 +113,10 @@ public class MainController implements Initializable {
 
     @FXML
     VBox VBox1;
+
+    public void updateComment(MouseEvent event) {
+        AppMain.measurement.updateComment(commentInput.getText());
+    }
 
     public void runMeasurement(MouseEvent event) {
         // TODO: run measurement and graph
@@ -157,7 +166,7 @@ public class MainController implements Initializable {
         try {
             AppMain.graphService.createGraphRun();
         } catch (Exception e) { // catches exception/error that occurs always when running graph, but works
-            AppMain.notificationService.createNotification("Error occured during run", NotificationType.ERROR).show();
+            AppMain.notificationService.createNotification("Error occured during run", NotificationType.ERROR);
 //            throw e;
         }
     }
@@ -181,7 +190,7 @@ public class MainController implements Initializable {
         try {
             AppMain.calibrationService.openCalibration();
         } catch (Exception e) {
-            AppMain.notificationService.createNotification("Calibration window could not be open! Please, restart the app.", NotificationType.ERROR).show();
+            AppMain.notificationService.createNotification("Calibration window could not be open! Please, restart the app.", NotificationType.ERROR);
         }
     }
 

@@ -44,7 +44,7 @@ public class AppMain extends Application {
             throw new Exception("Notification container not found in this window!");
         }
         notificationService = new NotificationService(notificationContainer);
-        notificationService.createNotification("First try", NotificationType.SUCCESS).show();
+        notificationService.createNotification("First try", NotificationType.SUCCESS);
 
         communicationService = new CommunicationService();
 
