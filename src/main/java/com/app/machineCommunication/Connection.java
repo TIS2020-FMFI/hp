@@ -3,6 +3,7 @@ package com.app.machineCommunication;
 
 
 import com.app.service.AppMain;
+import com.app.service.calibration.CalibrationType;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.notification.NotificationType;
 import java.io.*;
@@ -67,7 +68,7 @@ public class Connection {
     }
 
 
-    public void write(String text) throws IOException, InterruptedException {
+    private void write(String text) throws IOException, InterruptedException {
         // TODO: extract to own thread
         writeEnd.write(text);
         writeEnd.newLine();
@@ -106,6 +107,8 @@ public class Connection {
                 startMeasurement();
             }
         }
+    }
+
 
     }
 
@@ -130,6 +133,9 @@ public class Connection {
         write("s PB" + environmentParameters.getVoltageSweep().getStop() + "EN");
         write("s SB" + environmentParameters.getVoltageSweep().getStep() + "EN");
         write("s BI" + environmentParameters.getVoltageSweep().getSpot() + "EN");
+
+    public boolean calibrationHandler(CalibrationType calibrationType) throws IOException {
+        return true;
     }
 
 }

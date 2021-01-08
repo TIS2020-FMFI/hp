@@ -2,6 +2,7 @@ package com.app.service.communication;
 
 
 import com.app.machineCommunication.Connection;
+import com.app.service.calibration.CalibrationType;
 
 import java.io.IOException;
 
@@ -23,5 +24,9 @@ public class CommunicationService {
     public void runMeasurement() throws IOException, InterruptedException {
         // TODO: frequency or voltage ?
         connection.measurement("V");
+    }
+
+    public boolean runCalibration(CalibrationType calibrationType) throws IOException {
+        return connection.calibrationHandler(calibrationType);
     }
 }
