@@ -22,10 +22,8 @@ public class Graph extends ChartPanel
 
     private static JFreeChart createChart(String title, String yaxisName1, String yaxisName2, String xaxisName){
 
-        series1 = new AutoUpdatingDataset(yaxisName1,100000, 400, 1000);
+        series1 = new AutoUpdatingDataset(yaxisName1,100000, 400, 500);
         series2 = new AutoUpdatingDataset(yaxisName2,100000,400, 500);
-
-        series2.setDelay(250, 1000000000);
 
 
         //construct the plot
@@ -48,30 +46,24 @@ public class Graph extends ChartPanel
 
         //generate the chart
         chart = new JFreeChart(plot);
-//        chart.setBackgroundPaint(Color.WHITE);
 
         //configure the chart
         plot.setDomainPannable(true);
         plot.setRangePannable(true);
-//        plot.getDomainAxis().setLowerBound(0);
         plot.getDomainAxis().setAutoRange(true);
         plot.getRangeAxis(0).setAutoRange(true);
         plot.getRangeAxis(1).setAutoRange(true);
         plot.getDomainAxis().setFixedAutoRange(30);
-//        plot.getDomainAxis().setLowerBound(0);
-//        plot.getRangeAxis(0).setFixedAutoRange(50);
-//        plot.getRangeAxis(1).setFixedAutoRange(50);
         plot.getRangeAxis(0).setUpperMargin(0.1);
         plot.getRangeAxis(1).setUpperMargin(1.5);
+        plot.getRangeAxis(0).setLabelPaint(Color.BLUE);
+        plot.getRangeAxis(1).setLabelPaint(Color.RED);
         plot.setOutlinePaint(null);
         chart.setBackgroundPaint(null);
         chart.setBorderVisible(false);
-        chart.getLegend(0).setItemPaint(Color.BLUE);
         chart.removeLegend();
 
-//        plot.getRangeAxis(0).setLowerMargin(0.1);
-//        plot.getRangeAxis(0).setLowerMargin(1);
-//        plot.getRangeAxis(0).setDefaultAutoRange(new Range(50,110));
+
         series1.start();
         series2.start();
 

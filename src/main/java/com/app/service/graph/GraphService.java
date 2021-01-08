@@ -28,19 +28,5 @@ public class GraphService {
         AnchorPane.setTopAnchor(chartViewer, 0.0);
 
         anchorPane.getChildren().addAll(chartViewer);
-
-//        // real-time plotting
-
-        //now make your timer
-//        int delay = 500; //milliseconds
-//        ActionListener actionListener = e -> {
-//            rtcp.series1.add(poc, (Math.random() * 20 + 80));
-//            rtcp.series2.add(poc, (Math.random() * 20 + 80));
-//            System.out.print(poc);
-//            poc++;
-//
-//        };
-//        new Timer(delay, actionListener).start();
-
     }
 }
