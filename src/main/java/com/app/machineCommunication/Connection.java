@@ -2,6 +2,7 @@ package com.app.machineCommunication;
 
 
 import com.app.service.AppMain;
+import com.app.service.calibration.CalibrationType;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.notification.NotificationType;
 
@@ -54,7 +55,7 @@ public class Connection {
 
     }
 
-    public void write(String text) throws IOException, InterruptedException {
+    private void write(String text) throws IOException, InterruptedException {
         // TODO: extract to own thread
         writeEnd.write(text);
         writeEnd.newLine();
@@ -98,8 +99,10 @@ public class Connection {
 
             }
         }
+    }
 
-
+    public boolean calibrationHandler(CalibrationType calibrationType) throws IOException {
+        return true;
     }
 
 }
