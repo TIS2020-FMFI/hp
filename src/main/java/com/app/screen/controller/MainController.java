@@ -199,13 +199,13 @@ public class MainController implements Initializable {
             }
             Platform.exit();
             System.exit(0);
-        }else{
-
+        } else if (!AppMain.measurement.getState().equals(MeasurementState.SAVED)){
+            AppMain.notificationService.createNotification("There is some data that has not been saved yet, do you want to quit anyway?", NotificationType.WARNING);
         }
     }
 
     public void showHelpWindow(MouseEvent event) {
-        //TODO: create simple window with links, details, description
+        AppMain.helpService.openHelp();
     }
 
     @Override

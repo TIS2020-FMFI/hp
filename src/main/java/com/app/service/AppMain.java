@@ -4,6 +4,7 @@ import com.app.service.calibration.CalibrationService;
 import com.app.service.communication.CommunicationService;
 import com.app.service.file.FileService;
 import com.app.service.graph.GraphService;
+import com.app.service.help.HelpService;
 import com.app.service.measurement.Measurement;
 import com.app.service.notification.NotificationService;
 import com.app.service.notification.NotificationType;
@@ -20,6 +21,7 @@ public class AppMain extends Application {
     public static Stage ps;
     public static NotificationService notificationService;
     public static CalibrationService calibrationService;
+    public static HelpService helpService;
     public static FileService fileService;
     public static GraphService graphService;
     public static CommunicationService communicationService;
@@ -48,6 +50,7 @@ public class AppMain extends Application {
 
         graphService = new GraphService((AnchorPane) root.lookup("#upperPane"), primaryStage);
         calibrationService = new CalibrationService("/views/calibrationScreen.fxml");
+        helpService = new HelpService("/views/helpScreen.fxml");
 
         // if all runs successfully then show
         primaryStage.show();
