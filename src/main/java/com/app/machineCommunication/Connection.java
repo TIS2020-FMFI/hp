@@ -109,9 +109,6 @@ public class Connection {
         }
     }
 
-
-    }
-
     public void others() throws IOException, InterruptedException {
         if (environmentParameters.getOther().isHighSpeed())
             write("s H1");
@@ -133,6 +130,7 @@ public class Connection {
         write("s PB" + environmentParameters.getVoltageSweep().getStop() + "EN");
         write("s SB" + environmentParameters.getVoltageSweep().getStep() + "EN");
         write("s BI" + environmentParameters.getVoltageSweep().getSpot() + "EN");
+    }
 
     public boolean calibrationHandler(CalibrationType calibrationType) throws IOException {
         return true;
