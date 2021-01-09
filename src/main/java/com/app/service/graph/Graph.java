@@ -7,6 +7,12 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.SamplingXYLineRenderer;
 
 import java.awt.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Scanner;
 
 public class Graph extends ChartPanel
 {
@@ -15,16 +21,15 @@ public class Graph extends ChartPanel
     public static AutoUpdatingDataset series2 ;
     private static JFreeChart chart;
 
-    public Graph(String yaxisName1, String yaxisName2, String xaxisName,boolean running)
-    {
-        super(createChart(yaxisName1,yaxisName2,xaxisName,running));
+    public Graph(String yaxisName1, String yaxisName2, String xaxisName,boolean running, File data) throws FileNotFoundException {
+        super(createChart(yaxisName1,yaxisName2,xaxisName,running, data));
     }
 
     public JFreeChart getChart() {
         return chart;
     }
 
-    private static JFreeChart createChart(String yaxisName1, String yaxisName2, String xaxisName, boolean running){ // ak no running, tak klasicky chart z dat, ktore poslem cez parameter
+    private static JFreeChart createChart(String yaxisName1, String yaxisName2, String xaxisName, boolean running, File data ) throws FileNotFoundException { // ak no running, tak klasicky chart z dat, ktore poslem cez parameter
 
         series1 = new AutoUpdatingDataset(yaxisName1,100000, 400, 500);
         series2 = new AutoUpdatingDataset(yaxisName2,100000,400, 500);
@@ -70,27 +75,55 @@ public class Graph extends ChartPanel
         if (running) {
             series1.start();
             series2.start();
+            return chart ;
         }
-        if (!running) { // teda ideme loadovat
-
+        if (!running) {
+            if (data != null) {
+                parseAndAddData(data);
+                return chart ;
+            }
         }
-
-        return chart;
+        chart = null;
+        return null;
     }
 
-    private Double[] inputChange(String measurement) {
+    public static void  parseAndAddData(File data) throws FileNotFoundException {
+        Scanner scanner = new Scanner(data);
+        ArrayList<ArrayList<Double>> all_values = new ArrayList<ArrayList<Double>>();
+        while(scanner.hasNext()){
+            try {
+                ArrayList<Double> values_long = inputChange(scanner.nextLine());
+                all_values.add(values_long);
+            } catch (Exception e) {
+            }
+        }
 
-        measurement = "F 0500.0000,NZN 028.55E+00,NDN-089.77E+00";
+        final int COLUMN = 0;
+        Comparator<ArrayList<Double>> myComparator = new Comparator<ArrayList<Double>>() {
+            @Override
+            public int compare(ArrayList<Double> o1, ArrayList<Double> o2) {
+                return o1.get(COLUMN).compareTo(o2.get(COLUMN));
+            }
+        };
+        Collections.sort(all_values, myComparator);
+
+        for (int i = 0; i < all_values.size(); i++) {
+            series1.addValue(all_values.get(i).get(0),all_values.get(i).get(1));
+            series2.addValue(all_values.get(i).get(0),all_values.get(i).get(2));
+        }
+    }
+
+    public static ArrayList<Double> inputChange(String measurement) {
         String[] values = measurement.split(",");
         for (int i = 0; i < values.length; i++) {
             if (i == 0) values[i] = values[i].substring(1,values[i].length());
             else values[i] = values[i].substring(3,values[i].length());
         }
 
-        Double[] values_long = new Double[3];
-        values_long[0] = Double.parseDouble(values[0]);
-        values_long[1] = Double.parseDouble(values[1]);
-        values_long[2] = Double.parseDouble(values[2]);
+        ArrayList<Double> values_long = new ArrayList<Double>();
+        values_long.add(Double.parseDouble(values[0])); // frequency / voltage
+        values_long.add(Double.parseDouble(values[1]));
+        values_long.add(Double.parseDouble(values[2]));
 
         return values_long;
     }
