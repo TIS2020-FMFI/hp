@@ -6,8 +6,6 @@ import com.app.service.measurement.Measurement;
 import com.app.service.measurement.MeasurementState;
 import com.app.service.notification.NotificationType;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -106,9 +104,13 @@ public class MainController implements Initializable {
 
     @FXML
     AnchorPane upperPane;
-
     @FXML
     AnchorPane lowerPane;
+    @FXML
+    ToggleGroup toogleUpperXAxis;
+    @FXML
+    ToggleGroup toogleLowerXAxis;
+
 
     @FXML
     VBox VBox1;
@@ -183,9 +185,15 @@ public class MainController implements Initializable {
         AppMain.fileService.setEnvironmentParameters(AppMain.measurement.getParameters());
 
         try {
-            AppMain.graphService.createGraphRun();
+            RadioButton selectedRadioButtonUpper = (RadioButton) toogleUpperXAxis.getSelectedToggle();
+            String toogleGroupValueUpper = selectedRadioButtonUpper.getText();
+
+            RadioButton selectedRadioButtonLower = (RadioButton) toogleLowerXAxis.getSelectedToggle();
+            String toogleGroupValueLower = selectedRadioButtonLower.getText();
+
+            AppMain.graphService.createGraphRun(toogleGroupValueUpper, toogleGroupValueLower);
         } catch (Exception e) {
-            AppMain.notificationService.createNotification("Error occured during run", NotificationType.ERROR).show();
+            AppMain.notificationService.createNotification("Error occured during run", NotificationType.ERROR);
         }
     }
 
@@ -194,7 +202,7 @@ public class MainController implements Initializable {
         try {
             AppMain.graphService.LoadGraph();
         } catch (Exception e) {
-            AppMain.notificationService.createNotification("Error occured during loading graph", NotificationType.ERROR).show();
+            AppMain.notificationService.createNotification("Error occured during loading graph", NotificationType.ERROR);
         }
     }
 

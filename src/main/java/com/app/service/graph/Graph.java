@@ -67,11 +67,11 @@ public class Graph extends ChartPanel
         chart.setBorderVisible(false);
         chart.removeLegend();
 
-        if (running == true) {
+        if (running) {
             series1.start();
             series2.start();
         }
-        if (running == false) { // teda ideme loadovat
+        if (!running) { // teda ideme loadovat
 
         }
 
