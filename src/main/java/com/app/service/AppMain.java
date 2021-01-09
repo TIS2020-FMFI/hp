@@ -12,7 +12,6 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -48,7 +47,7 @@ public class AppMain extends Application {
 
         communicationService = new CommunicationService();
 
-        graphService = new GraphService((AnchorPane) root.lookup("#upperPane"), primaryStage);
+        graphService = new GraphService("/views/mainScreen.fxml", root);
         calibrationService = new CalibrationService("/views/calibrationScreen.fxml");
         helpService = new HelpService("/views/helpScreen.fxml");
 

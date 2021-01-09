@@ -11,7 +11,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 
@@ -104,13 +103,25 @@ public class MainController implements Initializable {
     AnchorPane upperPane;
 
     @FXML
-    Pane lowerPane;
+    AnchorPane lowerPane;
 
     @FXML
     VBox VBox1;
+    
+    public void setUpperPaneRun(MouseEvent event) {
+        AppMain.graphService.setUpperRunning();
+    }
 
+    public void setLowerPaneRun(MouseEvent event) {
+        AppMain.graphService.setLowerRunning();
+    }
+    
     public void runMeasurement(MouseEvent event) {
         // TODO: run measurement and graph
+
+        if (AppMain.graphService.isRunning()) {
+            return;
+        }
 
         EnvironmentParameters newParameters = AppMain.measurement.getParameters();
 
@@ -156,9 +167,8 @@ public class MainController implements Initializable {
 
         try {
             AppMain.graphService.createGraphRun();
-        } catch (Exception e) { // catches exception/error that occurs always when running graph, but works
+        } catch (Exception e) {
             AppMain.notificationService.createNotification("Error occured during run", NotificationType.ERROR).show();
-//            throw e;
         }
     }
 

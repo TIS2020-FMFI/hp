@@ -15,12 +15,12 @@ public class Graph extends ChartPanel
     public static AutoUpdatingDataset series2 ;
     public static JFreeChart chart;
 
-    public Graph(String title, String yaxisName1, String yaxisName2, String xaxisName)
+    public Graph(String yaxisName1, String yaxisName2, String xaxisName,String running)
     {
-        super(createChart(title,yaxisName1,yaxisName2,xaxisName));
+        super(createChart(yaxisName1,yaxisName2,xaxisName,running));
     }
 
-    private static JFreeChart createChart(String title, String yaxisName1, String yaxisName2, String xaxisName){
+    private static JFreeChart createChart(String yaxisName1, String yaxisName2, String xaxisName, String running){ // ak no running, tak klasicky chart z dat, ktore poslem cez parameter
 
         series1 = new AutoUpdatingDataset(yaxisName1,100000, 400, 500);
         series2 = new AutoUpdatingDataset(yaxisName2,100000,400, 500);
@@ -63,9 +63,10 @@ public class Graph extends ChartPanel
         chart.setBorderVisible(false);
         chart.removeLegend();
 
-
-        series1.start();
-        series2.start();
+        if (running != null) {
+            series1.start();
+            series2.start();
+        }
 
         return chart;
     }
