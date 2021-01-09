@@ -115,6 +115,14 @@ public class MainController implements Initializable {
     public void setLowerPaneRun(MouseEvent event) {
         AppMain.graphService.setLowerRunning();
     }
+
+    public void setUpperPaneLoad(MouseEvent event) {
+        AppMain.graphService.setUpperLoaded();
+    }
+
+    public void setLowerPaneLoad(MouseEvent event) {
+        AppMain.graphService.setLowerLoaded();
+    }
     
     public void runMeasurement(MouseEvent event) {
         // TODO: run measurement and graph
@@ -169,6 +177,15 @@ public class MainController implements Initializable {
             AppMain.graphService.createGraphRun();
         } catch (Exception e) {
             AppMain.notificationService.createNotification("Error occured during run", NotificationType.ERROR).show();
+        }
+    }
+
+    public void loadGraph(MouseEvent event) {
+        // TODO: load data from file, parse them, and add them to graph series
+        try {
+            AppMain.graphService.LoadGraph();
+        } catch (Exception e) {
+            AppMain.notificationService.createNotification("Error occured during loading graph", NotificationType.ERROR).show();
         }
     }
 

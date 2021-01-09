@@ -47,7 +47,7 @@ public class AppMain extends Application {
 
         communicationService = new CommunicationService();
 
-        graphService = new GraphService("/views/mainScreen.fxml", root);
+        graphService = new GraphService(root);
         calibrationService = new CalibrationService("/views/calibrationScreen.fxml");
         helpService = new HelpService("/views/helpScreen.fxml");
 

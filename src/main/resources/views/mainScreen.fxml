@@ -595,7 +595,7 @@
                                     <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="38.0" prefWidth="679.0">
                                       <items>
                                         <Button fx:id="upperGraphRun" mnemonicParsing="false" onMousePressed="#setUpperPaneRun" onMouseReleased="#runMeasurement" styleClass="graph-btn" text="Run" />
-                                          <Button fx:id="upperGraphLoad" mnemonicParsing="false" styleClass="graph-btn" text="Load" />
+                                          <Button fx:id="upperGraphLoad" mnemonicParsing="false" onMousePressed="#setUpperPaneLoad" onMouseReleased="#loadGraph" styleClass="graph-btn" text="Load" />
                                           <Button fx:id="upperGraphExport" mnemonicParsing="false" styleClass="graph-btn" text="Export" />
                                           <Button fx:id="upperGraphSave" mnemonicParsing="false" styleClass="graph-btn" text="Save as" />
                                           <Button fx:id="upperGraphPoint" mnemonicParsing="false" styleClass="graph-btn" text="Point" />
@@ -615,7 +615,7 @@
                                     <ToolBar prefHeight="0.0" prefWidth="679.0">
                                       <items>
                                         <Button fx:id="lowerGraphRun" mnemonicParsing="false" onMousePressed="#setLowerPaneRun" onMouseReleased="#runMeasurement" styleClass="graph-btn" text="Run" />
-                                          <Button fx:id="lowerGraphLoad" mnemonicParsing="false" styleClass="graph-btn" text="Load" />
+                                          <Button fx:id="lowerGraphLoad" mnemonicParsing="false" onMousePressed="#setLowerPaneLoad" onMouseReleased="#loadGraph" styleClass="graph-btn" text="Load" />
                                           <Button fx:id="lowerGraphExport" mnemonicParsing="false" styleClass="graph-btn" text="Export" />
                                           <Button fx:id="lowerGraphSave" mnemonicParsing="false" styleClass="graph-btn" text="Save as" />
                                           <Button fx:id="lowerGraphPoint" mnemonicParsing="false" styleClass="graph-btn" text="Point" />
