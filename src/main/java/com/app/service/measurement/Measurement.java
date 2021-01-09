@@ -1,19 +1,23 @@
 package com.app.service.measurement;
 
+import com.app.service.AppMain;
 import com.app.service.file.parameters.EnvironmentParameters;
+import com.app.service.notification.NotificationType;
 
 import java.util.LinkedList;
 
 public class Measurement {
     LinkedList<SingleValue> data;
     EnvironmentParameters parameters;
+    StringBuilder comment;
     int indexOfTheValueToSave = 0;
     MeasurementState state;
 
-    public Measurement(EnvironmentParameters parameters) throws Exception {
-        this.data = new LinkedList<SingleValue>();
+    public Measurement(EnvironmentParameters parameters) {
+        this.data = new LinkedList<>();
         this.parameters = parameters;
         this.state = MeasurementState.WAITING;
+        comment = new StringBuilder();
     }
 
     public void addSingleValue(SingleValue singleValue){
@@ -46,5 +50,10 @@ public class Measurement {
 
     public MeasurementState getState() {
         return state;
+    }
+
+    public void updateComment(String newValue) {
+        comment = new StringBuilder(newValue);
+        AppMain.notificationService.createNotification("Comment saved", NotificationType.ANNOUNCEMENT);
     }
 }

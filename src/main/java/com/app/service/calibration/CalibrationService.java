@@ -54,7 +54,7 @@ public class CalibrationService {
     }
 
     private void showNotification(String content, NotificationType type) {
-        notificationService.createNotification(content, type).show();
+        notificationService.createNotification(content, type);
     }
 
     public void addRadioButtons(LinkedList<RadioButton> radioButtons) {

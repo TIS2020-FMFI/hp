@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
 <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="try" stylesheets="@styles/mainScreenStyles.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.screen.controller.MainController">
    <children>
-      <VBox fx:id="mainContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox fx:id="mainContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1450.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="1200.0">
               <items>
@@ -59,7 +75,7 @@
                <children>
                   <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <VBox maxHeight="1.7976931348623157E308" maxWidth="-Infinity" prefWidth="450.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                        <VBox maxHeight="1.7976931348623157E308" maxWidth="-Infinity" prefWidth="500.0" spacing="5.0" HBox.hgrow="ALWAYS">
                            <children>
                               <StackPane>
                                  <children>
@@ -572,6 +588,52 @@
                                     </Button>
                                  </children>
                               </StackPane>
+                              <StackPane>
+                                 <children>
+                                    <GridPane minHeight="200.0" minWidth="400.0" styleClass="simple-border">
+                                       <columnConstraints>
+                                          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                       </columnConstraints>
+                                       <rowConstraints>
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                                       </rowConstraints>
+                                       <StackPane.margin>
+                                          <Insets top="10.0" />
+                                       </StackPane.margin>
+                                       <VBox.margin>
+                                          <Insets />
+                                       </VBox.margin>
+                                       <children>
+                                          <VBox>
+                                             <children>
+                                                <TextArea fx:id="commentInput" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                                                   <GridPane.margin>
+                                                      <Insets />
+                                                   </GridPane.margin>
+                                                   <VBox.margin>
+                                                      <Insets bottom="10.0" left="10.0" right="10.0" top="20.0" />
+                                                   </VBox.margin>
+                                                </TextArea>
+                                                <HBox alignment="BOTTOM_RIGHT" fillHeight="false" VBox.vgrow="NEVER">
+                                                   <children>
+                                                      <Button alignment="CENTER" mnemonicParsing="false" onMouseReleased="#updateComment" styleClass="graph-btn" text="Save" textAlignment="CENTER">
+                                                         <HBox.margin>
+                                                            <Insets bottom="10.0" left="10.0" right="10.0" />
+                                                         </HBox.margin>
+                                                      </Button>
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </VBox>
+                                       </children>
+                                    </GridPane>
+                                    <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Comment" StackPane.alignment="TOP_LEFT">
+                                       <StackPane.margin>
+                                          <Insets left="15.0" />
+                                       </StackPane.margin>
+                                    </Button>
+                                 </children>
+                              </StackPane>
                            </children>
                            <padding>
                               <Insets bottom="30.0" left="30.0" top="30.0" />
@@ -591,7 +653,7 @@
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
                                  <children>
-                                    <AnchorPane fx:id="upperPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="260.0" prefWidth="680.0" />
+                                    <AnchorPane fx:id="upperPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="260.0" prefWidth="680.0" VBox.vgrow="ALWAYS" />
                                     <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="38.0" prefWidth="679.0">
                                       <items>
                                         <Button fx:id="upperGraphRun" mnemonicParsing="false" onMousePressed="#setUpperPaneRun" onMouseReleased="#runMeasurement" styleClass="graph-btn" text="Run" />
@@ -611,8 +673,8 @@
                                     <Insets bottom="30.0" left="30.0" right="30.0" />
                                  </VBox.margin>
                                  <children>
-                                    <AnchorPane fx:id="lowerPane" prefHeight="260.0" prefWidth="680.0" />
-                                    <ToolBar prefHeight="0.0" prefWidth="679.0">
+                                    <AnchorPane fx:id="lowerPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="260.0" prefWidth="680.0" VBox.vgrow="ALWAYS" />
+                                    <ToolBar prefHeight="40.0" prefWidth="200.0">
                                       <items>
                                         <Button fx:id="lowerGraphRun" mnemonicParsing="false" onMousePressed="#setLowerPaneRun" onMouseReleased="#runMeasurement" styleClass="graph-btn" text="Run" />
                                           <Button fx:id="lowerGraphLoad" mnemonicParsing="false" onMousePressed="#setLowerPaneLoad" onMouseReleased="#loadGraph" styleClass="graph-btn" text="Load" />
