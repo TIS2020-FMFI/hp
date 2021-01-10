@@ -133,7 +133,7 @@ public class CalibrationService {
                 toggleGroupTypeDisabled.set(associatedRadioButtonIndex, true);
                 setNextRadioButtonActive();
             }
-        } catch (NoSuchAttributeException | IOException | RuntimeException e) {
+        } catch (NoSuchAttributeException | IOException | RuntimeException | InterruptedException e) {
             showNotification("upss! -> " + e.getMessage(), NotificationType.ERROR);
         }
     }
