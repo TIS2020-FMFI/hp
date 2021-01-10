@@ -34,7 +34,7 @@ public class Connection {
     }
 
     public boolean connect() throws IOException, InterruptedException {
-        //ak sa nepripoji, exception -> pipe is being closed
+        //ak sa nepripoji -> exception pipe is being closed
         if (connected){
             if(cmd)
                 write(".");
