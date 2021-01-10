@@ -199,6 +199,7 @@ public class MainController implements Initializable {
 
     public void loadGraph(MouseEvent event) {
         // TODO: load data from file, parse them, and add them to graph series
+
         try {
             AppMain.graphService.LoadGraph();
         } catch (Exception e) {

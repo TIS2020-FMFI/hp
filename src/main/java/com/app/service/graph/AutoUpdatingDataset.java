@@ -52,8 +52,10 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
     }
 
     public void addValue(double x, double y) {
+        cursor ++;
         values[cursor][0] = x;
         values[cursor][1] = y;
+        fireDatasetChanged();
     }
 
     public double getYValue(int series, int item) {
