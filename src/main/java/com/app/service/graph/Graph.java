@@ -8,7 +8,6 @@ import org.jfree.chart.renderer.xy.SamplingXYLineRenderer;
 
 import java.awt.*;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,11 +16,11 @@ import java.util.Scanner;
 public class Graph extends ChartPanel
 {
     private long value=0;
-    public static AutoUpdatingDataset series1;
-    public static AutoUpdatingDataset series2 ;
+    private static AutoUpdatingDataset series1;
+    private static AutoUpdatingDataset series2 ;
     private static JFreeChart chart;
 
-    public Graph(String yaxisName1, String yaxisName2, String xaxisName,boolean running, File data) throws FileNotFoundException {
+    public Graph(String yaxisName1, String yaxisName2, String xaxisName,boolean running, File data) throws Exception {
         super(createChart(yaxisName1,yaxisName2,xaxisName,running, data));
     }
 
@@ -29,7 +28,7 @@ public class Graph extends ChartPanel
         return chart;
     }
 
-    private static JFreeChart createChart(String yaxisName1, String yaxisName2, String xaxisName, boolean running, File data ) throws FileNotFoundException { // ak no running, tak klasicky chart z dat, ktore poslem cez parameter
+    private static JFreeChart createChart(String yaxisName1, String yaxisName2, String xaxisName, boolean running, File data ) throws Exception { // ak no running, tak klasicky chart z dat, ktore poslem cez parameter
 
         series1 = new AutoUpdatingDataset(yaxisName1,100000, 400, 500);
         series2 = new AutoUpdatingDataset(yaxisName2,100000,400, 500);
@@ -87,7 +86,7 @@ public class Graph extends ChartPanel
         return null;
     }
 
-    public static void  parseAndAddData(File data) throws FileNotFoundException {
+    public static void  parseAndAddData(File data) throws Exception {
         Scanner scanner = new Scanner(data);
         ArrayList<ArrayList<Double>> all_values = new ArrayList<ArrayList<Double>>();
         while(scanner.hasNext()){
