@@ -13,7 +13,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 
@@ -109,7 +108,7 @@ public class MainController implements Initializable {
     AnchorPane upperPane;
 
     @FXML
-    Pane lowerPane;
+    AnchorPane lowerPane;
 
     @FXML
     VBox VBox1;
@@ -118,8 +117,28 @@ public class MainController implements Initializable {
         AppMain.measurement.updateComment(commentInput.getText());
     }
 
+    public void setUpperPaneRun(MouseEvent event) {
+        AppMain.graphService.setUpperRunning();
+    }
+
+    public void setLowerPaneRun(MouseEvent event) {
+        AppMain.graphService.setLowerRunning();
+    }
+
+    public void setUpperPaneLoad(MouseEvent event) {
+        AppMain.graphService.setUpperLoaded();
+    }
+
+    public void setLowerPaneLoad(MouseEvent event) {
+        AppMain.graphService.setLowerLoaded();
+    }
+
     public void runMeasurement(MouseEvent event) {
         // TODO: run measurement and graph
+
+        if (AppMain.graphService.isRunning()) {
+            return;
+        }
 
         EnvironmentParameters newParameters = AppMain.measurement.getParameters();
 
@@ -165,9 +184,17 @@ public class MainController implements Initializable {
 
         try {
             AppMain.graphService.createGraphRun();
-        } catch (Exception e) { // catches exception/error that occurs always when running graph, but works
-            AppMain.notificationService.createNotification("Error occured during run", NotificationType.ERROR);
-//            throw e;
+        } catch (Exception e) {
+            AppMain.notificationService.createNotification("Error occured during run", NotificationType.ERROR).show();
+        }
+    }
+
+    public void loadGraph(MouseEvent event) {
+        // TODO: load data from file, parse them, and add them to graph series
+        try {
+            AppMain.graphService.LoadGraph();
+        } catch (Exception e) {
+            AppMain.notificationService.createNotification("Error occured during loading graph", NotificationType.ERROR).show();
         }
     }
 

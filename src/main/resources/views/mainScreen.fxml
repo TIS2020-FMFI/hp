@@ -1,12 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="try" stylesheets="@styles/mainScreenStyles.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.screen.controller.MainController">
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="try" stylesheets="@styles/mainScreenStyles.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.screen.controller.MainController">
    <children>
       <VBox fx:id="mainContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1450.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -642,8 +656,8 @@
                                     <AnchorPane fx:id="upperPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="260.0" prefWidth="680.0" VBox.vgrow="ALWAYS" />
                                     <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="38.0" prefWidth="679.0">
                                       <items>
-                                        <Button fx:id="upperGraphRun" mnemonicParsing="false" onMouseReleased="#runMeasurement" styleClass="graph-btn" text="Run" />
-                                          <Button fx:id="upperGraphLoad" mnemonicParsing="false" styleClass="graph-btn" text="Load" />
+                                        <Button fx:id="upperGraphRun" mnemonicParsing="false" onMousePressed="#setUpperPaneRun" onMouseReleased="#runMeasurement" styleClass="graph-btn" text="Run" />
+                                          <Button fx:id="upperGraphLoad" mnemonicParsing="false" onMousePressed="#setUpperPaneLoad" onMouseReleased="#loadGraph" styleClass="graph-btn" text="Load" />
                                           <Button fx:id="upperGraphExport" mnemonicParsing="false" styleClass="graph-btn" text="Export" />
                                           <Button fx:id="upperGraphSave" mnemonicParsing="false" styleClass="graph-btn" text="Save as" />
                                           <Button fx:id="upperGraphPoint" mnemonicParsing="false" styleClass="graph-btn" text="Point" />
@@ -659,11 +673,11 @@
                                     <Insets bottom="30.0" left="30.0" right="30.0" />
                                  </VBox.margin>
                                  <children>
-                                    <Pane fx:id="lowerPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="260.0" prefWidth="680.0" VBox.vgrow="ALWAYS" />
+                                    <AnchorPane fx:id="lowerPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="260.0" prefWidth="680.0" VBox.vgrow="ALWAYS" />
                                     <ToolBar prefHeight="40.0" prefWidth="200.0">
                                       <items>
-                                        <Button fx:id="lowerGraphRun" mnemonicParsing="false" styleClass="graph-btn" text="Run" />
-                                          <Button fx:id="lowerGraphLoad" mnemonicParsing="false" styleClass="graph-btn" text="Load" />
+                                        <Button fx:id="lowerGraphRun" mnemonicParsing="false" onMousePressed="#setLowerPaneRun" onMouseReleased="#runMeasurement" styleClass="graph-btn" text="Run" />
+                                          <Button fx:id="lowerGraphLoad" mnemonicParsing="false" onMousePressed="#setLowerPaneLoad" onMouseReleased="#loadGraph" styleClass="graph-btn" text="Load" />
                                           <Button fx:id="lowerGraphExport" mnemonicParsing="false" styleClass="graph-btn" text="Export" />
                                           <Button fx:id="lowerGraphSave" mnemonicParsing="false" styleClass="graph-btn" text="Save as" />
                                           <Button fx:id="lowerGraphPoint" mnemonicParsing="false" styleClass="graph-btn" text="Point" />
