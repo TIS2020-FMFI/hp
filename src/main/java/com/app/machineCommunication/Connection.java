@@ -127,8 +127,6 @@ public class Connection {
         write("s FR" + environmentParameters.getFrequencySweep().getSpot() + "EN");
     }
 
-
-
     public void voltageSweep()  throws IOException, InterruptedException {
         write("s TB" + environmentParameters.getVoltageSweep().getStart() + "EN");
         write("s PB" + environmentParameters.getVoltageSweep().getStop() + "EN");
@@ -136,21 +134,22 @@ public class Connection {
         write("s BI" + environmentParameters.getVoltageSweep().getSpot() + "EN");
     }
 
-    public void shortCalibration() throws IOException, InterruptedException {
-        write("s A5");
-        write("s CS");
-        read(); // we don't need results for now
-        //TODO: notification "connect LOAD standard"
-    }
-    public void loadCalibration() throws IOException, InterruptedException {
-
-    }
     public void openCalibration() throws IOException, InterruptedException {
         write("s A4");
         write("s CS");
         read(); // we don't need results for now
-        //TODO: notification "connect SHORT standard"
     }
+    public void shortCalibration() throws IOException, InterruptedException {
+        write("s A5");
+        write("s CS");
+        read(); // we don't need results for now
+    }
+    public void loadCalibration() throws IOException, InterruptedException {
+        write("s A5");
+        write("s CS");
+        read(); // we don't need results for now
+    }
+
 
     public boolean calibrationHandler(CalibrationType calibrationType) throws IOException, InterruptedException {
         if (connected) {
