@@ -5,7 +5,10 @@ package com.app.machineCommunication;
 import com.app.service.AppMain;
 import com.app.service.calibration.CalibrationType;
 import com.app.service.file.parameters.EnvironmentParameters;
+import com.app.service.measurement.MeasurementTypes;
 import com.app.service.notification.NotificationType;
+
+import javax.naming.directory.NoSuchAttributeException;
 import java.io.*;
 
 public class Connection {
@@ -13,6 +16,7 @@ public class Connection {
 
     private boolean connected = false;
     boolean cmd = false;
+    boolean calibrationMode = false;
     Process p;
     BufferedReader readEnd;
     BufferedWriter writeEnd;
@@ -53,7 +57,7 @@ public class Connection {
             if (!result.toString().equals("!not ready, try again later (cmd)")) {
                 cmd = !cmd;
 
-            } else {/*notifikacia o nepripojeni do cmd modu ? treba odkliknut tie dve chyby na pristroji pomocou hocijakého tlačidla*/}
+            } else {/*notifikacia o nepripojeni do cmd modu ? pristroj si nepamätá nastavenia a treba na nom stlačiť hocijaké tlačidlo*/}
 
         } else {/*notifikacia ze treba najprv pripojit zariadenie ? */}
     }
@@ -91,17 +95,17 @@ public class Connection {
 
     }
 
-    public void measurement(String sweep) throws IOException, InterruptedException {
+    public void measurement(MeasurementTypes type) throws IOException, InterruptedException {
         if (connected) {
             if (!cmd)
                 toggleCmdMode();
 
             if (cmd) {
                 // TODO:function for display functions
-                others();
-                if (sweep == "F")
+                highSpeed();
+                if (type == MeasurementTypes.Frequency)
                     frequencySweep();
-                if (sweep == "V")
+                if (type == MeasurementTypes.Voltage)
                     voltageSweep();
 
                 startMeasurement();
@@ -109,7 +113,7 @@ public class Connection {
         }
     }
 
-    public void others() throws IOException, InterruptedException {
+    public void highSpeed() throws IOException, InterruptedException {
         if (environmentParameters.getOther().isHighSpeed())
             write("s H1");
         else
@@ -132,9 +136,43 @@ public class Connection {
         write("s BI" + environmentParameters.getVoltageSweep().getSpot() + "EN");
     }
 
-    public boolean calibrationHandler(CalibrationType calibrationType) throws IOException {
+    public void shortCalibration() {
+
+    }
+    public void loadCalibration() {
+
+    }
+    public void openCalibration() {
+
+    }
+
+    public boolean calibrationHandler(CalibrationType calibrationType) throws IOException, InterruptedException {
+        if (connected) {
+            if (!cmd) toggleCmdMode();
+            if (cmd){
+                if (!calibrationMode){write("s C1"); calibrationMode = !calibrationMode; highSpeed();}
+                if (calibrationMode){
+                    switch (calibrationType) {
+                        case OPEN:
+                            openCalibration();
+                            break;
+                        case SHORT:
+                            shortCalibration();
+                            break;
+                        case LOAD:
+                            loadCalibration();
+                            write("s C0");
+                            calibrationMode = !calibrationMode;
+                            break;
+                    }
+                }
+            }
+        } else {/*TODO: connect machine notification*/}
+
         return true;
     }
+
+
 
 }
 
