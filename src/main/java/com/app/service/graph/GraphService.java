@@ -10,11 +10,11 @@ public class GraphService {
     AnchorPane anchorPaneLower;
     private STATE stateUpper = STATE.NOTRUNNING;
     private STATE stateLower = STATE.NOTRUNNING;
-    private Parent root;
     boolean running = false;
     String loadingTo = null;
     ChartViewer chartViewerUpper = new ChartViewer();
     ChartViewer chartViewerLower = new ChartViewer();
+
 
     public enum STATE {
         UPPERRUNNING,
@@ -26,10 +26,8 @@ public class GraphService {
 
 
     public GraphService(Parent rootPrimary) {
-        root = rootPrimary;
-
-        anchorPaneUpper = (AnchorPane) root.lookup("#upperPane");
-        anchorPaneLower = (AnchorPane) root.lookup("#lowerPane");
+        anchorPaneUpper = (AnchorPane) rootPrimary.lookup("#upperPane");
+        anchorPaneLower = (AnchorPane) rootPrimary.lookup("#lowerPane");
 
         configChartViewer(chartViewerUpper);
         configChartViewer(chartViewerLower);
@@ -82,14 +80,16 @@ public class GraphService {
         return (stateUpper == STATE.UPPERLOADED || stateLower == STATE.LOWERLOADED);
     }
 
-    public void createGraphRun() throws Exception {
-        if (running == false) {
+    public void createGraphRun(String upperXAxisName, String lowerXAxisName) {
+        if (!running) {
             running = true;
-            Graph rtcp = new Graph("Resistance", "Capacity", "Frequency", running);
+
             if (stateUpper == STATE.UPPERRUNNING) {
+                Graph rtcp = new Graph("Resistance", "Capacity", upperXAxisName, true);
                 chartViewerUpper.setChart(rtcp.getChart());
             }
             if (stateLower == STATE.LOWERRUNNING) {
+                Graph rtcp = new Graph("Resistance", "Capacity", lowerXAxisName, running);
                 chartViewerLower.setChart(rtcp.getChart());
             }
         }
@@ -100,10 +100,10 @@ public class GraphService {
 
             Graph rtcp = new Graph("Resistance", "Capacity", "Frequency", false);
 
-            if (stateUpper == STATE.UPPERLOADED && loadingTo == "upper") {
+            if (stateUpper == STATE.UPPERLOADED && loadingTo.equals("upper")) {
                 chartViewerUpper.setChart(rtcp.getChart());
             }
-            if (stateLower == STATE.LOWERLOADED && loadingTo == "lower") {
+            if (stateLower == STATE.LOWERLOADED && loadingTo.equals("lower")) {
                 chartViewerLower.setChart(rtcp.getChart());
             }
             loadingTo = null;
