@@ -95,6 +95,7 @@ public class Graph extends ChartPanel
                 ArrayList<Double> values_long = inputChange(scanner.nextLine());
                 all_values.add(values_long);
             } catch (Exception e) {
+                throw new Exception("Could not parse data");
             }
         }
 
