@@ -59,7 +59,7 @@ public class Connection {
 
             } else {/*notifikacia o nepripojeni do cmd modu ? pristroj si nepamätá nastavenia a treba na nom stlačiť hocijaké tlačidlo*/}
 
-        } else {/*notifikacia ze treba najprv pripojit zariadenie ? */}
+        } else {/*TODO: connect machine notification*/}
     }
 
     public StringBuilder read() throws IOException {
@@ -142,8 +142,11 @@ public class Connection {
     public void loadCalibration() {
 
     }
-    public void openCalibration() {
-
+    public void openCalibration() throws IOException, InterruptedException {
+        write("s A4");
+        write("s CS");
+        read(); // we don't need results for now
+        //TODO: notification "connect SHORT standard"
     }
 
     public boolean calibrationHandler(CalibrationType calibrationType) throws IOException, InterruptedException {
