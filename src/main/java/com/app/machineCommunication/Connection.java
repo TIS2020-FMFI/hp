@@ -6,7 +6,9 @@ import com.app.service.AppMain;
 import com.app.service.calibration.CalibrationType;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.file.parameters.MeasuredQuantity;
+import com.app.service.graph.AutoUpdatingDataset;
 import com.app.service.graph.GraphService;
+import com.app.service.measurement.Measurement;
 import com.app.service.measurement.SingleValue;
 import com.app.service.notification.NotificationService;
 import com.app.service.notification.NotificationType;
@@ -33,6 +35,7 @@ public class Connection extends Thread{
     BufferedWriter writeEnd;
     EnvironmentParameters environmentParameters;
     ArrayList<String> commands;
+    AutoUpdatingDataset list;
 
     public Connection() throws Exception {
         try {
@@ -55,7 +58,7 @@ public class Connection extends Thread{
 
     }
 
-    public boolean connect() throws IOException, InterruptedException {
+    public boolean connect() {
         if (connected){
             if(cmd)
                 write(".");
@@ -72,7 +75,7 @@ public class Connection extends Thread{
         return connected;
     }
 
-    public void toggleCmdMode() throws IOException, InterruptedException {
+    public void toggleCmdMode() throws IOException {
         if (connected) {
             write("cmd");
             StringBuilder result = read();
@@ -123,7 +126,7 @@ public class Connection extends Thread{
 
 
 
-    public void startMeasurement() throws IOException, InterruptedException {
+    public void startMeasurement(Measurement data) throws IOException {
        if (environmentParameters.getOther().isAutoSweep()) {
            write("s WU");
            write("c");
@@ -135,8 +138,7 @@ public class Connection extends Thread{
                        write("n");
                        break;
                    } else {
-                       parseSingleValue(result.toString());
-                       // TODO: tu bude posli result
+                       data.addSingleValue(parseSingleValue(result.toString()));
                        result = new StringBuilder();
                    }
                } else
@@ -147,8 +149,7 @@ public class Connection extends Thread{
            write("s SU");
            write("q 1");
            StringBuilder result = read();
-           parseSingleValue(result.toString());
-          // TODO: Tu bude posli result
+           data.addSingleValue(parseSingleValue(result.toString()));
            // TODO: Kedy je koniec ? manualSweep = false
        }
 
@@ -160,50 +161,49 @@ public class Connection extends Thread{
                 toggleCmdMode();
             if (cmd && !manualSweep) {
                 // TODO:function for display functions
-
                 highSpeed();
                 if (type == MeasuredQuantity.FREQUENCY)
                     frequencySweep();
                 if (type == MeasuredQuantity.VOLTAGE)
                     voltageSweep();
                 if (!environmentParameters.getOther().isAutoSweep()) manualSweep=true;
-                startMeasurement();
+                startMeasurement(list.getMeasurementInstance());
             }
         }
     }
 
-    public void highSpeed() throws IOException, InterruptedException {
+    public void highSpeed() {
         if (environmentParameters.getOther().isHighSpeed())
             write("s H1");
         else
             write("s H0");
     }
 
-    public void frequencySweep() throws IOException, InterruptedException {
+    public void frequencySweep() {
         write("s TF" + environmentParameters.getFrequencySweep().getStart() + "EN");
         write("s PF" + environmentParameters.getFrequencySweep().getStop() + "EN");
         write("s SF" + environmentParameters.getFrequencySweep().getStep() + "EN");
         write("s FR" + environmentParameters.getFrequencySweep().getSpot() + "EN");
     }
 
-    public void voltageSweep()  throws IOException, InterruptedException {
+    public void voltageSweep()  {
         write("s TB" + environmentParameters.getVoltageSweep().getStart() + "EN");
         write("s PB" + environmentParameters.getVoltageSweep().getStop() + "EN");
         write("s SB" + environmentParameters.getVoltageSweep().getStep() + "EN");
         write("s BI" + environmentParameters.getVoltageSweep().getSpot() + "EN");
     }
 //TODO: calibration parameters
-    public void openCalibration() throws IOException, InterruptedException {
+    public void openCalibration() throws IOException {
         write("s A4");
         write("s CS");
         read(); // we don't need results for now
     }
-    public void shortCalibration() throws IOException, InterruptedException {
+    public void shortCalibration() throws IOException {
         write("s A5");
         write("s CS");
         read(); // we don't need results for now
     }
-    public void loadCalibration() throws IOException, InterruptedException {
+    public void loadCalibration() throws IOException {
         write("s A5");
         write("s CS");
         read(); // we don't need results for now
