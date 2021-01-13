@@ -120,4 +120,12 @@ public class GraphService {
             loadingTo = null;
         }
     }
+
+    public boolean isUpperRunning() {
+        return (stateUpper == GraphState.UPPER_RUNNING);
+    }
+
+    public boolean isLowerRunning() {
+        return (stateLower == GraphState.LOWER_RUNNING);
+    }
 }
