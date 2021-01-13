@@ -100,40 +100,43 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
                         timer.cancel();
                         return;
                     }
-                    cursor++;
-                    values[cursor][0] = poc;
-                    values[cursor][1] = (Math.random() * 20 + 80);
-                    poc++;
-                    long now = System.currentTimeMillis();
-
-                    if (now - lastEvent > visualDelay) {
-                        lastEvent = now;
-                        fireDatasetChanged();
-                    }
-
-//                    // Prepared for tommorow
-//                    if (measurement.getData().size() != sizeData) {
-//                        SingleValue singleValue = measurement.getData().getLast();
-//                        double valueY = -1000000000;  // initialized at not possible to obtain value
-//                        if (whichSeries == 0) {
-//                            valueY = singleValue.getDisplayA();
-//                        }
-//                        if (whichSeries == 1) {
-//                            valueY = singleValue.getDisplayB();
-//                        }
-//                        if (valueY == -1000000000) {
-//                            cancel(); // cannot obtain value from singleValue;
-//                        }
-//                        cursor++;
-//                        values[cursor][0] = singleValue.getDisplayX();
-//                        values[cursor][whichSeries + 1] = valueY;
-//                        long now = System.currentTimeMillis();
+                    // This is random data, should be commented if real data run, just for trial
+//                    cursor++;
+//                    values[cursor][0] = poc;
+//                    values[cursor][1] = (Math.random() * 20 + 80);
+//                    poc++;
+//                    long now = System.currentTimeMillis();
 //
-//                        if (now - lastEvent > visualDelay) {
-//                            lastEvent = now;
-//                            fireDatasetChanged();
-//                        }
+//                    if (now - lastEvent > visualDelay) {
+//                        lastEvent = now;
+//                        fireDatasetChanged();
 //                    }
+
+//                    // Real data - Prepared for tommorow
+                    int currentSizeData = measurement.getData().size();
+                    if (currentSizeData != sizeData) {
+                        SingleValue singleValue = measurement.getData().getLast();
+                        double valueY = -1000000000;  // initialized at not possible to obtain value
+                        if (whichSeries == 0) {
+                            valueY = singleValue.getDisplayA();
+                        }
+                        if (whichSeries == 1) {
+                            valueY = singleValue.getDisplayB();
+                        }
+                        if (valueY == -1000000000) {
+                            cancel(); // cannot obtain value from singleValue;
+                        }
+                        cursor++;
+                        values[cursor][0] = singleValue.getDisplayX();
+                        values[cursor][whichSeries + 1] = valueY;
+                        long now = System.currentTimeMillis();
+
+                        if (now - lastEvent > visualDelay) {
+                            lastEvent = now;
+                            fireDatasetChanged();
+                        }
+                        sizeData = currentSizeData;
+                    }
                 });
             }
         }, delay, delay);
