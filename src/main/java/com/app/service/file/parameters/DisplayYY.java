@@ -27,4 +27,5 @@ public class DisplayYY {
     public void setX(MeasuredQuantity x) {
         X = x;
     }
+
 }

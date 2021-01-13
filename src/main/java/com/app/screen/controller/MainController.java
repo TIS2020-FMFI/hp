@@ -16,6 +16,7 @@ import javafx.stage.DirectoryChooser;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
@@ -135,8 +136,9 @@ public class MainController implements Initializable {
         AppMain.graphService.setLowerLoaded();
     }
 
-    public void runMeasurement(MouseEvent event) {
+    public void runMeasurement(MouseEvent event) throws IOException, InterruptedException {
         // TODO: run measurement and graph
+
         //ABORT??
         if (AppMain.graphService.isRunning()) {
             return;
@@ -145,6 +147,12 @@ public class MainController implements Initializable {
         EnvironmentParameters newParameters = AppMain.measurement.getParameters();
 
         //doplnit ABS
+        if (newParameters.getDisplayYY().getX() == MeasuredQuantity.VOLTAGE)
+            AppMain.communicationService.runMeasurement(MeasuredQuantity.VOLTAGE);
+        else
+            AppMain.communicationService.runMeasurement(MeasuredQuantity.FREQUENCY);
+
+
 
         DisplayYY newDisplayYY = newParameters.getDisplayYY();
         RadioButton selectedDisplayA = (RadioButton) displayA.getSelectedToggle();

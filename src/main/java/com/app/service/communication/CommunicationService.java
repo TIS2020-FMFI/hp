@@ -22,9 +22,8 @@ public class CommunicationService {
         }
     }
 
-    public void runMeasurement() throws IOException, InterruptedException {
-        // TODO: frequency or voltage ?
-        connection.measurement(MeasuredQuantity.FREQUENCY);
+    public void runMeasurement(MeasuredQuantity mq) throws IOException, InterruptedException {
+        connection.measurement(mq);
     }
 
     public boolean runCalibration(CalibrationType calibrationType) throws IOException, InterruptedException {

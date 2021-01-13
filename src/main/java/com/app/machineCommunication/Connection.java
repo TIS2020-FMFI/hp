@@ -9,6 +9,7 @@ import com.app.service.file.parameters.MeasuredQuantity;
 import com.app.service.notification.NotificationType;
 
 import java.io.*;
+import java.util.LinkedList;
 
 public class Connection extends Thread{
 
@@ -72,8 +73,8 @@ public class Connection extends Thread{
 
 
     private void write(String text){
-        // TODO: extract to own thread
-        new Thread(() -> {
+
+       new Thread(() -> {
             try {
                 writeEnd.write(text);
                 writeEnd.newLine();
@@ -101,6 +102,7 @@ public class Connection extends Thread{
                        write("n");
                        break;
                    } else {
+
                        // TODO: tu bude posli result
                        result = new StringBuilder();
                    }
