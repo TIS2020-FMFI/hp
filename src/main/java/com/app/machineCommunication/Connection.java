@@ -10,7 +10,7 @@ import com.app.service.notification.NotificationType;
 
 import java.io.*;
 
-public class Connection {
+public class Connection extends Thread{
 
 
     private boolean connected = false;
@@ -71,12 +71,19 @@ public class Connection {
     }
 
 
-    private void write(String text) throws IOException, InterruptedException {
+    private void write(String text) throws IOException, InterruptedException{
         // TODO: extract to own thread
-        writeEnd.write(text);
-        writeEnd.newLine();
-        writeEnd.flush();
-        Thread.sleep(1000);
+        new Thread(() -> {
+            try {
+                writeEnd.write(text);
+                writeEnd.newLine();
+                writeEnd.flush();
+                Thread.sleep(1000);
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
     }
 
 
