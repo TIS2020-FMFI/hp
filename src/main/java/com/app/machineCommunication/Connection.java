@@ -7,6 +7,7 @@ import com.app.service.calibration.CalibrationType;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.file.parameters.MeasuredQuantity;
 import com.app.service.graph.GraphService;
+import com.app.service.measurement.SingleValue;
 import com.app.service.notification.NotificationService;
 import com.app.service.notification.NotificationType;
 import javafx.application.Platform;
@@ -134,7 +135,7 @@ public class Connection extends Thread{
                        write("n");
                        break;
                    } else {
-
+                       parseSingleValue(result.toString());
                        // TODO: tu bude posli result
                        result = new StringBuilder();
                    }
@@ -146,6 +147,7 @@ public class Connection extends Thread{
            write("s SU");
            write("q 1");
            StringBuilder result = read();
+           parseSingleValue(result.toString());
           // TODO: Tu bude posli result
            // TODO: Kedy je koniec ? manualSweep = false
        }
@@ -240,7 +242,18 @@ public class Connection extends Thread{
         return true;
     }
 
-
+    public static SingleValue parseSingleValue(String measurement) {
+        String[] values = measurement.split(",");
+        for (int i = 0; i < values.length; i++) {
+            if (i == 0) values[i] = values[i].substring(1,values[i].length());
+            else values[i] = values[i].substring(3,values[i].length());
+        }
+        ArrayList<Double> values_long = new ArrayList<Double>();
+        values_long.add(Double.parseDouble(values[0])); // frequency / voltage
+        values_long.add(Double.parseDouble(values[1]));
+        values_long.add(Double.parseDouble(values[2]));
+        return new SingleValue(Double.parseDouble(values[0]), Double.parseDouble(values[1]), Double.parseDouble(values[2]));
+    }
 
 }
 
