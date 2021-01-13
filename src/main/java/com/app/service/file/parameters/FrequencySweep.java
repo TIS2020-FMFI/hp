@@ -56,4 +56,28 @@ public class FrequencySweep extends Sweep {
     public double getMinSpot() {
         return minSpot;
     }
+
+    public double getMaxStart() {
+        return maxStart;
+    }
+
+    public double getMaxStop() {
+        return maxStop;
+    }
+
+    public double getMaxStep() {
+        return maxStep;
+    }
+
+    public double getMaxSpot() {
+        return maxSpot;
+    }
+
+    @Override
+    public void check() {
+        setStart(super.start);
+        setStop(super.stop);
+        setSpot(super.spot);
+        setStep(super.step);
+    }
 }

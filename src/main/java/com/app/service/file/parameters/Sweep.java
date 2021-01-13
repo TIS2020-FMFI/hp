@@ -25,4 +25,5 @@ public abstract class Sweep {
         return spot;
     }
 
+    public abstract void check();
 }
