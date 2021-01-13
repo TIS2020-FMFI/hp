@@ -114,6 +114,12 @@ public class MainController implements Initializable {
 
 
     @FXML
+    ToolBar upperToolbar;
+    @FXML
+    ToolBar lowerToolbar;
+
+
+    @FXML
     VBox VBox1;
 
     public void updateComment(MouseEvent event) {
@@ -136,9 +142,12 @@ public class MainController implements Initializable {
         AppMain.graphService.setLowerLoaded();
     }
 
-    public void runMeasurement(MouseEvent event) throws IOException, InterruptedException {
-        // TODO: run measurement and graph
+    public void point() {
+        //TODO: Do this, call machine to step one measruement
+    }
 
+    public void runMeasurement(MouseEvent event) {
+        // TODO: run measurement and graph
         //ABORT??
         if (AppMain.graphService.isRunning()) {
             return;
@@ -147,12 +156,6 @@ public class MainController implements Initializable {
         EnvironmentParameters newParameters = AppMain.measurement.getParameters();
 
         //doplnit ABS
-        if (newParameters.getDisplayYY().getX() == MeasuredQuantity.VOLTAGE)
-            AppMain.communicationService.runMeasurement(MeasuredQuantity.VOLTAGE);
-        else
-            AppMain.communicationService.runMeasurement(MeasuredQuantity.FREQUENCY);
-
-
 
         DisplayYY newDisplayYY = newParameters.getDisplayYY();
         RadioButton selectedDisplayA = (RadioButton) displayA.getSelectedToggle();
@@ -215,6 +218,31 @@ public class MainController implements Initializable {
             String toogleGroupValueLower = selectedRadioButtonLower.getText();
 
             AppMain.graphService.createGraphRun(toogleGroupValueUpper, toogleGroupValueLower);
+
+            if (AppMain.graphService.isRunning() & otherAutoSweep.getValue().equals("OFF")) {
+                if (AppMain.graphService.isUpperRunning()) {
+                    Button button = new Button("Point");
+                    upperToolbar.getItems().add(button);
+                    button.setId("upperPoint");
+                    button.setOnKeyPressed(e -> {
+                        point();
+                    });
+                    //TODO: tu metoda, ktora prida measurement data, ktore v grafe uz on checkuje, je treba aj cez abort znicit ten button potom
+                }
+                if (AppMain.graphService.isLowerRunning()) {
+                    Button button = new Button("Point");
+                    lowerToolbar.getItems().add(button);
+                    button.setId("lowerPoint");
+                    button.setOnKeyPressed(e -> {
+                        point();
+                    });
+                    //TODO: tu metoda, ktora prida measurement data, ktore v grafe uz on checkuje, je treba aj cez abort znicit ten button potom
+                }
+
+            } else {
+                AppMain.notificationService.createNotification("Auto sweep is on", NotificationType.ANNOUNCEMENT);
+            }
+
         } catch (Exception e) {
             AppMain.notificationService.createNotification("Error occured during run", NotificationType.ERROR);
         }
