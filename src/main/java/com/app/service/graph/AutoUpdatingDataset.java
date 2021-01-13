@@ -78,9 +78,8 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
         return new Double(getXValue(series, item));
     }
 
-    public SingleValue getLastMeasurement() {
-        SingleValue singleValue = measurement.getData().getLast();
-        return singleValue;
+    public Measurement getMeasurementInstance() {
+        return measurement;
     }
 
     public void setDelay(long delay, long visualDelay) {
@@ -120,7 +119,7 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
 //                    // Real data - Prepared for tommorow
                     int currentSizeData = measurement.getData().size();
                     if (currentSizeData != sizeData) {
-                        SingleValue singleValue = getLastMeasurement();
+                        SingleValue singleValue =  measurement.getData().getLast();
                         double valueY = -1000000000;  // initialized at not possible to obtain value
                         if (whichSeries == 0) {
                             valueY = singleValue.getDisplayA();
