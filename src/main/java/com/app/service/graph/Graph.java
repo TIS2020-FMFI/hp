@@ -1,5 +1,7 @@
 package com.app.service.graph;
 
+import com.app.service.file.parameters.EnvironmentParameters;
+import com.app.service.measurement.Measurement;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
@@ -19,9 +21,11 @@ public class Graph extends ChartPanel
     private static AutoUpdatingDataset series1;
     private static AutoUpdatingDataset series2 ;
     private static JFreeChart chart;
+    private static Measurement measurement;
 
     public Graph(String yaxisName1, String yaxisName2, String xaxisName,boolean running, File data) throws Exception {
         super(createChart(yaxisName1,yaxisName2,xaxisName,running, data));
+        measurement = new Measurement(new EnvironmentParameters());
     }
 
     public JFreeChart getChart() {
@@ -30,9 +34,8 @@ public class Graph extends ChartPanel
 
     private static JFreeChart createChart(String yaxisName1, String yaxisName2, String xaxisName, boolean running, File data ) throws Exception { // ak no running, tak klasicky chart z dat, ktore poslem cez parameter
 
-        series1 = new AutoUpdatingDataset(yaxisName1,100000, 400, 500);
-        series2 = new AutoUpdatingDataset(yaxisName2,100000,400, 500);
-
+        series1 = new AutoUpdatingDataset(measurement, yaxisName1,100000, 400, 500);
+        series2 = new AutoUpdatingDataset(measurement, yaxisName2,100000,400, 500);
 
         //construct the plot
         XYPlot plot = new XYPlot();

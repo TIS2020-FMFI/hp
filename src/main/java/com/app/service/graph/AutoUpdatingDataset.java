@@ -1,5 +1,6 @@
 package com.app.service.graph;
 
+import com.app.service.measurement.Measurement;
 import javafx.application.Platform;
 import org.jfree.data.DomainOrder;
 import org.jfree.data.xy.AbstractXYDataset;
@@ -24,8 +25,11 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
     private long lastEvent;
     private long period;
     private double yDataMax = Math.PI * 100;
+    private Measurement measurement;
+    private boolean stopMeasurement = false;
 
-    AutoUpdatingDataset(String name, int max, int delay, int visualDelay) {
+    AutoUpdatingDataset(Measurement measurement, String name, int max, int delay, int visualDelay) {
+        this.measurement = measurement;
         this.name = name;
         this.max = max;
         this.delay = delay;
@@ -79,33 +83,35 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
         this.visualDelay = visualDelay;
     }
 
+    public void abortMeasurement() {
+        stopMeasurement = true;
+    }
+
     public void start() {
-
-        timer.schedule(new TimerTask() {
+        // check size() of Measurement.data everySecond
+        new Timer().schedule(new TimerTask() {
             public void run() {
-                Platform.runLater(new Runnable() {
-                    public void run() {
-                        if (cursor >= max - 1) {
-                            timer.cancel();
-                            return;
-                        }
-                        cursor++;
-                        values[cursor][0] = poc;
-                        values[cursor][1] = (Math.random() * 20 + 80);
-                        poc++;
-                        long now = System.currentTimeMillis();
+                Platform.runLater(() -> {
+                    if (stopMeasurement) {
+                        cancel();
+                    }
+                    if (cursor >= max - 1) {
+                        timer.cancel();
+                        return;
+                    }
+                    cursor++;
+                    values[cursor][0] = poc;
+                    values[cursor][1] = (Math.random() * 20 + 80);
+                    poc++;
+                    long now = System.currentTimeMillis();
 
-                        if (now - lastEvent > visualDelay) {
-                            lastEvent = now;
-                            fireDatasetChanged();
-                        }
-
+                    if (now - lastEvent > visualDelay) {
+                        lastEvent = now;
+                        fireDatasetChanged();
                     }
                 });
-
             }
         }, delay, delay);
-
         // .cancel() to terminate both timerTask and timer
     }
 }

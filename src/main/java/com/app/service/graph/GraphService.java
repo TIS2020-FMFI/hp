@@ -9,26 +9,19 @@ import org.jfree.chart.fx.ChartViewer;
 
 import java.io.File;
 
-enum STATE {
-    UPPER_RUNNING,
-    LOWER_RUNNING,
-    NOT_RUNNING,
-    UPPER_LOADED,
-    LOWER_LOADED
-}
 
 public class GraphService {
     private AnchorPane anchorPaneUpper;
     private AnchorPane anchorPaneLower;
-    private STATE stateUpper = STATE.NOT_RUNNING;
-    private STATE stateLower = STATE.NOT_RUNNING;
+    private GraphState stateUpper = GraphState.NOT_RUNNING;
+    private GraphState stateLower = GraphState.NOT_RUNNING;
     private boolean running = false;
     private String loadingTo = null;
     private ChartViewer chartViewerUpper = new ChartViewer();
     private ChartViewer chartViewerLower = new ChartViewer();
-
-
-
+    Graph rtcpUpper = null;
+    Graph rtcpLower = null;
+    
 
     public GraphService(Parent rootPrimary) {
 
@@ -54,13 +47,13 @@ public class GraphService {
 
     public void setUpperRunning() {
         if (!isRunning())  {
-            stateUpper = STATE.UPPER_RUNNING;
+            stateUpper = GraphState.UPPER_RUNNING;
         }
     }
 
     public void setLowerRunning() {
         if (!isRunning()) {
-            stateLower = STATE.LOWER_RUNNING;
+            stateLower = GraphState.LOWER_RUNNING;
         }
     }
 
@@ -69,34 +62,34 @@ public class GraphService {
     }
 
     public void setUpperLoaded() {
-        if (stateUpper != STATE.UPPER_RUNNING)  {
-            stateUpper = STATE.UPPER_LOADED;
+        if (stateUpper != GraphState.UPPER_RUNNING)  {
+            stateUpper = GraphState.UPPER_LOADED;
             loadingTo = "upper";
         }
     }
 
     public void setLowerLoaded() {
-        if (stateLower != STATE.LOWER_RUNNING)  {
-            stateLower = STATE.LOWER_LOADED;
+        if (stateLower != GraphState.LOWER_RUNNING)  {
+            stateLower = GraphState.LOWER_LOADED;
             loadingTo = "lower";
         }
     }
 
     public boolean isLoaded(){
-        return (stateUpper == STATE.UPPER_LOADED || stateLower == STATE.LOWER_LOADED);
+        return (stateUpper == GraphState.UPPER_LOADED || stateLower == GraphState.LOWER_LOADED);
     }
 
     public void createGraphRun(String upperXAxisName, String lowerXAxisName) throws Exception {
         if (!running) {
             running = true;
 
-            if (stateUpper == STATE.UPPER_RUNNING) {
-                Graph rtcp = new Graph("Resistance", "Capacity", upperXAxisName, running, null);
-                chartViewerUpper.setChart(rtcp.getChart());
+            if (stateUpper == GraphState.UPPER_RUNNING) {
+                rtcpUpper = new Graph("Resistance", "Capacity", upperXAxisName, running, null);
+                chartViewerUpper.setChart(rtcpUpper.getChart());
             }
-            if (stateLower == STATE.LOWER_RUNNING) {
-                Graph rtcp = new Graph("Resistance", "Capacity", lowerXAxisName, running, null);
-                chartViewerLower.setChart(rtcp.getChart());
+            if (stateLower == GraphState.LOWER_RUNNING) {
+                rtcpLower = new Graph("Resistance", "Capacity", lowerXAxisName, running, null);
+                chartViewerLower.setChart(rtcpLower.getChart());
             }
         }
     }
@@ -118,10 +111,10 @@ public class GraphService {
                 return;
             }
 
-            if (stateUpper == STATE.UPPER_LOADED && loadingTo.equals("upper")) {
+            if (stateUpper == GraphState.UPPER_LOADED && loadingTo.equals("upper")) {
                 chartViewerUpper.setChart(chart);
             }
-            if (stateLower == STATE.LOWER_LOADED && loadingTo.equals("lower")) {
+            if (stateLower == GraphState.LOWER_LOADED && loadingTo.equals("lower")) {
                 chartViewerLower.setChart(chart);
             }
             loadingTo = null;
