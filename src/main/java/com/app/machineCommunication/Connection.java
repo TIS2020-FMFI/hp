@@ -6,10 +6,18 @@ import com.app.service.AppMain;
 import com.app.service.calibration.CalibrationType;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.file.parameters.MeasuredQuantity;
+import com.app.service.graph.GraphService;
+import com.app.service.notification.NotificationService;
 import com.app.service.notification.NotificationType;
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
 
 import java.io.*;
-import java.util.LinkedList;
+import java.lang.reflect.Array;
+import java.util.*;
 
 public class Connection extends Thread{
 
@@ -18,12 +26,14 @@ public class Connection extends Thread{
     boolean cmd = false;
     boolean calibrationMode = false;
     boolean manualSweep = false;
+    private NotificationService notificationService;
     Process p;
     BufferedReader readEnd;
     BufferedWriter writeEnd;
     EnvironmentParameters environmentParameters;
+    ArrayList<String> commands;
 
-    public Connection(){
+    public Connection() throws Exception {
         try {
             p = Runtime.getRuntime().exec("D:/hpctrl-main/src/Debug/hpctrl.exe -i"); // TODO: set to default within project
             readEnd = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -32,6 +42,16 @@ public class Connection extends Thread{
             AppMain.notificationService.createNotification("hpctrl script missing, read help for more info", NotificationType.ERROR);
         }
         environmentParameters = new EnvironmentParameters();
+        commands = new ArrayList<String>();
+        Parent root = FXMLLoader.load(getClass().getResource("/views/mainScreen.fxml"));
+
+
+        VBox notificationContainer = (VBox) root.lookup("#notificationContainer");
+        if (notificationContainer == null) {
+            throw new Exception("Notification container not found in this window!");
+        }
+        notificationService = new NotificationService(notificationContainer);
+
     }
 
     public boolean connect() throws IOException, InterruptedException {
@@ -40,8 +60,10 @@ public class Connection extends Thread{
                 write(".");
             write("exit");
         }
-        else
+        else{
             write("connect");
+            writer();
+        }
         //TODO: what happens if it doesn't connect?
         cmd = false;
         connected = !connected;
@@ -57,9 +79,9 @@ public class Connection extends Thread{
             if (!result.toString().equals("!not ready, try again later (cmd)")) {
                 cmd = !cmd;
 
-            } else {/*notifikacia o nepripojeni do cmd modu ? pristroj si nepamätá nastavenia a treba na nom stlačiť hocijaké tlačidlo*/}
+            } else {notificationService.createNotification("CMD connection failed, try to press any button on machine", NotificationType.ERROR);}
 
-        } else {/*TODO: connect machine notification*/}
+        } else { notificationService.createNotification("Connection error", NotificationType.ERROR);}
     }
 
     public StringBuilder read() throws IOException {
@@ -73,20 +95,30 @@ public class Connection extends Thread{
 
 
     private void write(String text){
-
-       new Thread(() -> {
-            try {
-                writeEnd.write(text);
-                writeEnd.newLine();
-                writeEnd.flush();
-                Thread.sleep(1000);
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-
+        commands.add(text);
     }
 
+    public void writer() {
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (!commands.isEmpty()){
+                    try {
+                        writeEnd.write(commands.get(0));
+                        commands.remove(0);
+                        writeEnd.newLine();
+                        writeEnd.flush();
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        }, 0, 1000);
+
+        }
 
 
 
@@ -203,7 +235,7 @@ public class Connection extends Thread{
                     }
                 }
             }
-        } else {/*TODO: connect machine notification*/}
+        } else {notificationService.createNotification("Connection error", NotificationType.ERROR);}
 
         return true;
     }

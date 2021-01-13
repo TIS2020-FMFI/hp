@@ -111,7 +111,7 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
                     }
                 });
             }
-        }, delay, delay);
+        }, 0, 1000);
         // .cancel() to terminate both timerTask and timer
     }
 }

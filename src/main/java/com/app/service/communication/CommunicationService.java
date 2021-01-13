@@ -10,7 +10,7 @@ import java.io.IOException;
 public class CommunicationService {
     Connection connection;
 
-    public CommunicationService() throws IOException {
+    public CommunicationService() throws Exception {
         connection = new Connection();
     }
 
