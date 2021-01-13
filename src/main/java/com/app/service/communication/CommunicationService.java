@@ -3,9 +3,8 @@ package com.app.service.communication;
 
 import com.app.machineCommunication.Connection;
 import com.app.service.calibration.CalibrationType;
-import com.app.service.measurement.MeasurementTypes;
+import com.app.service.file.parameters.MeasuredQuantity;
 
-import javax.naming.directory.NoSuchAttributeException;
 import java.io.IOException;
 
 public class CommunicationService {
@@ -25,7 +24,7 @@ public class CommunicationService {
 
     public void runMeasurement() throws IOException, InterruptedException {
         // TODO: frequency or voltage ?
-        connection.measurement(MeasurementTypes.Frequency);
+        connection.measurement(MeasuredQuantity.FREQUENCY);
     }
 
     public boolean runCalibration(CalibrationType calibrationType) throws IOException, InterruptedException {

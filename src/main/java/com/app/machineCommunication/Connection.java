@@ -5,10 +5,9 @@ package com.app.machineCommunication;
 import com.app.service.AppMain;
 import com.app.service.calibration.CalibrationType;
 import com.app.service.file.parameters.EnvironmentParameters;
-import com.app.service.measurement.MeasurementTypes;
+import com.app.service.file.parameters.MeasuredQuantity;
 import com.app.service.notification.NotificationType;
 
-import javax.naming.directory.NoSuchAttributeException;
 import java.io.*;
 
 public class Connection {
@@ -95,7 +94,7 @@ public class Connection {
 
     }
 
-    public void measurement(MeasurementTypes type) throws IOException, InterruptedException {
+    public void measurement(MeasuredQuantity type) throws IOException, InterruptedException {
         if (connected) {
             if (!cmd)
                 toggleCmdMode();
@@ -103,9 +102,9 @@ public class Connection {
             if (cmd) {
                 // TODO:function for display functions
                 highSpeed();
-                if (type == MeasurementTypes.Frequency)
+                if (type == MeasuredQuantity.FREQUENCY)
                     frequencySweep();
-                if (type == MeasurementTypes.Voltage)
+                if (type == MeasuredQuantity.VOLTAGE)
                     voltageSweep();
 
                 startMeasurement();
