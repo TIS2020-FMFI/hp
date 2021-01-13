@@ -197,7 +197,7 @@ public class MainController implements Initializable {
 
         AppMain.measurement.setParameters(newParameters);
         AppMain.measurement.setState(MeasurementState.STARTED);
-        AppMain.fileService.setEnvironmentParameters(AppMain.measurement.getParameters());
+        AppMain.fileService.setMeasurement(AppMain.measurement);
 
         try {
             RadioButton selectedRadioButtonUpper = (RadioButton) toogleUpperXAxis.getSelectedToggle();
@@ -248,12 +248,11 @@ public class MainController implements Initializable {
     public void quitApp(MouseEvent event) {
         // TODO: if not all data saved -> notification and abort quit
         // save global props into config
-        if(AppMain.measurement.getState() == MeasurementState.SAVED ||
-                AppMain.measurement.getState() == MeasurementState.ABORTED ||
-                AppMain.measurement.getState() == MeasurementState.WAITING) {
+        if(AppMain.measurement.getState().equals(MeasurementState.SAVED) ||
+                AppMain.measurement.getState().equals(MeasurementState.ABORTED) ||
+                AppMain.measurement.getState().equals(MeasurementState.WAITING)) {
             try {
-                AppMain.fileService.setEnvironmentParameters(AppMain.measurement.getParameters());
-                AppMain.fileService.saveConfig();
+                if(!AppMain.measurement.getState().equals(MeasurementState.WAITING)) AppMain.fileService.saveConfig();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
