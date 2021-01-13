@@ -17,7 +17,7 @@ import java.util.Scanner;
 
 public class Graph extends ChartPanel
 {
-    private long value=0;
+    private static boolean setAxisData= false;
     private static AutoUpdatingDataset series1;
     private static AutoUpdatingDataset series2 ;
     private static JFreeChart chart;
@@ -34,8 +34,8 @@ public class Graph extends ChartPanel
 
     private static JFreeChart createChart(String yaxisName1, String yaxisName2, String xaxisName, boolean running, File data ) throws Exception { // ak no running, tak klasicky chart z dat, ktore poslem cez parameter
 
-        series1 = new AutoUpdatingDataset(measurement, yaxisName1,100000, 400, 500);
-        series2 = new AutoUpdatingDataset(measurement, yaxisName2,100000,400, 500);
+        series1 = new AutoUpdatingDataset(measurement, yaxisName1,100000, 400, 500,0);
+        series2 = new AutoUpdatingDataset(measurement, yaxisName2,100000,400, 500,1);
 
         //construct the plot
         XYPlot plot = new XYPlot();
@@ -118,6 +118,19 @@ public class Graph extends ChartPanel
 
     public static ArrayList<Double> inputChange(String measurement) {
         String[] values = measurement.split(",");
+
+        if (setAxisData == false) {
+
+            String Xaxis = values[0].substring(0,1);
+            String Yaxis1 = values[1].substring(0,3);
+            String Yaxis2 = values[2].substring(0,3);
+            setAxisData = true;
+            chart.getXYPlot().getDomainAxis().setLabel(Xaxis);
+            chart.getXYPlot().getRangeAxis(0).setLabel(Yaxis1);
+            chart.getXYPlot().getRangeAxis(1).setLabel(Yaxis2);
+
+        }
+
         for (int i = 0; i < values.length; i++) {
             if (i == 0) values[i] = values[i].substring(1,values[i].length());
             else values[i] = values[i].substring(3,values[i].length());

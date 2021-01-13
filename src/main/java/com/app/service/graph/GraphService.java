@@ -79,16 +79,16 @@ public class GraphService {
         return (stateUpper == GraphState.UPPER_LOADED || stateLower == GraphState.LOWER_LOADED);
     }
 
-    public void createGraphRun(String upperXAxisName, String lowerXAxisName) throws Exception {
+    public void createGraphRun(String upperXAxisName, String lowerXAxisName, String Yaxis1, String Yaxis2) throws Exception {
         if (!running) {
             running = true;
 
             if (stateUpper == GraphState.UPPER_RUNNING) {
-                rtcpUpper = new Graph("Resistance", "Capacity", upperXAxisName, running, null);
+                rtcpUpper = new Graph(Yaxis1, Yaxis2, upperXAxisName, running, null);
                 chartViewerUpper.setChart(rtcpUpper.getChart());
             }
             if (stateLower == GraphState.LOWER_RUNNING) {
-                rtcpLower = new Graph("Resistance", "Capacity", lowerXAxisName, running, null);
+                rtcpLower = new Graph(Yaxis1, Yaxis2, lowerXAxisName, running, null);
                 chartViewerLower.setChart(rtcpLower.getChart());
             }
         }
@@ -104,7 +104,7 @@ public class GraphService {
             File selectedFile = fileChooser.showOpenDialog(new Stage());
 
 
-            Graph rtcp = new Graph("Resistance", "Capacity", "Frequency", false, selectedFile);
+            Graph rtcp = new Graph(" ", " ", " ", false, selectedFile);
             JFreeChart chart = rtcp.getChart();
             if (chart == null) {
                 loadingTo = null;
@@ -128,4 +128,7 @@ public class GraphService {
     public boolean isLowerRunning() {
         return (stateLower == GraphState.LOWER_RUNNING);
     }
+
+
+
 }
