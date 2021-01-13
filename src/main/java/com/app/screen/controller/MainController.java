@@ -137,7 +137,7 @@ public class MainController implements Initializable {
 
     public void runMeasurement(MouseEvent event) {
         // TODO: run measurement and graph
-
+        //ABORT??
         if (AppMain.graphService.isRunning()) {
             return;
         }
@@ -154,14 +154,14 @@ public class MainController implements Initializable {
 
         if(event.getSource() == upperGraphRun){
             RadioButton selectedDisplayX = (RadioButton) toogleUpperXAxis.getSelectedToggle();
-            if(selectedDisplayX.getText() == "Frequency"){
+            if(selectedDisplayX.getText().equals("Frequency")){
                 newDisplayYY.setX(MeasuredQuantity.FREQUENCY);
             }else{
                 newDisplayYY.setX(MeasuredQuantity.VOLTAGE);
             }
         }else{
             RadioButton selectedDisplayX = (RadioButton) toogleLowerXAxis.getSelectedToggle();
-            if(selectedDisplayX.getText() == "Frequency"){
+            if(selectedDisplayX.getText().equals("Frequency")){
                 newDisplayYY.setX(MeasuredQuantity.FREQUENCY);
             }else{
                 newDisplayYY.setX(MeasuredQuantity.VOLTAGE);
@@ -192,6 +192,8 @@ public class MainController implements Initializable {
         if (otherSweepType.getValue().equals("LINEAR")) {
             newOther.setSweepType(SweepType.LINEAR);
         } else newOther.setSweepType(SweepType.LOG);
+
+        newParameters.checkAll();
 
         AppMain.measurement.setParameters(newParameters);
         AppMain.measurement.setState(MeasurementState.STARTED);
