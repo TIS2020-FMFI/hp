@@ -152,8 +152,21 @@ public class MainController implements Initializable {
         RadioButton selectedDisplayB = (RadioButton) displayB.getSelectedToggle();
         if(selectedDisplayB != null) newDisplayYY.setA(selectedDisplayB.getText());
 
-        //doplnit displayX
-
+        if(event.getSource() == upperGraphRun){
+            RadioButton selectedDisplayX = (RadioButton) toogleUpperXAxis.getSelectedToggle();
+            if(selectedDisplayX.getText() == "Frequency"){
+                newDisplayYY.setX(MeasuredQuantity.FREQUENCY);
+            }else{
+                newDisplayYY.setX(MeasuredQuantity.VOLTAGE);
+            }
+        }else{
+            RadioButton selectedDisplayX = (RadioButton) toogleLowerXAxis.getSelectedToggle();
+            if(selectedDisplayX.getText() == "Frequency"){
+                newDisplayYY.setX(MeasuredQuantity.FREQUENCY);
+            }else{
+                newDisplayYY.setX(MeasuredQuantity.VOLTAGE);
+            }
+        }
 
         newParameters.setDisplayYY(newDisplayYY);
 
@@ -293,12 +306,13 @@ public class MainController implements Initializable {
             e.printStackTrace();
         }
 
-        // -----
-
         LocalDate localDate = LocalDate.now();
-        AppMain.fileService.setAutoSavingDir("/" + localDate.getYear() + "/" + localDate.getMonth() + "/" + localDate.getDayOfMonth());
+        String dir = System.getProperty("user.dir");
+        String path = dir + "\\" + localDate.getYear() + "\\" + localDate.getMonth() + "\\" + localDate.getDayOfMonth() + "\\";
+        AppMain.fileService.setAutoSavingDir(path);
 
-        //doplnit text do autoSaveMenu
+        savingDirMenu.setText(path);
+
     }
 
     public void runConnection(MouseEvent mouseEvent) throws Exception {
@@ -313,7 +327,7 @@ public class MainController implements Initializable {
         File dir = directoryChooser.showDialog(AppMain.ps);
         if (dir != null) {
             LocalDate localDate = LocalDate.now();
-            String newAutoSavingDir = dir.getAbsolutePath() + "/" + localDate.getYear() + "/" + localDate.getMonth() + "/" + localDate.getDayOfMonth();
+            String newAutoSavingDir = dir.getAbsolutePath() + "\\" + localDate.getYear() + "\\" + localDate.getMonth() + "\\" + localDate.getDayOfMonth() + "\\";
             AppMain.fileService.setAutoSavingDir(newAutoSavingDir);
             savingDirMenu.setText(newAutoSavingDir);
 //            System.out.println(dir.getAbsolutePath());
