@@ -71,7 +71,7 @@ public class Connection extends Thread{
     }
 
 
-    private void write(String text) throws IOException, InterruptedException{
+    private void write(String text){
         // TODO: extract to own thread
         new Thread(() -> {
             try {
