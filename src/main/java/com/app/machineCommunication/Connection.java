@@ -16,6 +16,7 @@ public class Connection {
     private boolean connected = false;
     boolean cmd = false;
     boolean calibrationMode = false;
+    boolean manualSweep = false;
     Process p;
     BufferedReader readEnd;
     BufferedWriter writeEnd;
@@ -33,7 +34,6 @@ public class Connection {
     }
 
     public boolean connect() throws IOException, InterruptedException {
-        //ak sa nepripoji -> exception pipe is being closed
         if (connected){
             if(cmd)
                 write(".");
@@ -80,17 +80,34 @@ public class Connection {
     }
 
 
+
+
     public void startMeasurement() throws IOException, InterruptedException {
-        write("s WU");
-        StringBuilder result = new StringBuilder();
-        while (readEnd.ready()) {
-            char letter = (char) readEnd.read();
-            if (letter == '\n') {
-                // TODO: tu bude posli result
-                result = new StringBuilder();
-            } else
-                result.append(letter);
-        }
+       if (environmentParameters.getOther().isAutoSweep()) {
+           write("s WU");
+           write("c");
+           StringBuilder result = new StringBuilder();
+           while (readEnd.ready()) {
+               char letter = (char) readEnd.read();
+               if (letter == '\n') {
+                   if (result.charAt(0) == 'N') {
+                       write("n");
+                       break;
+                   } else {
+                       // TODO: tu bude posli result
+                       result = new StringBuilder();
+                   }
+               } else
+                   result.append(letter);
+           }
+       }
+       else {
+           write("s SU");
+           write("q 1");
+           StringBuilder result = read();
+          // TODO: Tu bude posli result
+           // TODO: Kedy je koniec ? manualSweep = false
+       }
 
     }
 
@@ -98,15 +115,15 @@ public class Connection {
         if (connected) {
             if (!cmd)
                 toggleCmdMode();
-
-            if (cmd) {
+            if (cmd && !manualSweep) {
                 // TODO:function for display functions
+
                 highSpeed();
                 if (type == MeasuredQuantity.FREQUENCY)
                     frequencySweep();
                 if (type == MeasuredQuantity.VOLTAGE)
                     voltageSweep();
-
+                if (!environmentParameters.getOther().isAutoSweep()) manualSweep=true;
                 startMeasurement();
             }
         }
@@ -132,7 +149,7 @@ public class Connection {
         write("s SB" + environmentParameters.getVoltageSweep().getStep() + "EN");
         write("s BI" + environmentParameters.getVoltageSweep().getSpot() + "EN");
     }
-
+//TODO: calibration parameters
     public void openCalibration() throws IOException, InterruptedException {
         write("s A4");
         write("s CS");
@@ -154,8 +171,14 @@ public class Connection {
         if (connected) {
             if (!cmd) toggleCmdMode();
             if (cmd){
-                if (!calibrationMode){write("s C1"); calibrationMode = !calibrationMode; highSpeed();}
+                if (!calibrationMode){
+                    write("s C1");
+                    write("s EL" + environmentParameters.getOther().getElectricalLength() + "EN");
+                    highSpeed();
+                    calibrationMode = !calibrationMode;
+                    }
                 if (calibrationMode){
+
                     switch (calibrationType) {
                         case OPEN:
                             openCalibration();
