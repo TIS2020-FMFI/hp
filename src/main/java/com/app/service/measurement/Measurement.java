@@ -54,6 +54,10 @@ public class Measurement {
 
     public void updateComment(String newValue) {
         comment = new StringBuilder(newValue);
-        AppMain.notificationService.createNotification("Comment saved", NotificationType.ANNOUNCEMENT);
+//na testoch pada        AppMain.notificationService.createNotification("Comment saved", NotificationType.ANNOUNCEMENT);
+    }
+
+    public StringBuilder getComment() {
+        return comment;
     }
 }
