@@ -54,4 +54,28 @@ public class VoltageSweep extends Sweep {
     public double getMinSpot() {
         return minSpot;
     }
+
+    public static double getMaxStart() {
+        return maxStart;
+    }
+
+    public static double getMaxStop() {
+        return maxStop;
+    }
+
+    public static double getMaxStep() {
+        return maxStep;
+    }
+
+    public static double getMaxSpot() {
+        return maxSpot;
+    }
+
+    @Override
+    public void check() {
+        setStart(super.start);
+        setStop(super.stop);
+        setSpot(super.spot);
+        setStep(super.step);
+    }
 }

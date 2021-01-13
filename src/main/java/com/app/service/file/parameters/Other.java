@@ -62,4 +62,10 @@ public class Other {
     public double getMinCapacitance() {
         return minCapacitance;
     }
+
+    public void check(){
+        setElectricalLength(electricalLength);
+        setCapacitance(capacitance);
+        if(sweepType == null) setSweepType(SweepType.LOG);
+    }
 }

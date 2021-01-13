@@ -18,7 +18,7 @@ public class JsonParser {
 
     public static boolean writeConfig(String fileName, EnvironmentParameters environmentParameters) throws FileNotFoundException {
 
-        environmentParameters = checkParameters(environmentParameters);
+        environmentParameters.checkAll();
 
         // creating JSONObject
         JSONObject jo = new JSONObject();
@@ -110,6 +110,7 @@ public class JsonParser {
             other.setHighSpeed((Boolean) o.get("highSpeed"));
             other.setAutoSweep((Boolean) o.get("autoSweep"));
             environmentParameters.setOther(other);
+            environmentParameters.checkAll();
             return environmentParameters;
         }catch (Exception e){
             EnvironmentParameters parameters = new EnvironmentParameters();
@@ -145,42 +146,11 @@ public class JsonParser {
             voltageSweep.setStep(voltageSweep.getMinStep());
             voltageSweep.setSpot(voltageSweep.getMinSpot());
             parameters.setVoltageSweep(voltageSweep);
+            parameters.checkAll();
+
             return parameters;
         }
-        // TODO: add reading saving dir + auto save
 
-        // getting map
-//        Map address = ((Map)jo.get("address"));
-        // iterating map
-//        Iterator<Map.Entry> itr1 = address.entrySet().iterator();
-//        while (itr1.hasNext()) {
-//            Map.Entry pair = itr1.next();
-//            System.out.println(pair.getKey() + " : " + pair.getValue());
-//        }
-
-        // getting array
-//        JSONArray ja = (JSONArray) jo.get("phoneNumbers");
-        // iterating array
-//        Iterator itr2 = ja.iterator();
-//
-//        while (itr2.hasNext()) {
-//            itr1 = ((Map) itr2.next()).entrySet().iterator();
-//            while (itr1.hasNext()) {
-//                Map.Entry pair = itr1.next();
-//                System.out.println(pair.getKey() + " : " + pair.getValue());
-//            }
-//        }
     }
 
-    public static EnvironmentParameters checkParameters(EnvironmentParameters environmentParameters){
-        if(environmentParameters.getDisplayYY().getA() == null) environmentParameters.getDisplayYY().setA("L");
-
-        if(environmentParameters.getDisplayYY().getB() == null) environmentParameters.getDisplayYY().setB("R");
-
-        if(environmentParameters.getDisplayYY().getX() == null) environmentParameters.getDisplayYY().setX(MeasuredQuantity.FREQUENCY);
-
-        if(environmentParameters.getOther().getSweepType() == null) environmentParameters.getOther().setSweepType(SweepType.LOG);
-
-        return environmentParameters;
-    }
 }
