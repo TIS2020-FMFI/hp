@@ -217,25 +217,34 @@ public class MainController implements Initializable {
             RadioButton selectedRadioButtonLower = (RadioButton) toogleLowerXAxis.getSelectedToggle();
             String toogleGroupValueLower = selectedRadioButtonLower.getText();
 
-            AppMain.graphService.createGraphRun(toogleGroupValueUpper, toogleGroupValueLower);
+            try {
+                String YaxisQuantity1 = selectedDisplayA.getText();
+                String YaxisQuantity2 = selectedDisplayB.getText();
+
+                AppMain.graphService.createGraphRun(toogleGroupValueUpper, toogleGroupValueLower, YaxisQuantity1, YaxisQuantity2); //TODO: may drop because these values may not be set ?!
+            } catch (Exception e) {
+                AppMain.notificationService.createNotification("Running parameters not set", NotificationType.ERROR);
+                throw e;
+            }
 
             if (AppMain.graphService.isRunning() & otherAutoSweep.getValue().equals("OFF")) {
                 if (AppMain.graphService.isUpperRunning()) {
                     Button button = new Button("Point");
-                    upperToolbar.getItems().add(button);
                     button.setId("upperPoint");
                     button.setOnKeyPressed(e -> {
                         point();
                     });
+                    upperToolbar.getItems().add(button);
                     //TODO: tu metoda, ktora prida measurement data, ktore v grafe uz on checkuje, je treba aj cez abort znicit ten button potom
                 }
                 if (AppMain.graphService.isLowerRunning()) {
                     Button button = new Button("Point");
-                    lowerToolbar.getItems().add(button);
                     button.setId("lowerPoint");
                     button.setOnKeyPressed(e -> {
                         point();
                     });
+                    lowerToolbar.getItems().add(button);
+
                     //TODO: tu metoda, ktora prida measurement data, ktore v grafe uz on checkuje, je treba aj cez abort znicit ten button potom
                 }
 
