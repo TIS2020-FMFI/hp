@@ -80,8 +80,7 @@ public class Graph extends ChartPanel
         chart.setBorderVisible(false);
         chart.removeLegend();
 
-        // adds data to graph - real data / loaded
-        if (running) { // real data through timer checking on Measurement.data
+        if (running) {
             series1.start();
             series2.start();
             return chart ;
@@ -124,12 +123,11 @@ public class Graph extends ChartPanel
             series1.addValue(all_values.get(i).get(0),all_values.get(i).get(1));
             series2.addValue(all_values.get(i).get(0),all_values.get(i).get(2));
         }
-
     }
 
     public static int findAxisEnd(String s) {
         int poc = 0;
-        Character Char = s.charAt(poc);
+        Character Char = s.charAt(poc);;
         while (Char != '-' & !Character.isDigit(Char) & Char != ' ') {
             Char = s.charAt(poc);
             poc++;
@@ -156,7 +154,7 @@ public class Graph extends ChartPanel
         }
 
         for (int i = 0; i < values.length; i++) {
-            values[i] = values[i].substring(findAxisEnd(values[i]));
+            values[i] = values[i].substring(findAxisEnd(values[i]),values[i].length());
         }
 
         ArrayList<Double> values_long = new ArrayList<Double>();

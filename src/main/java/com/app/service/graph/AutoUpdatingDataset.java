@@ -137,6 +137,7 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
                         values[cursor][1] = valueY;
 
                         long now = System.currentTimeMillis();
+
                         if (now - lastEvent > visualDelay) {
                             lastEvent = now;
                             fireDatasetChanged();
