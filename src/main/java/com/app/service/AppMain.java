@@ -34,6 +34,7 @@ public class AppMain extends Application {
         ps = primaryStage;
 
         fileService = new FileService("src/main/resources/persistent/config.json");
+        environmentParameters = AppMain.fileService.loadConfig();
 
         Parent root = FXMLLoader.load(getClass().getResource("/views/mainScreen.fxml"));
         primaryStage.setTitle("Super machine");

@@ -315,12 +315,7 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // TODO: read config here
-        EnvironmentParameters parameters;
         try {
-            parameters = AppMain.fileService.loadConfig();
-//            AppMain.measurement = new Measurement(parameters);
-            AppMain.environmentParameters = parameters;
             frequencyStart.setText("" + AppMain.environmentParameters.getFrequencySweep().getStart());
             frequencyStop.setText("" + AppMain.environmentParameters.getFrequencySweep().getStop());
             frequencySpot.setText("" + AppMain.environmentParameters.getFrequencySweep().getSpot());
