@@ -1,7 +1,6 @@
 package com.app.service.file.parameters;
 
 public class EnvironmentParameters {
-
     private DisplayYY displayYY;
     private FrequencySweep frequencySweep;
     private VoltageSweep voltageSweep;

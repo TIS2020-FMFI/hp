@@ -1,8 +1,6 @@
 package com.app.service.measurement;
 
-import com.app.service.AppMain;
 import com.app.service.file.parameters.EnvironmentParameters;
-import com.app.service.notification.NotificationType;
 
 import java.util.LinkedList;
 

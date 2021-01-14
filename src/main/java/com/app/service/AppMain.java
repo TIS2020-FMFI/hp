@@ -33,11 +33,14 @@ public class AppMain extends Application {
 
         fileService = new FileService("src/main/resources/persistent/config.json");
         environmentParameters = fileService.loadConfig();
+        graphService = new GraphService();
 
         Parent root = FXMLLoader.load(getClass().getResource("/views/mainScreen.fxml"));
         primaryStage.setTitle("Super machine");
         primaryStage.setScene(new Scene(root));
         primaryStage.setResizable(false);
+
+        graphService.setRoot(root);
 
         VBox notificationContainer = (VBox) root.lookup("#notificationContainer");
         if (notificationContainer == null) {
@@ -48,7 +51,6 @@ public class AppMain extends Application {
 
         communicationService = new CommunicationService();
 
-        graphService = new GraphService(root);
         calibrationService = new CalibrationService("/views/calibrationScreen.fxml");
         helpService = new HelpService("/views/helpScreen.fxml");
 

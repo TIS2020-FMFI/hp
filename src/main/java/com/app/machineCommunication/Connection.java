@@ -47,7 +47,7 @@ public class Connection extends Thread{
             AppMain.notificationService.createNotification("hpctrl script missing, read help for more info", NotificationType.ERROR);
         }
         environmentParameters = AppMain.environmentParameters;
-        commands = new ArrayList<String>();
+        commands = new ArrayList<>();
         Parent root = FXMLLoader.load(getClass().getResource("/views/mainScreen.fxml"));
 
 
@@ -59,19 +59,27 @@ public class Connection extends Thread{
 
     }
 
+    public boolean isConnected() {
+        return connected;
+    }
+
+
+
     public boolean connect() {
-        if (connected){
-            if(cmd)
-                write(".");
-            write("exit");
-        }
-        else{
-            write("connect 19");
-            writer();
-        }
-        //TODO: what happens if it doesn't connect?
-        cmd = false;
-        connected = !connected;
+        connected = true; // TODO: remove this line and uncomment all lines below when testing with machine
+
+//        if (connected){
+//            if(cmd)
+//                write(".");
+//            write("exit");
+//        }
+//        else{
+//            write("connect 19");
+//            writer();
+//        }
+//        //TODO: what happens if it doesn't connect?
+//        cmd = false;
+//        connected = !connected;
 
         return connected;
     }
@@ -111,11 +119,12 @@ public class Connection extends Thread{
                 if (!commands.isEmpty()){
                     try {
                         System.out.println("sending '" + commands.get(0) + "'");
-                        writeEnd.write(commands.get(0));
-                        commands.remove(0);
-                        writeEnd.newLine();
-                        writeEnd.flush();
-
+                        if (commands.size() > 0) {
+                            writeEnd.write(commands.get(0));
+                            commands.remove(0);
+                            writeEnd.newLine();
+                            writeEnd.flush();
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -172,7 +181,7 @@ public class Connection extends Thread{
 
     }
 
-    public void measurement(MeasuredQuantity type) throws IOException, InterruptedException {
+    public void measurement(MeasuredQuantity type) throws IOException {
         if (connected) {
             if (!cmd)
                 toggleCmdMode();
@@ -186,7 +195,7 @@ public class Connection extends Thread{
                 if (type == MeasuredQuantity.VOLTAGE)
                     voltageSweep();
                 if (!environmentParameters.getOther().isAutoSweep()) manualSweep=true;
-                startMeasurement(AppMain.graphService.rtcpUpper.getMeasurementInstance());
+                startMeasurement(AppMain.graphService.getRunningGraph().getMeasurement());
             }
         }
     }
