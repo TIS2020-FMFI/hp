@@ -142,11 +142,16 @@ public class MainController implements Initializable {
         AppMain.graphService.setLowerLoaded();
     }
 
-    public void point() {
+    public void point() throws IOException, InterruptedException {
+        EnvironmentParameters newParameters = AppMain.environmentParameters;
+        if (newParameters.getDisplayYY().getX() == MeasuredQuantity.VOLTAGE)
+            AppMain.communicationService.runMeasurement(MeasuredQuantity.VOLTAGE);
+        else
+            AppMain.communicationService.runMeasurement(MeasuredQuantity.FREQUENCY);
         //TODO: Do this, call machine to step one measruement
     }
 
-    public void runMeasurement(MouseEvent event) {
+    public void runMeasurement(MouseEvent event) throws IOException, InterruptedException {
         // TODO: run measurement and graph
         //ABORT??
         if (AppMain.graphService.isRunning()) {
@@ -232,7 +237,13 @@ public class MainController implements Initializable {
                     Button button = new Button("Point");
                     button.setId("upperPoint");
                     button.setOnKeyPressed(e -> {
-                        point();
+                        try {
+                            point();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
                     });
                     upperToolbar.getItems().add(button);
                     //TODO: tu metoda, ktora prida measurement data, ktore v grafe uz on checkuje, je treba aj cez abort znicit ten button potom
@@ -241,7 +252,13 @@ public class MainController implements Initializable {
                     Button button = new Button("Point");
                     button.setId("lowerPoint");
                     button.setOnKeyPressed(e -> {
-                        point();
+                        try {
+                            point();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
                     });
                     lowerToolbar.getItems().add(button);
 
@@ -255,6 +272,11 @@ public class MainController implements Initializable {
         } catch (Exception e) {
             AppMain.notificationService.createNotification("Error occured during run", NotificationType.ERROR);
         }
+        if (newParameters.getDisplayYY().getX() == MeasuredQuantity.VOLTAGE)
+            AppMain.communicationService.runMeasurement(MeasuredQuantity.VOLTAGE);
+        else
+            AppMain.communicationService.runMeasurement(MeasuredQuantity.FREQUENCY);
+
     }
 
     public void loadGraph(MouseEvent event) {
