@@ -3,6 +3,7 @@ package com.app.service;
 import com.app.service.calibration.CalibrationService;
 import com.app.service.communication.CommunicationService;
 import com.app.service.file.FileService;
+import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.graph.GraphService;
 import com.app.service.help.HelpService;
 import com.app.service.measurement.Measurement;
@@ -24,7 +25,8 @@ public class AppMain extends Application {
     public static FileService fileService;
     public static GraphService graphService;
     public static CommunicationService communicationService;
-    public static Measurement measurement;
+    public static EnvironmentParameters environmentParameters;
+    public static String comment;
 
     @Override
     public void start(Stage primaryStage) throws Exception {

@@ -68,8 +68,8 @@ public class CalibrationController implements Initializable {
         if (AppMain.calibrationService.isCalibrated()) {
             runCalibrationBtn.setText("Close");
         }
-        calibrationInput.setText(AppMain.measurement.getParameters().getOther().getCapacitance() + "");
-        electricalLengthInput.setText(AppMain.measurement.getParameters().getOther().getElectricalLength() + "");
+        calibrationInput.setText(AppMain.environmentParameters.getOther().getCapacitance() + "");
+        electricalLengthInput.setText(AppMain.environmentParameters.getOther().getElectricalLength() + "");
         if (AppMain.calibrationService.isCalibrationInProcess()) {
             calibrationInput.setDisable(true);
             electricalLengthInput.setDisable(true);
