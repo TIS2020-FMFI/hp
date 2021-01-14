@@ -70,6 +70,6 @@ public class FileService {
     }
 
     public Measurement loadData(String path){
-        return measurement;
+        return JsonParser.readMeasurement(autoSavingDir);
     }
 }
