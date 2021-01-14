@@ -6,7 +6,6 @@ import com.app.service.file.FileService;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.graph.GraphService;
 import com.app.service.help.HelpService;
-import com.app.service.measurement.Measurement;
 import com.app.service.notification.NotificationService;
 import com.app.service.notification.NotificationType;
 import javafx.application.Application;

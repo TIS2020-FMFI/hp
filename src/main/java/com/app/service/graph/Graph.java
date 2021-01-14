@@ -1,7 +1,6 @@
 package com.app.service.graph;
 
 import com.app.service.AppMain;
-import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.measurement.Measurement;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -23,16 +22,16 @@ public class Graph extends ChartPanel {
     private static JFreeChart chart;
     private static Measurement measurement;
 
-    public Graph(String yaxisName1, String yaxisName2, String xaxisName, boolean running, File data) throws Exception {
-        super(createChart(yaxisName1, yaxisName2, xaxisName, running, data));
-        measurement = new Measurement(AppMain.environmentParameters);
+    public Graph(String yaxisName1, String yaxisName2, String xaxisName,boolean running, File data) throws Exception {
+        super(createChart(yaxisName1,yaxisName2,xaxisName,running, data));
     }
 
     public JFreeChart getChart() {
         return chart;
     }
 
-    private static JFreeChart createChart(String yaxisName1, String yaxisName2, String xaxisName, boolean running, File data) throws Exception { // ak no running, tak klasicky chart z dat, ktore poslem cez parameter
+    private static JFreeChart createChart(String yaxisName1, String yaxisName2, String xaxisName, boolean running, File data ) throws Exception { // ak no running, tak klasicky chart z dat, ktore poslem cez parameter
+        measurement = new Measurement(AppMain.environmentParameters);
 
         series1 = new AutoUpdatingDataset(measurement, yaxisName1, 100000, 400, 500, 0);
         series2 = new AutoUpdatingDataset(measurement, yaxisName2, 100000, 400, 500, 1);
