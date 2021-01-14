@@ -19,8 +19,8 @@ public class GraphService {
     private String loadingTo = null;
     private ChartViewer chartViewerUpper = new ChartViewer();
     private ChartViewer chartViewerLower = new ChartViewer();
-    Graph rtcpUpper = null;
-    Graph rtcpLower = null;
+    public Graph rtcpUpper = null;
+    public Graph rtcpLower = null;
 
 
     public GraphService(Parent rootPrimary) {

@@ -25,19 +25,20 @@ public class Graph extends ChartPanel
     public static boolean running;
 
     public Graph(String yaxisName1, String yaxisName2, String xaxisName,boolean isRunning, File data) throws Exception {
-        super(createChart(yaxisName1,yaxisName2,xaxisName, data));
-        if (isRunning) {
-            measurement = new Measurement(new EnvironmentParameters());
-        }
-        running = isRunning;
-        setAxisData = false;
+        super(createChart(yaxisName1,yaxisName2,xaxisName, isRunning, data));
     }
 
     public JFreeChart getChart() {
         return chart;
     }
 
-    private static JFreeChart createChart(String yaxisName1, String yaxisName2, String xaxisName, File data ) throws Exception { // ak no running, tak klasicky chart z dat, ktore poslem cez parameter
+    private static JFreeChart createChart(String yaxisName1, String yaxisName2, String xaxisName, boolean isRunning, File data ) throws Exception { // ak no running, tak klasicky chart z dat, ktore poslem cez parameter
+
+        running = isRunning;
+        if (running) {
+            measurement = new Measurement(new EnvironmentParameters());
+        }
+        setAxisData = false;
 
         series1 = new AutoUpdatingDataset(measurement, yaxisName1,100000, 400, 500,0);
         series2 = new AutoUpdatingDataset(measurement, yaxisName2,100000,400, 500,1);

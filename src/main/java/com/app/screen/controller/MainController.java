@@ -212,8 +212,16 @@ public class MainController implements Initializable {
 
         try {
 
-            String YaxisQuantity1 = selectedDisplayA.getText();
-            String YaxisQuantity2 = selectedDisplayB.getText();
+            String YaxisQuantity1;
+            String YaxisQuantity2;
+            try {
+                YaxisQuantity1 = selectedDisplayA.getText();
+                YaxisQuantity2 = selectedDisplayB.getText();
+            } catch (Exception e) {
+                AppMain.notificationService.createNotification("Running parameters not set", NotificationType.ERROR);
+                throw e;
+            }
+
 
             try {
                 if (AppMain.graphService.isUpperRunning()) {
@@ -229,7 +237,6 @@ public class MainController implements Initializable {
                 }
 
             } catch (Exception e) {
-                AppMain.notificationService.createNotification("Running parameters not set", NotificationType.ERROR);
                 throw e;
             }
 
