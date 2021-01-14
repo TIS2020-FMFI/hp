@@ -164,6 +164,8 @@ public class Graph extends ChartPanel
 
         return values_long;
     }
-
+    public Measurement getMeasurementInstance() {
+        return measurement;
+    }
 
 }

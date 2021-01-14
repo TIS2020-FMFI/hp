@@ -78,9 +78,7 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
         return new Double(getXValue(series, item));
     }
 
-    public Measurement getMeasurementInstance() {
-        return measurement;
-    }
+
 
     public void setDelay(long delay, long visualDelay) {
         this.delay = delay;

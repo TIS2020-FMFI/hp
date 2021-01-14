@@ -210,7 +210,7 @@ public class MainController implements Initializable {
         } else newOther.setSweepType(SweepType.LOG);
 
         newParameters.checkAll();
-
+        AppMain.environmentParameters = newParameters;
 //        AppMain.measurement.setParameters(newParameters);
 //        AppMain.measurement.setState(MeasurementState.STARTED);
 //        AppMain.fileService.setMeasurement(AppMain.measurement);
