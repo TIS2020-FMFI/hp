@@ -95,10 +95,12 @@ public class GraphService {
             running = true;
             if (stateUpper == GraphState.UPPER_RUNNING) {
                 anchorPaneUpper.getChildren().clear();
+                anchorPaneUpper.getChildren().add(chartViewerUpper);
                 rtcpUpper = new Graph(Yaxis1, Yaxis2, XAxisName, running, null);
                 chartViewerUpper.setChart(rtcpUpper.getChart());
             } else if (stateLower == GraphState.LOWER_RUNNING) {
                 anchorPaneLower.getChildren().clear();
+                anchorPaneLower.getChildren().add(chartViewerLower);
                 rtcpLower = new Graph(Yaxis1, Yaxis2, XAxisName, running, null);
                 chartViewerLower.setChart(rtcpLower.getChart());
             }
@@ -134,11 +136,11 @@ public class GraphService {
 
     public void abortMeasurement() {
         if (isLowerRunning()) {
-            rtcpLower.getMeasurement().setState(MeasurementState.ABORTED);
+            rtcpLower.getMeasurementInstance().setState(MeasurementState.ABORTED);
             stateLower = GraphState.NOT_RUNNING;
             rtcpLower = null;
         } else {
-            rtcpUpper.getMeasurement().setState(MeasurementState.ABORTED);
+            rtcpUpper.getMeasurementInstance().setState(MeasurementState.ABORTED);
             stateUpper = GraphState.NOT_RUNNING;
             rtcpUpper = null;
         }
