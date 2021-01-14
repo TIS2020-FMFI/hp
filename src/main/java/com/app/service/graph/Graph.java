@@ -1,6 +1,5 @@
 package com.app.service.graph;
 
-import com.app.service.AppMain;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.measurement.Measurement;
 import org.jfree.chart.ChartPanel;
@@ -18,22 +17,28 @@ import java.util.Scanner;
 
 public class Graph extends ChartPanel
 {
-    private static boolean setAxisData= false;
+    private static boolean setAxisData;
     private static AutoUpdatingDataset series1;
     private static AutoUpdatingDataset series2 ;
     private static JFreeChart chart;
     private static Measurement measurement;
+    public static boolean running;
 
-    public Graph(String yaxisName1, String yaxisName2, String xaxisName,boolean running, File data) throws Exception {
-        super(createChart(yaxisName1,yaxisName2,xaxisName,running, data));
+    public Graph(String yaxisName1, String yaxisName2, String xaxisName,boolean isRunning, File data) throws Exception {
+        super(createChart(yaxisName1,yaxisName2,xaxisName, isRunning, data));
     }
 
     public JFreeChart getChart() {
         return chart;
     }
 
-    private static JFreeChart createChart(String yaxisName1, String yaxisName2, String xaxisName, boolean running, File data ) throws Exception { // ak no running, tak klasicky chart z dat, ktore poslem cez parameter
-        measurement = new Measurement(AppMain.environmentParameters);
+    private static JFreeChart createChart(String yaxisName1, String yaxisName2, String xaxisName, boolean isRunning, File data ) throws Exception { // ak no running, tak klasicky chart z dat, ktore poslem cez parameter
+
+        running = isRunning;
+        if (running) {
+            measurement = new Measurement(new EnvironmentParameters());
+        }
+        setAxisData = false;
 
         series1 = new AutoUpdatingDataset(measurement, yaxisName1,100000, 400, 500,0);
         series2 = new AutoUpdatingDataset(measurement, yaxisName2,100000,400, 500,1);
@@ -80,9 +85,9 @@ public class Graph extends ChartPanel
             series2.start();
             return chart ;
         }
-        if (!running) {
+        if (!running) { // loaded
             if (data != null) {
-                parseAndAddData(data);
+                addData(parseData(data));
                 return chart ;
             }
         }
@@ -90,7 +95,7 @@ public class Graph extends ChartPanel
         return null;
     }
 
-    public static void  parseAndAddData(File data) throws Exception {
+    public static ArrayList<ArrayList<Double>> parseData(File data) throws Exception {
         Scanner scanner = new Scanner(data);
         ArrayList<ArrayList<Double>> all_values = new ArrayList<ArrayList<Double>>();
         while(scanner.hasNext()){
@@ -101,7 +106,10 @@ public class Graph extends ChartPanel
                 throw new Exception("Could not parse data");
             }
         }
+        return all_values;
+    }
 
+    public static void addData(ArrayList<ArrayList<Double>> all_values) {
         final int COLUMN = 0;
         Comparator<ArrayList<Double>> myComparator = new Comparator<ArrayList<Double>>() {
             @Override
@@ -116,6 +124,7 @@ public class Graph extends ChartPanel
             series2.addValue(all_values.get(i).get(0),all_values.get(i).get(2));
         }
     }
+
     public static int findAxisEnd(String s) {
         int poc = 0;
         Character Char = s.charAt(poc);;
@@ -125,19 +134,23 @@ public class Graph extends ChartPanel
         }
         return poc-1;
     }
+
+    public static void setAxesName(String[] values) {
+        String Xaxis = values[0].substring(0,findAxisEnd(values[0]));
+        String Yaxis1 = values[1].substring(0,findAxisEnd(values[1]));
+        String Yaxis2 = values[2].substring(0,findAxisEnd(values[2]));
+        chart.getXYPlot().getDomainAxis().setLabel(Xaxis);
+        chart.getXYPlot().getRangeAxis(0).setLabel(Yaxis1);
+        chart.getXYPlot().getRangeAxis(1).setLabel(Yaxis2);
+    }
+
     public static ArrayList<Double> inputChange(String measurement) {
 
 
         String[] values = measurement.split(",");
         if (setAxisData == false) {
-            String Xaxis = values[0].substring(0,findAxisEnd(values[0]));
-            String Yaxis1 = values[1].substring(0,findAxisEnd(values[1]));
-            String Yaxis2 = values[2].substring(0,findAxisEnd(values[2]));
+            setAxesName(values);
             setAxisData = true;
-            chart.getXYPlot().getDomainAxis().setLabel(Xaxis);
-            chart.getXYPlot().getRangeAxis(0).setLabel(Yaxis1);
-            chart.getXYPlot().getRangeAxis(1).setLabel(Yaxis2);
-
         }
 
         for (int i = 0; i < values.length; i++) {

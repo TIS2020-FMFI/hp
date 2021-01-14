@@ -116,7 +116,7 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
 //                        fireDatasetChanged();
 //                    }
 
-//                    // Real data - Prepared for tommorow
+                    // Real data - Prepared for tommorow
                     int currentSizeData = measurement.getData().size();
                     if (currentSizeData != sizeData) {
                         SingleValue singleValue =  measurement.getData().getLast();
@@ -130,9 +130,12 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
                         if (valueY == -1000000000) {
                             cancel(); // cannot obtain value from singleValue;
                         }
+
+                        //add value
                         cursor++;
                         values[cursor][0] = singleValue.getDisplayX();
-                        values[cursor][whichSeries + 1] = valueY;
+                        values[cursor][1] = valueY;
+
                         long now = System.currentTimeMillis();
 
                         if (now - lastEvent > visualDelay) {
@@ -143,8 +146,7 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
                     }
                 });
             }
-        }, 0, 1000);
-        // .cancel() to terminate both timerTask and timer
+        }, delay, 1000);
     }
 }
 

@@ -216,19 +216,32 @@ public class MainController implements Initializable {
 //        AppMain.fileService.setMeasurement(AppMain.measurement);
 
         try {
-            RadioButton selectedRadioButtonUpper = (RadioButton) toogleUpperXAxis.getSelectedToggle();
-            String toogleGroupValueUpper = selectedRadioButtonUpper.getText();
 
-            RadioButton selectedRadioButtonLower = (RadioButton) toogleLowerXAxis.getSelectedToggle();
-            String toogleGroupValueLower = selectedRadioButtonLower.getText();
-
+            String YaxisQuantity1;
+            String YaxisQuantity2;
             try {
-                String YaxisQuantity1 = selectedDisplayA.getText();
-                String YaxisQuantity2 = selectedDisplayB.getText();
-
-                AppMain.graphService.createGraphRun(toogleGroupValueUpper, toogleGroupValueLower, YaxisQuantity1, YaxisQuantity2); //TODO: may drop because these values may not be set ?!
+                YaxisQuantity1 = selectedDisplayA.getText();
+                YaxisQuantity2 = selectedDisplayB.getText();
             } catch (Exception e) {
                 AppMain.notificationService.createNotification("Running parameters not set", NotificationType.ERROR);
+                throw e;
+            }
+
+
+            try {
+                if (AppMain.graphService.isUpperRunning()) {
+                    RadioButton selectedRadioButtonUpper = (RadioButton) toogleUpperXAxis.getSelectedToggle();
+                    String toogleXaxis = selectedRadioButtonUpper.getText();
+                    AppMain.graphService.createGraphRun(toogleXaxis, YaxisQuantity1, YaxisQuantity2);
+
+                }
+                if (AppMain.graphService.isLowerRunning()) {
+                    RadioButton selectedRadioButtonLower = (RadioButton) toogleLowerXAxis.getSelectedToggle();
+                    String toogleXaxis = selectedRadioButtonLower.getText();
+                    AppMain.graphService.createGraphRun(toogleXaxis, YaxisQuantity1, YaxisQuantity2); //TODO: may drop because these values may not be set ?!
+                }
+
+            } catch (Exception e) {
                 throw e;
             }
 
