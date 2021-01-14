@@ -125,7 +125,7 @@ public class MainController implements Initializable {
     VBox VBox1;
 
     public void updateComment(MouseEvent event) {
-//        AppMain.measurement.updateComment(commentInput.getText());
+        AppMain.environmentParameters.setComment(commentInput.getText());
     }
 
     public void setUpperPaneRun(MouseEvent event) {

@@ -6,7 +6,7 @@ public class EnvironmentParameters {
     private FrequencySweep frequencySweep;
     private VoltageSweep voltageSweep;
     private Other other;
-    private StringBuilder comment;
+    private String comment;
 
 
     public FrequencySweep getFrequencySweep() {
@@ -66,4 +66,8 @@ public class EnvironmentParameters {
         other.check();
 
     }
+
+    public String getComment() { return comment; }
+
+    public void setComment(String comment) { this.comment = comment; }
 }
