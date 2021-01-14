@@ -3,11 +3,8 @@ package com.app.service.file;
 import com.app.persistent.JsonParser;
 import com.app.service.AppMain;
 import com.app.service.file.parameters.EnvironmentParameters;
-import com.app.service.measurement.Measurement;
-import com.app.service.measurement.MeasurementState;
 
 import java.io.FileNotFoundException;
-import java.time.LocalTime;
 
 public class FileService {
     private final String configPath;
@@ -62,6 +59,6 @@ public class FileService {
 //    }
 //
 //    public Measurement loadData(String path){
-//        return measurement;
+//        return JsonParser.readMeasurement(autoSavingDir);
 //    }
 }
