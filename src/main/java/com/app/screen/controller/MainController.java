@@ -319,6 +319,10 @@ public class MainController implements Initializable {
                 AppMain.notificationService.createNotification("Auto sweep is on", NotificationType.ANNOUNCEMENT);
             }
 
+            if (newParameters.getDisplayYY().getX() == MeasuredQuantity.VOLTAGE)
+                AppMain.communicationService.runMeasurement(MeasuredQuantity.VOLTAGE);
+            else
+                AppMain.communicationService.runMeasurement(MeasuredQuantity.FREQUENCY);
         } catch (Exception e) {
             if (triggerButton == upperGraphRun) {
                 AppMain.graphService.setStateUpper(GraphState.NOT_RUNNING);
@@ -329,10 +333,6 @@ public class MainController implements Initializable {
             triggerButton.setText("Run");
             AppMain.notificationService.createNotification("Error occurred -> " + e.getMessage(), NotificationType.ERROR);
         }
-        if (newParameters.getDisplayYY().getX() == MeasuredQuantity.VOLTAGE)
-            AppMain.communicationService.runMeasurement(MeasuredQuantity.VOLTAGE);
-        else
-            AppMain.communicationService.runMeasurement(MeasuredQuantity.FREQUENCY);
 
     }
 

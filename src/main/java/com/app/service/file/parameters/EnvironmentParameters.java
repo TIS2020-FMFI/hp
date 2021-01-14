@@ -6,6 +6,7 @@ public class EnvironmentParameters {
     private FrequencySweep frequencySweep;
     private VoltageSweep voltageSweep;
     private Other other;
+    private StringBuilder comment;
 
 
     public FrequencySweep getFrequencySweep() {
