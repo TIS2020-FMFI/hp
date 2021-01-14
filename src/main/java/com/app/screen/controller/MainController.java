@@ -123,7 +123,7 @@ public class MainController implements Initializable {
     VBox VBox1;
 
     public void updateComment(MouseEvent event) {
-        AppMain.measurement.updateComment(commentInput.getText());
+        AppMain.comment = commentInput.getText();
     }
 
     public void setUpperPaneRun(MouseEvent event) {
@@ -153,7 +153,7 @@ public class MainController implements Initializable {
             return;
         }
 
-        EnvironmentParameters newParameters = AppMain.measurement.getParameters();
+        EnvironmentParameters newParameters = AppMain.environmentParameters;
 
         //doplnit ABS
 
@@ -206,9 +206,9 @@ public class MainController implements Initializable {
 
         newParameters.checkAll();
 
-        AppMain.measurement.setParameters(newParameters);
-        AppMain.measurement.setState(MeasurementState.STARTED);
-        AppMain.fileService.setMeasurement(AppMain.measurement);
+//        AppMain.measurement.setParameters(newParameters);
+//        AppMain.measurement.setState(MeasurementState.STARTED);
+//        AppMain.fileService.setMeasurement(AppMain.measurement);
 
         try {
             RadioButton selectedRadioButtonUpper = (RadioButton) toogleUpperXAxis.getSelectedToggle();
@@ -293,7 +293,8 @@ public class MainController implements Initializable {
     public void quitApp(MouseEvent event) {
         // TODO: if not all data saved -> notification and abort quit
         // save global props into config
-        if(AppMain.measurement.getState().equals(MeasurementState.SAVED) ||
+        //treba prerobit kvoli zmenam v measurement
+/*        if(AppMain.measurement.getState().equals(MeasurementState.SAVED) ||
                 AppMain.measurement.getState().equals(MeasurementState.ABORTED) ||
                 AppMain.measurement.getState().equals(MeasurementState.WAITING)) {
             try {
@@ -305,7 +306,7 @@ public class MainController implements Initializable {
             System.exit(0);
         } else if (!AppMain.measurement.getState().equals(MeasurementState.SAVED)){
             AppMain.notificationService.createNotification("There is some data that has not been saved yet, do you want to quit anyway?", NotificationType.WARNING);
-        }
+        }*/
     }
 
     public void showHelpWindow(MouseEvent event) {
@@ -318,33 +319,34 @@ public class MainController implements Initializable {
         EnvironmentParameters parameters;
         try {
             parameters = AppMain.fileService.loadConfig();
-            AppMain.measurement = new Measurement(parameters);
-            frequencyStart.setText("" + AppMain.measurement.getParameters().getFrequencySweep().getStart());
-            frequencyStop.setText("" + AppMain.measurement.getParameters().getFrequencySweep().getStop());
-            frequencySpot.setText("" + AppMain.measurement.getParameters().getFrequencySweep().getSpot());
-            frequencyStep.setText("" + AppMain.measurement.getParameters().getFrequencySweep().getStep());
+//            AppMain.measurement = new Measurement(parameters);
+            AppMain.environmentParameters = parameters;
+            frequencyStart.setText("" + AppMain.environmentParameters.getFrequencySweep().getStart());
+            frequencyStop.setText("" + AppMain.environmentParameters.getFrequencySweep().getStop());
+            frequencySpot.setText("" + AppMain.environmentParameters.getFrequencySweep().getSpot());
+            frequencyStep.setText("" + AppMain.environmentParameters.getFrequencySweep().getStep());
 
-            voltageStart.setText("" + AppMain.measurement.getParameters().getVoltageSweep().getStart());
-            voltageStop.setText("" + AppMain.measurement.getParameters().getVoltageSweep().getStop());
-            voltageSpot.setText("" + AppMain.measurement.getParameters().getVoltageSweep().getSpot());
-            voltageStep.setText("" + AppMain.measurement.getParameters().getVoltageSweep().getStep());
+            voltageStart.setText("" + AppMain.environmentParameters.getVoltageSweep().getStart());
+            voltageStop.setText("" + AppMain.environmentParameters.getVoltageSweep().getStop());
+            voltageSpot.setText("" + AppMain.environmentParameters.getVoltageSweep().getSpot());
+            voltageStep.setText("" + AppMain.environmentParameters.getVoltageSweep().getStep());
 
-            otherCapacitance.setText("" + AppMain.measurement.getParameters().getOther().getCapacitance());
-            otherElectricalLength.setText("" + AppMain.measurement.getParameters().getOther().getElectricalLength());
+            otherCapacitance.setText("" + AppMain.environmentParameters.getOther().getCapacitance());
+            otherElectricalLength.setText("" + AppMain.environmentParameters.getOther().getElectricalLength());
 
             // ----- initialize all dropbox -> coz its not possible to do so in sceneBuilder yet
             otherSweepType.getItems().addAll("LINEAR", "LOG");
-            if(AppMain.measurement.getParameters().getOther().getSweepType() == SweepType.LINEAR){
+            if(AppMain.environmentParameters.getOther().getSweepType() == SweepType.LINEAR){
                 otherSweepType.getSelectionModel().select(0);
             }else otherSweepType.getSelectionModel().select(1);
 
             otherHighSpeed.getItems().addAll("ON", "OFF" );
-            if(AppMain.measurement.getParameters().getOther().isHighSpeed()){
+            if(AppMain.environmentParameters.getOther().isHighSpeed()){
                 otherHighSpeed.getSelectionModel().select(0);
             }else otherHighSpeed.getSelectionModel().select(1);
 
             otherAutoSweep.getItems().addAll("ON", "OFF");
-            if(AppMain.measurement.getParameters().getOther().isAutoSweep()){
+            if(AppMain.environmentParameters.getOther().isAutoSweep()){
                 otherAutoSweep.getSelectionModel().select(0);
             }else otherAutoSweep.getSelectionModel().select(1);
 
