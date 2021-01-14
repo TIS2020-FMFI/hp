@@ -1,14 +1,7 @@
 {
     "displayA": null,
-    "other": {
-        "autoSweep": false,
-        "electricalLength": null,
-        "capacitance": null,
-        "sweepType": null,
-        "highSpeed": false
-    },
-    "displayX": null,
     "displayB": null,
+    "displayX": null,
     "frequency": {
         "start": 0.0,
         "step": 0.0,
@@ -20,5 +13,12 @@
         "step": 0.0,
         "stop": 0.0,
         "spot": 0.0
+    },
+    "other": {
+        "autoSweep": false,
+        "electricalLength": null,
+        "capacitance": null,
+        "sweepType": null,
+        "highSpeed": false
     }
 }

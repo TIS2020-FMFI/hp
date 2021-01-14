@@ -2,6 +2,8 @@ package com.app.screen.controller;
 
 import com.app.service.AppMain;
 import com.app.service.file.parameters.*;
+import com.app.service.graph.GraphService;
+import com.app.service.graph.GraphState;
 import com.app.service.measurement.Measurement;
 import com.app.service.measurement.MeasurementState;
 import com.app.service.notification.NotificationType;
@@ -16,7 +18,6 @@ import javafx.stage.DirectoryChooser;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
@@ -123,15 +124,15 @@ public class MainController implements Initializable {
     VBox VBox1;
 
     public void updateComment(MouseEvent event) {
-        AppMain.measurement.updateComment(commentInput.getText());
+//        AppMain.measurement.updateComment(commentInput.getText());
     }
 
     public void setUpperPaneRun(MouseEvent event) {
-        AppMain.graphService.setUpperRunning();
+//        AppMain.graphService.setUpperRunning();
     }
 
     public void setLowerPaneRun(MouseEvent event) {
-        AppMain.graphService.setLowerRunning();
+//        AppMain.graphService.setLowerRunning();
     }
 
     public void setUpperPaneLoad(MouseEvent event) {
@@ -142,41 +143,71 @@ public class MainController implements Initializable {
         AppMain.graphService.setLowerLoaded();
     }
 
+    private void toggleDisabling() {
+        GraphService gs = AppMain.graphService;
+        upperGraphRun.setDisable(gs.isLowerRunning());
+        upperGraphSave.setDisable(gs.isUpperRunning());
+        upperGraphLoad.setDisable(gs.isUpperRunning());
+        upperGraphExport.setDisable(gs.isUpperRunning());
+
+        lowerGraphRun.setDisable(gs.isUpperRunning());
+        lowerGraphSave.setDisable(gs.isLowerRunning());
+        lowerGraphLoad.setDisable(gs.isLowerRunning());
+        lowerGraphExport.setDisable(gs.isLowerRunning());
+    }
+
     public void point() {
         //TODO: Do this, call machine to step one measruement
     }
 
-    public void runMeasurement(MouseEvent event) {
-        // TODO: run measurement and graph
-        //ABORT??
-        if (AppMain.graphService.isRunning()) {
-            return;
+    public void runUpperMeasurement(MouseEvent event) {
+        GraphService gs = AppMain.graphService;
+        if (gs.isUpperRunning()) {
+            gs.abortMeasurement();
+            toggleDisabling();
+            upperGraphRun.setText("Run");
+        } else if (!gs.isLowerRunning()) {
+            gs.setUpperRunning();
+            runMeasurement(upperGraphRun);
         }
+    }
 
-        EnvironmentParameters newParameters = AppMain.measurement.getParameters();
+    public void runLowerMeasurement(MouseEvent event) {
+        GraphService gs = AppMain.graphService;
+        if (gs.isLowerRunning()) {
+            gs.abortMeasurement();
+            toggleDisabling();
+            lowerGraphRun.setText("Run");
+        } else if (!gs.isUpperRunning()) {
+            gs.setLowerRunning();
+            runMeasurement(lowerGraphRun);
+        }
+    }
 
-        //doplnit ABS
+    private void runMeasurement(Button triggerButton) {
+        toggleDisabling();
+        triggerButton.setText("Abort");
+
+        EnvironmentParameters newParameters = AppMain.environmentParameters;
+
+        // TODO: doplnit ABS
 
         DisplayYY newDisplayYY = newParameters.getDisplayYY();
         RadioButton selectedDisplayA = (RadioButton) displayA.getSelectedToggle();
-        if(selectedDisplayA != null) newDisplayYY.setA(selectedDisplayA.getText());
+        if (selectedDisplayA != null) newDisplayYY.setA(selectedDisplayA.getText());
         RadioButton selectedDisplayB = (RadioButton) displayB.getSelectedToggle();
-        if(selectedDisplayB != null) newDisplayYY.setA(selectedDisplayB.getText());
+        if (selectedDisplayB != null) newDisplayYY.setA(selectedDisplayB.getText());
 
-        if(event.getSource() == upperGraphRun){
-            RadioButton selectedDisplayX = (RadioButton) toogleUpperXAxis.getSelectedToggle();
-            if(selectedDisplayX.getText().equals("Frequency")){
-                newDisplayYY.setX(MeasuredQuantity.FREQUENCY);
-            }else{
-                newDisplayYY.setX(MeasuredQuantity.VOLTAGE);
-            }
-        }else{
-            RadioButton selectedDisplayX = (RadioButton) toogleLowerXAxis.getSelectedToggle();
-            if(selectedDisplayX.getText().equals("Frequency")){
-                newDisplayYY.setX(MeasuredQuantity.FREQUENCY);
-            }else{
-                newDisplayYY.setX(MeasuredQuantity.VOLTAGE);
-            }
+        RadioButton selectedDisplayX;
+        if (triggerButton == upperGraphRun) {
+            selectedDisplayX = (RadioButton) toogleUpperXAxis.getSelectedToggle();
+        } else {
+            selectedDisplayX = (RadioButton) toogleLowerXAxis.getSelectedToggle();
+        }
+        if (selectedDisplayX.getText().equals("Frequency")) {
+            newDisplayYY.setX(MeasuredQuantity.FREQUENCY);
+        } else {
+            newDisplayYY.setX(MeasuredQuantity.VOLTAGE);
         }
 
         newParameters.setDisplayYY(newDisplayYY);
@@ -206,28 +237,26 @@ public class MainController implements Initializable {
 
         newParameters.checkAll();
 
-        AppMain.measurement.setParameters(newParameters);
-        AppMain.measurement.setState(MeasurementState.STARTED);
-        AppMain.fileService.setMeasurement(AppMain.measurement);
+        AppMain.environmentParameters = newParameters;
+//        AppMain.measurement.setState(MeasurementState.STARTED);
+//        AppMain.fileService.setMeasurement(AppMain.measurement);
 
         try {
             RadioButton selectedRadioButtonUpper = (RadioButton) toogleUpperXAxis.getSelectedToggle();
-            String toogleGroupValueUpper = selectedRadioButtonUpper.getText();
+            String toggleGroupValueUpper = selectedRadioButtonUpper.getText();
 
             RadioButton selectedRadioButtonLower = (RadioButton) toogleLowerXAxis.getSelectedToggle();
-            String toogleGroupValueLower = selectedRadioButtonLower.getText();
+            String toggleGroupValueLower = selectedRadioButtonLower.getText();
 
-            try {
-                String YaxisQuantity1 = selectedDisplayA.getText();
-                String YaxisQuantity2 = selectedDisplayB.getText();
-
-                AppMain.graphService.createGraphRun(toogleGroupValueUpper, toogleGroupValueLower, YaxisQuantity1, YaxisQuantity2); //TODO: may drop because these values may not be set ?!
-            } catch (Exception e) {
-                AppMain.notificationService.createNotification("Running parameters not set", NotificationType.ERROR);
-                throw e;
+            if (selectedDisplayA == null || selectedDisplayB == null) {
+                AppMain.notificationService.createNotification("Display A or B not set", NotificationType.ERROR);
+                throw new NullPointerException("Values not properly set!");
             }
+            String YaxisQuantity1 = selectedDisplayA.getText();
+            String YaxisQuantity2 = selectedDisplayB.getText();
+            AppMain.graphService.createGraphRun(toggleGroupValueUpper, toggleGroupValueLower, YaxisQuantity1, YaxisQuantity2);
 
-            if (AppMain.graphService.isRunning() & otherAutoSweep.getValue().equals("OFF")) {
+            if (AppMain.graphService.isRunning() && otherAutoSweep.getValue().equals("OFF")) {
                 if (AppMain.graphService.isUpperRunning()) {
                     Button button = new Button("Point");
                     button.setId("upperPoint");
@@ -253,7 +282,14 @@ public class MainController implements Initializable {
             }
 
         } catch (Exception e) {
-            AppMain.notificationService.createNotification("Error occured during run", NotificationType.ERROR);
+            if (triggerButton == upperGraphRun) {
+                AppMain.graphService.setStateUpper(GraphState.NOT_RUNNING);
+            } else {
+                AppMain.graphService.setStateLower(GraphState.NOT_RUNNING);
+            }
+            toggleDisabling();
+            triggerButton.setText("Run");
+            AppMain.notificationService.createNotification("Error occurred -> " + e.getMessage(), NotificationType.ERROR);
         }
     }
 
@@ -263,16 +299,16 @@ public class MainController implements Initializable {
         try {
             AppMain.graphService.LoadGraph();
         } catch (Exception e) {
-            AppMain.notificationService.createNotification("Error occured during loading graph", NotificationType.ERROR);
+            AppMain.notificationService.createNotification("Error occurred during loading graph", NotificationType.ERROR);
         }
     }
 
     public void toggleAutoSave(MouseEvent event) {
         // TODO: change autoSaveMode in global props global props
-        if(AppMain.fileService.isAutoSave()){
+        if (AppMain.fileService.isAutoSave()) {
             autoSaveMenu.setText("Auto save: OFF");
             AppMain.fileService.setAutoSave(false);
-        }else {
+        } else {
             autoSaveMenu.setText("Auto save: ON");
             AppMain.fileService.setAutoSave(true);
         }
@@ -293,19 +329,19 @@ public class MainController implements Initializable {
     public void quitApp(MouseEvent event) {
         // TODO: if not all data saved -> notification and abort quit
         // save global props into config
-        if(AppMain.measurement.getState().equals(MeasurementState.SAVED) ||
-                AppMain.measurement.getState().equals(MeasurementState.ABORTED) ||
-                AppMain.measurement.getState().equals(MeasurementState.WAITING)) {
-            try {
-                if(!AppMain.measurement.getState().equals(MeasurementState.WAITING)) AppMain.fileService.saveConfig();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            Platform.exit();
-            System.exit(0);
-        } else if (!AppMain.measurement.getState().equals(MeasurementState.SAVED)){
-            AppMain.notificationService.createNotification("There is some data that has not been saved yet, do you want to quit anyway?", NotificationType.WARNING);
-        }
+//        if (AppMain.measurement.getState().equals(MeasurementState.SAVED) ||
+//                AppMain.measurement.getState().equals(MeasurementState.ABORTED) ||
+//                AppMain.measurement.getState().equals(MeasurementState.WAITING)) {
+//            try {
+//                if (!AppMain.measurement.getState().equals(MeasurementState.WAITING)) AppMain.fileService.saveConfig();
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            }
+//            Platform.exit();
+//            System.exit(0);
+//        } else if (!AppMain.measurement.getState().equals(MeasurementState.SAVED)) {
+//            AppMain.notificationService.createNotification("There is some data that has not been saved yet, do you want to quit anyway?", NotificationType.WARNING);
+//        }
     }
 
     public void showHelpWindow(MouseEvent event) {
@@ -314,43 +350,34 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // TODO: read config here
-        EnvironmentParameters parameters;
-        try {
-            parameters = AppMain.fileService.loadConfig();
-            AppMain.measurement = new Measurement(parameters);
-            frequencyStart.setText("" + AppMain.measurement.getParameters().getFrequencySweep().getStart());
-            frequencyStop.setText("" + AppMain.measurement.getParameters().getFrequencySweep().getStop());
-            frequencySpot.setText("" + AppMain.measurement.getParameters().getFrequencySweep().getSpot());
-            frequencyStep.setText("" + AppMain.measurement.getParameters().getFrequencySweep().getStep());
+        frequencyStart.setText("" + AppMain.environmentParameters.getFrequencySweep().getStart());
+        frequencyStop.setText("" + AppMain.environmentParameters.getFrequencySweep().getStop());
+        frequencySpot.setText("" + AppMain.environmentParameters.getFrequencySweep().getSpot());
+        frequencyStep.setText("" + AppMain.environmentParameters.getFrequencySweep().getStep());
 
-            voltageStart.setText("" + AppMain.measurement.getParameters().getVoltageSweep().getStart());
-            voltageStop.setText("" + AppMain.measurement.getParameters().getVoltageSweep().getStop());
-            voltageSpot.setText("" + AppMain.measurement.getParameters().getVoltageSweep().getSpot());
-            voltageStep.setText("" + AppMain.measurement.getParameters().getVoltageSweep().getStep());
+        voltageStart.setText("" + AppMain.environmentParameters.getVoltageSweep().getStart());
+        voltageStop.setText("" + AppMain.environmentParameters.getVoltageSweep().getStop());
+        voltageSpot.setText("" + AppMain.environmentParameters.getVoltageSweep().getSpot());
+        voltageStep.setText("" + AppMain.environmentParameters.getVoltageSweep().getStep());
 
-            otherCapacitance.setText("" + AppMain.measurement.getParameters().getOther().getCapacitance());
-            otherElectricalLength.setText("" + AppMain.measurement.getParameters().getOther().getElectricalLength());
+        otherCapacitance.setText("" + AppMain.environmentParameters.getOther().getCapacitance());
+        otherElectricalLength.setText("" + AppMain.environmentParameters.getOther().getElectricalLength());
 
-            // ----- initialize all dropbox -> coz its not possible to do so in sceneBuilder yet
-            otherSweepType.getItems().addAll("LINEAR", "LOG");
-            if(AppMain.measurement.getParameters().getOther().getSweepType() == SweepType.LINEAR){
-                otherSweepType.getSelectionModel().select(0);
-            }else otherSweepType.getSelectionModel().select(1);
+        // ----- initialize all dropbox -> coz its not possible to do so in sceneBuilder yet
+        otherSweepType.getItems().addAll("LINEAR", "LOG");
+        if (AppMain.environmentParameters.getOther().getSweepType() == SweepType.LINEAR) {
+            otherSweepType.getSelectionModel().select(0);
+        } else otherSweepType.getSelectionModel().select(1);
 
-            otherHighSpeed.getItems().addAll("ON", "OFF" );
-            if(AppMain.measurement.getParameters().getOther().isHighSpeed()){
-                otherHighSpeed.getSelectionModel().select(0);
-            }else otherHighSpeed.getSelectionModel().select(1);
+        otherHighSpeed.getItems().addAll("ON", "OFF");
+        if (AppMain.environmentParameters.getOther().isHighSpeed()) {
+            otherHighSpeed.getSelectionModel().select(0);
+        } else otherHighSpeed.getSelectionModel().select(1);
 
-            otherAutoSweep.getItems().addAll("ON", "OFF");
-            if(AppMain.measurement.getParameters().getOther().isAutoSweep()){
-                otherAutoSweep.getSelectionModel().select(0);
-            }else otherAutoSweep.getSelectionModel().select(1);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        otherAutoSweep.getItems().addAll("ON", "OFF");
+        if (AppMain.environmentParameters.getOther().isAutoSweep()) {
+            otherAutoSweep.getSelectionModel().select(0);
+        } else otherAutoSweep.getSelectionModel().select(1);
 
         LocalDate localDate = LocalDate.now();
         String dir = System.getProperty("user.dir");

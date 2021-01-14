@@ -1,5 +1,6 @@
 package com.app.service.graph;
 
+import com.app.service.measurement.MeasurementState;
 import javafx.scene.Parent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
@@ -35,7 +36,7 @@ public class GraphService {
         anchorPaneLower.getChildren().addAll(chartViewerLower);
     }
 
-    public void configChartViewer(ChartViewer chartViewer) {
+    private void configChartViewer(ChartViewer chartViewer) {
         chartViewer.setPrefWidth(680);
         chartViewer.setPrefHeight(260);
 
@@ -75,6 +76,13 @@ public class GraphService {
         }
     }
 
+    public void setStateUpper(GraphState state) {
+        stateUpper = state;
+    }
+    public void setStateLower(GraphState state) {
+        stateLower = state;
+    }
+
     public boolean isLoaded(){
         return (stateUpper == GraphState.UPPER_LOADED || stateLower == GraphState.LOWER_LOADED);
     }
@@ -84,10 +92,11 @@ public class GraphService {
             running = true;
 
             if (stateUpper == GraphState.UPPER_RUNNING) {
+                anchorPaneUpper.getChildren().clear();
                 rtcpUpper = new Graph(Yaxis1, Yaxis2, upperXAxisName, running, null);
                 chartViewerUpper.setChart(rtcpUpper.getChart());
-            }
-            if (stateLower == GraphState.LOWER_RUNNING) {
+            } else if (stateLower == GraphState.LOWER_RUNNING) {
+                anchorPaneLower.getChildren().clear();
                 rtcpLower = new Graph(Yaxis1, Yaxis2, lowerXAxisName, running, null);
                 chartViewerLower.setChart(rtcpLower.getChart());
             }
@@ -127,6 +136,18 @@ public class GraphService {
 
     public boolean isLowerRunning() {
         return (stateLower == GraphState.LOWER_RUNNING);
+    }
+
+    public void abortMeasurement() {
+        if (isLowerRunning()) {
+            rtcpLower.getMeasurement().setState(MeasurementState.ABORTED);
+            stateLower = GraphState.NOT_RUNNING;
+            rtcpLower = null;
+        } else {
+            rtcpUpper.getMeasurement().setState(MeasurementState.ABORTED);
+            stateUpper = GraphState.NOT_RUNNING;
+            rtcpUpper = null;
+        }
     }
 
 

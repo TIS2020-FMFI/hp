@@ -3,6 +3,7 @@ package com.app.service;
 import com.app.service.calibration.CalibrationService;
 import com.app.service.communication.CommunicationService;
 import com.app.service.file.FileService;
+import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.graph.GraphService;
 import com.app.service.help.HelpService;
 import com.app.service.measurement.Measurement;
@@ -24,7 +25,7 @@ public class AppMain extends Application {
     public static FileService fileService;
     public static GraphService graphService;
     public static CommunicationService communicationService;
-    public static Measurement measurement;
+    public static EnvironmentParameters environmentParameters;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -32,6 +33,7 @@ public class AppMain extends Application {
         ps = primaryStage;
 
         fileService = new FileService("src/main/resources/persistent/config.json");
+        environmentParameters = fileService.loadConfig();
 
         Parent root = FXMLLoader.load(getClass().getResource("/views/mainScreen.fxml"));
         primaryStage.setTitle("Super machine");
@@ -50,6 +52,7 @@ public class AppMain extends Application {
         graphService = new GraphService(root);
         calibrationService = new CalibrationService("/views/calibrationScreen.fxml");
         helpService = new HelpService("/views/helpScreen.fxml");
+
 
         // if all runs successfully then show
         primaryStage.show();

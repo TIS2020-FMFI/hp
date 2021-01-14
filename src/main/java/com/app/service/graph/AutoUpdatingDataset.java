@@ -87,7 +87,7 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
         this.visualDelay = visualDelay;
     }
 
-    public void abortMeasurement() {
+    public void abort() {
         stopMeasurement = true;
     }
 
@@ -116,7 +116,7 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
 //                        fireDatasetChanged();
 //                    }
 
-//                    // Real data - Prepared for tommorow
+//                    // Real data - Prepared for tomorrow
                     int currentSizeData = measurement.getData().size();
                     if (currentSizeData != sizeData) {
                         SingleValue singleValue =  measurement.getData().getLast();

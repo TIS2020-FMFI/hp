@@ -656,7 +656,7 @@
                                     <AnchorPane fx:id="upperPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="260.0" prefWidth="680.0" VBox.vgrow="ALWAYS" />
                                     <ToolBar fx:id="upperToolbar" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="38.0" prefWidth="679.0">
                                       <items>
-                                        <Button fx:id="upperGraphRun" mnemonicParsing="false" onMousePressed="#setUpperPaneRun" onMouseReleased="#runMeasurement" styleClass="graph-btn" text="Run" />
+                                        <Button fx:id="upperGraphRun" mnemonicParsing="false" onMousePressed="#setUpperPaneRun" onMouseReleased="#runUpperMeasurement" styleClass="graph-btn" text="Run" />
                                           <Button fx:id="upperGraphLoad" mnemonicParsing="false" onMousePressed="#setUpperPaneLoad" onMouseReleased="#loadGraph" styleClass="graph-btn" text="Load" />
                                           <Button fx:id="upperGraphExport" mnemonicParsing="false" styleClass="graph-btn" text="Export" />
                                           <Button fx:id="upperGraphSave" mnemonicParsing="false" styleClass="graph-btn" text="Save as" />
@@ -695,7 +695,7 @@
                                     <AnchorPane fx:id="lowerPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="260.0" prefWidth="680.0" VBox.vgrow="ALWAYS" />
                                     <ToolBar fx:id="lowerToolbar" prefHeight="40.0" prefWidth="200.0">
                                       <items>
-                                        <Button fx:id="lowerGraphRun" mnemonicParsing="false" onMousePressed="#setLowerPaneRun" onMouseReleased="#runMeasurement" styleClass="graph-btn" text="Run" />
+                                        <Button fx:id="lowerGraphRun" mnemonicParsing="false" onMousePressed="#setLowerPaneRun" onMouseReleased="#runLowerMeasurement" styleClass="graph-btn" text="Run" />
                                           <Button fx:id="lowerGraphLoad" mnemonicParsing="false" onMousePressed="#setLowerPaneLoad" onMouseReleased="#loadGraph" styleClass="graph-btn" text="Load" />
                                           <Button fx:id="lowerGraphExport" mnemonicParsing="false" styleClass="graph-btn" text="Export" />
                                           <Button fx:id="lowerGraphSave" mnemonicParsing="false" styleClass="graph-btn" text="Save as" />
