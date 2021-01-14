@@ -20,6 +20,8 @@ import javafx.scene.layout.VBox;
 
 import java.io.*;
 import java.lang.reflect.Array;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class Connection extends Thread{
@@ -35,17 +37,16 @@ public class Connection extends Thread{
     BufferedWriter writeEnd;
     EnvironmentParameters environmentParameters;
     ArrayList<String> commands;
-    AutoUpdatingDataset list;
 
     public Connection() throws Exception {
         try {
-            p = Runtime.getRuntime().exec("D:/hpctrl-main/src/Debug/hpctrl.exe -i"); // TODO: set to default within project
+            p = Runtime.getRuntime().exec("C:/s/hp/hpctrl.exe -i"); // TODO: set to default within project
             readEnd = new BufferedReader(new InputStreamReader(p.getInputStream()));
             writeEnd = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
         } catch (IOException e) {
             AppMain.notificationService.createNotification("hpctrl script missing, read help for more info", NotificationType.ERROR);
         }
-        environmentParameters = new EnvironmentParameters();
+        environmentParameters = AppMain.environmentParameters;
         commands = new ArrayList<String>();
         Parent root = FXMLLoader.load(getClass().getResource("/views/mainScreen.fxml"));
 
@@ -65,7 +66,7 @@ public class Connection extends Thread{
             write("exit");
         }
         else{
-            write("connect");
+            write("connect 19");
             writer();
         }
         //TODO: what happens if it doesn't connect?
@@ -109,6 +110,7 @@ public class Connection extends Thread{
             public void run() {
                 if (!commands.isEmpty()){
                     try {
+                        System.out.println("sending '" + commands.get(0) + "'");
                         writeEnd.write(commands.get(0));
                         commands.remove(0);
                         writeEnd.newLine();
@@ -120,7 +122,7 @@ public class Connection extends Thread{
 
                 }
             }
-        }, 0, 1000);
+        }, 0, 200);
 
         }
 
@@ -131,10 +133,21 @@ public class Connection extends Thread{
            write("s WU");
            write("c");
            StringBuilder result = new StringBuilder();
-           while (readEnd.ready()) {
+           LocalDateTime readingStarted = LocalDateTime.now();
+           LocalDateTime readingTimeouts = readingStarted.plus(20, ChronoUnit.SECONDS);
+           while (LocalDateTime.now().compareTo(readingTimeouts) < 0) {
+               if (!readEnd.ready())
+               {
+                   try {
+                       Thread.sleep(1);
+                   } catch (InterruptedException e) {
+                       e.printStackTrace();
+                   }
+                   continue;
+               }
                char letter = (char) readEnd.read();
-               if (letter == '\n') {
-                   if (result.charAt(0) == 'N') {
+               if ((letter == '\n') && (result.length() > 1)) {
+                   if (result.charAt(1) == 'N') {
                        write("n");
                        break;
                    } else {
@@ -143,6 +156,10 @@ public class Connection extends Thread{
                    }
                } else
                    result.append(letter);
+           }
+           if (LocalDateTime.now().compareTo(readingTimeouts) >= 0)
+           {
+               System.out.println("c cmd timeouted");
            }
        }
        else {
@@ -161,13 +178,15 @@ public class Connection extends Thread{
                 toggleCmdMode();
             if (cmd && !manualSweep) {
                 // TODO:function for display functions
+                write("s A7");
+                write("s B1");
                 highSpeed();
                 if (type == MeasuredQuantity.FREQUENCY)
                     frequencySweep();
                 if (type == MeasuredQuantity.VOLTAGE)
                     voltageSweep();
                 if (!environmentParameters.getOther().isAutoSweep()) manualSweep=true;
-                startMeasurement(list.getMeasurementInstance());
+                startMeasurement(AppMain.graphService.rtcpUpper.getMeasurementInstance());
             }
         }
     }
@@ -245,7 +264,12 @@ public class Connection extends Thread{
     public static SingleValue parseSingleValue(String measurement) {
         String[] values = measurement.split(",");
         for (int i = 0; i < values.length; i++) {
-            if (i == 0) values[i] = values[i].substring(1,values[i].length());
+            if (i == 0)
+            {
+                int numSpaces = 0;
+                while (values[i].charAt(numSpaces) == ' ') numSpaces++;
+                values[i] = values[i].substring(numSpaces + 1,values[i].length());
+            }
             else values[i] = values[i].substring(3,values[i].length());
         }
         ArrayList<Double> values_long = new ArrayList<Double>();
@@ -254,6 +278,7 @@ public class Connection extends Thread{
         values_long.add(Double.parseDouble(values[2]));
         return new SingleValue(Double.parseDouble(values[0]), Double.parseDouble(values[1]), Double.parseDouble(values[2]));
     }
+
 
 }
 

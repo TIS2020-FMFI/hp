@@ -248,22 +248,12 @@ public class MainController implements Initializable {
 //        AppMain.fileService.setMeasurement(AppMain.measurement);
 
         try {
-
             if (selectedDisplayA == null || selectedDisplayB == null) {
                 AppMain.notificationService.createNotification("Display A or B not set", NotificationType.ERROR);
                 throw new NullPointerException("Values not properly set!");
             }
-
-            String YaxisQuantity1;
-            String YaxisQuantity2;
-            try {
-                YaxisQuantity1 = selectedDisplayA.getText();
-                YaxisQuantity2 = selectedDisplayB.getText();
-            } catch (Exception e) {
-                AppMain.notificationService.createNotification("Running parameters not set", NotificationType.ERROR);
-                throw e;
-            }
-
+            String YaxisQuantity1 = selectedDisplayA.getText();
+            String YaxisQuantity2 = selectedDisplayB.getText();
 
             try {
                 if (AppMain.graphService.isUpperRunning()) {
@@ -271,13 +261,11 @@ public class MainController implements Initializable {
                     String toggleXaxis = selectedRadioButtonUpper.getText();
                     AppMain.graphService.createGraphRun(toggleXaxis, YaxisQuantity1, YaxisQuantity2);
 
-                }
-                if (AppMain.graphService.isLowerRunning()) {
+                } else if (AppMain.graphService.isLowerRunning()) {
                     RadioButton selectedRadioButtonLower = (RadioButton) toogleLowerXAxis.getSelectedToggle();
                     String toggleXaxis = selectedRadioButtonLower.getText();
                     AppMain.graphService.createGraphRun(toggleXaxis, YaxisQuantity1, YaxisQuantity2); //TODO: may drop because these values may not be set ?!
                 }
-
             } catch (Exception e) {
                 throw e;
             }

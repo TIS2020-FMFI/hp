@@ -39,8 +39,8 @@ public class Graph extends ChartPanel {
         }
         setAxisData = false;
 
-        series1 = new AutoUpdatingDataset(measurement, yaxisName1, 100000, 400, 500, 0);
-        series2 = new AutoUpdatingDataset(measurement, yaxisName2, 100000, 400, 500, 1);
+        series1 = new AutoUpdatingDataset(measurement, yaxisName1,100000, 100, 100,0);
+        series2 = new AutoUpdatingDataset(measurement, yaxisName2,100000,100, 100,1);
 
         //construct the plot
         XYPlot plot = new XYPlot();
@@ -161,8 +161,8 @@ public class Graph extends ChartPanel {
 
         return values_long;
     }
-
-    public Measurement getMeasurement() {
+    public Measurement getMeasurementInstance() {
         return measurement;
     }
+
 }
