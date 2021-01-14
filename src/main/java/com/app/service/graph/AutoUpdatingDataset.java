@@ -144,7 +144,7 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
                     }
                 });
             }
-        }, delay, 1000);
+        }, delay, delay);
     }
 }
 
