@@ -20,9 +20,9 @@ public class GraphService {
     private String loadingTo = null;
     private ChartViewer chartViewerUpper = new ChartViewer();
     private ChartViewer chartViewerLower = new ChartViewer();
-    Graph rtcpUpper = null;
-    Graph rtcpLower = null;
-    
+    public Graph rtcpUpper = null;
+    public Graph rtcpLower = null;
+
 
     public GraphService(Parent rootPrimary) {
 
@@ -46,16 +46,16 @@ public class GraphService {
         AnchorPane.setTopAnchor(chartViewer, 0.0);
     }
 
-    public void setUpperRunning() {
-        if (!isRunning())  {
-            stateUpper = GraphState.UPPER_RUNNING;
-        }
+    public void setUpperRunning() { if (!isRunning()) stateUpper = GraphState.UPPER_RUNNING; }
+
+    public void setLowerRunning() { if (!isRunning()) stateLower = GraphState.LOWER_RUNNING; }
+
+    public boolean isUpperRunning() {
+        return (stateUpper == GraphState.UPPER_RUNNING);
     }
 
-    public void setLowerRunning() {
-        if (!isRunning()) {
-            stateLower = GraphState.LOWER_RUNNING;
-        }
+    public boolean isLowerRunning() {
+        return (stateLower == GraphState.LOWER_RUNNING);
     }
 
     public boolean isRunning(){
@@ -76,6 +76,9 @@ public class GraphService {
         }
     }
 
+    public boolean isLowerLoaded(){ return (stateLower == GraphState.LOWER_LOADED); }
+
+    public boolean isUpperLoaded(){ return (stateUpper == GraphState.UPPER_LOADED); }
     public void setStateUpper(GraphState state) {
         stateUpper = state;
     }
@@ -87,17 +90,16 @@ public class GraphService {
         return (stateUpper == GraphState.UPPER_LOADED || stateLower == GraphState.LOWER_LOADED);
     }
 
-    public void createGraphRun(String upperXAxisName, String lowerXAxisName, String Yaxis1, String Yaxis2) throws Exception {
+    public void createGraphRun(String XAxisName, String Yaxis1, String Yaxis2) throws Exception {
         if (!running) {
             running = true;
-
             if (stateUpper == GraphState.UPPER_RUNNING) {
                 anchorPaneUpper.getChildren().clear();
-                rtcpUpper = new Graph(Yaxis1, Yaxis2, upperXAxisName, running, null);
+                rtcpUpper = new Graph(Yaxis1, Yaxis2, XAxisName, running, null);
                 chartViewerUpper.setChart(rtcpUpper.getChart());
             } else if (stateLower == GraphState.LOWER_RUNNING) {
                 anchorPaneLower.getChildren().clear();
-                rtcpLower = new Graph(Yaxis1, Yaxis2, lowerXAxisName, running, null);
+                rtcpLower = new Graph(Yaxis1, Yaxis2, XAxisName, running, null);
                 chartViewerLower.setChart(rtcpLower.getChart());
             }
         }
@@ -107,11 +109,10 @@ public class GraphService {
         if (isLoaded() && loadingTo != null) {
 
             FileChooser fileChooser = new FileChooser();
-            // fileChooser.setInitialDirectory(); for later
+            fileChooser.setInitialDirectory(new File("src/main/resources"));
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
             fileChooser.getExtensionFilters().add(extFilter);
             File selectedFile = fileChooser.showOpenDialog(new Stage());
-
 
             Graph rtcp = new Graph(" ", " ", " ", false, selectedFile);
             JFreeChart chart = rtcp.getChart();
@@ -119,23 +120,16 @@ public class GraphService {
                 loadingTo = null;
                 return;
             }
-
             if (stateUpper == GraphState.UPPER_LOADED && loadingTo.equals("upper")) {
+                rtcpUpper = rtcp;
                 chartViewerUpper.setChart(chart);
             }
             if (stateLower == GraphState.LOWER_LOADED && loadingTo.equals("lower")) {
+                rtcpLower = rtcp;
                 chartViewerLower.setChart(chart);
             }
             loadingTo = null;
         }
-    }
-
-    public boolean isUpperRunning() {
-        return (stateUpper == GraphState.UPPER_RUNNING);
-    }
-
-    public boolean isLowerRunning() {
-        return (stateLower == GraphState.LOWER_RUNNING);
     }
 
     public void abortMeasurement() {

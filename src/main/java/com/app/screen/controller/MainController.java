@@ -18,6 +18,7 @@ import javafx.stage.DirectoryChooser;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
@@ -156,7 +157,12 @@ public class MainController implements Initializable {
         lowerGraphExport.setDisable(gs.isLowerRunning());
     }
 
-    public void point() {
+    public void point() throws IOException, InterruptedException {
+        EnvironmentParameters newParameters = AppMain.environmentParameters;
+        if (newParameters.getDisplayYY().getX() == MeasuredQuantity.VOLTAGE)
+            AppMain.communicationService.runMeasurement(MeasuredQuantity.VOLTAGE);
+        else
+            AppMain.communicationService.runMeasurement(MeasuredQuantity.FREQUENCY);
         //TODO: Do this, call machine to step one measruement
     }
 
@@ -242,26 +248,52 @@ public class MainController implements Initializable {
 //        AppMain.fileService.setMeasurement(AppMain.measurement);
 
         try {
-            RadioButton selectedRadioButtonUpper = (RadioButton) toogleUpperXAxis.getSelectedToggle();
-            String toggleGroupValueUpper = selectedRadioButtonUpper.getText();
-
-            RadioButton selectedRadioButtonLower = (RadioButton) toogleLowerXAxis.getSelectedToggle();
-            String toggleGroupValueLower = selectedRadioButtonLower.getText();
 
             if (selectedDisplayA == null || selectedDisplayB == null) {
                 AppMain.notificationService.createNotification("Display A or B not set", NotificationType.ERROR);
                 throw new NullPointerException("Values not properly set!");
             }
-            String YaxisQuantity1 = selectedDisplayA.getText();
-            String YaxisQuantity2 = selectedDisplayB.getText();
-            AppMain.graphService.createGraphRun(toggleGroupValueUpper, toggleGroupValueLower, YaxisQuantity1, YaxisQuantity2);
 
-            if (AppMain.graphService.isRunning() && otherAutoSweep.getValue().equals("OFF")) {
+            String YaxisQuantity1;
+            String YaxisQuantity2;
+            try {
+                YaxisQuantity1 = selectedDisplayA.getText();
+                YaxisQuantity2 = selectedDisplayB.getText();
+            } catch (Exception e) {
+                AppMain.notificationService.createNotification("Running parameters not set", NotificationType.ERROR);
+                throw e;
+            }
+
+
+            try {
+                if (AppMain.graphService.isUpperRunning()) {
+                    RadioButton selectedRadioButtonUpper = (RadioButton) toogleUpperXAxis.getSelectedToggle();
+                    String toggleXaxis = selectedRadioButtonUpper.getText();
+                    AppMain.graphService.createGraphRun(toggleXaxis, YaxisQuantity1, YaxisQuantity2);
+
+                }
+                if (AppMain.graphService.isLowerRunning()) {
+                    RadioButton selectedRadioButtonLower = (RadioButton) toogleLowerXAxis.getSelectedToggle();
+                    String toggleXaxis = selectedRadioButtonLower.getText();
+                    AppMain.graphService.createGraphRun(toggleXaxis, YaxisQuantity1, YaxisQuantity2); //TODO: may drop because these values may not be set ?!
+                }
+
+            } catch (Exception e) {
+                throw e;
+            }
+
+            if (AppMain.graphService.isRunning() & otherAutoSweep.getValue().equals("OFF")) {
                 if (AppMain.graphService.isUpperRunning()) {
                     Button button = new Button("Point");
                     button.setId("upperPoint");
                     button.setOnKeyPressed(e -> {
-                        point();
+                        try {
+                            point();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
                     });
                     upperToolbar.getItems().add(button);
                     //TODO: tu metoda, ktora prida measurement data, ktore v grafe uz on checkuje, je treba aj cez abort znicit ten button potom
@@ -270,7 +302,13 @@ public class MainController implements Initializable {
                     Button button = new Button("Point");
                     button.setId("lowerPoint");
                     button.setOnKeyPressed(e -> {
-                        point();
+                        try {
+                            point();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
                     });
                     lowerToolbar.getItems().add(button);
 
@@ -291,6 +329,11 @@ public class MainController implements Initializable {
             triggerButton.setText("Run");
             AppMain.notificationService.createNotification("Error occurred -> " + e.getMessage(), NotificationType.ERROR);
         }
+        if (newParameters.getDisplayYY().getX() == MeasuredQuantity.VOLTAGE)
+            AppMain.communicationService.runMeasurement(MeasuredQuantity.VOLTAGE);
+        else
+            AppMain.communicationService.runMeasurement(MeasuredQuantity.FREQUENCY);
+
     }
 
     public void loadGraph(MouseEvent event) {
