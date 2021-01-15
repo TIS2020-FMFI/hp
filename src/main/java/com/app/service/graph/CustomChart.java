@@ -3,6 +3,7 @@ package com.app.service.graph;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.measurement.Measurement;
 import com.app.service.measurement.MeasurementState;
+import com.app.service.measurement.SingleValue;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
@@ -11,24 +12,22 @@ import org.jfree.chart.renderer.xy.SamplingXYLineRenderer;
 
 import java.awt.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Scanner;
 
 
 public class CustomChart extends ChartPanel {
-    private static boolean setAxisData = false;
     private static AutoUpdatingDataset series1;
     private static AutoUpdatingDataset series2;
     private static JFreeChart chart;
 
-//    public static boolean running;
-
-    public CustomChart(Measurement measurement) throws Exception {
+    public CustomChart(Measurement measurement) {
         super(createChart(measurement));
     }
-    public CustomChart(Measurement measurement, File file) {
+    public CustomChart(Measurement measurement, File file) throws FileNotFoundException {
         super(createChart(measurement, file));
     }
 
@@ -36,11 +35,16 @@ public class CustomChart extends ChartPanel {
         return chart;
     }
 
-    private static JFreeChart createChart(Measurement measurement, File file) {
-        // TODO: load graph
+    private static JFreeChart createChart(Measurement measurement, File file) throws FileNotFoundException {
         measurement.setState(MeasurementState.SAVED);
-        measurement.setParameters(new EnvironmentParameters());
-        return new JFreeChart(new XYPlot());
+        measurement.setParameters(new EnvironmentParameters()); // TODO: parseMeasurementSettings and set envParams accordingly
+        measurement.getData().addAll(parseMeasurement(file));
+        chart = new JFreeChart(new XYPlot());
+
+        chart.getXYPlot().getDomainAxis().setLabel(measurement.getParameters().getDisplayYY().getX().toString());
+        chart.getXYPlot().getRangeAxis(0).setLabel(measurement.getParameters().getDisplayYY().getA());
+        chart.getXYPlot().getRangeAxis(1).setLabel(measurement.getParameters().getDisplayYY().getB());
+        return chart;
     }
 
     private static JFreeChart createChart(Measurement measurement) {
@@ -84,87 +88,32 @@ public class CustomChart extends ChartPanel {
         chart.setBorderVisible(false);
         chart.removeLegend();
 
-//        if (state.equals(GraphState.MEASURING)) {
-//            series1.start();
-//            series2.start();
-//            return chart;
-//        }
-//        if (!running) { // loaded
-//            if (data != null) {
-//                addData(parseData(data));
-//                return chart;
-//            }
-//        }
-//        chart = null;
-        return null;
+        return chart;
     }
 
-    public static ArrayList<ArrayList<Double>> parseData(File data) throws Exception {
-        Scanner scanner = new Scanner(data);
-        ArrayList<ArrayList<Double>> all_values = new ArrayList<ArrayList<Double>>();
+    private static List<SingleValue> parseMeasurement(File file) throws FileNotFoundException, NumberFormatException {
+        Scanner scanner = new Scanner(file);
+        List<SingleValue> data = new ArrayList<>();
         while (scanner.hasNext()) {
+            String line = scanner.nextLine();
             try {
-                ArrayList<Double> values_long = inputChange(scanner.nextLine());
-                all_values.add(values_long);
-            } catch (Exception e) {
-                throw new Exception("Could not parse data");
+                data.add(new SingleValue(line));
+            } catch (NumberFormatException e) {
+                throw new NumberFormatException("Could not create Single value from input: " + line);
             }
         }
-        return all_values;
+        return data;
     }
 
     public static void addData(ArrayList<ArrayList<Double>> all_values) {
         final int COLUMN = 0;
-        Comparator<ArrayList<Double>> myComparator = new Comparator<ArrayList<Double>>() {
-            @Override
-            public int compare(ArrayList<Double> o1, ArrayList<Double> o2) {
-                return o1.get(COLUMN).compareTo(o2.get(COLUMN));
-            }
-        };
-        Collections.sort(all_values, myComparator);
+        Comparator<ArrayList<Double>> myComparator = Comparator.comparing(o -> o.get(COLUMN));
+        all_values.sort(myComparator);
 
-        for (int i = 0; i < all_values.size(); i++) {
-            series1.addValue(all_values.get(i).get(0), all_values.get(i).get(1));
-            series2.addValue(all_values.get(i).get(0), all_values.get(i).get(2));
+        for (ArrayList<Double> all_value : all_values) {
+            series1.addValue(all_value.get(0), all_value.get(1));
+            series2.addValue(all_value.get(0), all_value.get(2));
         }
-    }
-
-    public static int findAxisEnd(String s) {
-        int poc = 0;
-        Character Char = s.charAt(poc);
-        while (Char != '-' & !Character.isDigit(Char) & Char != ' ') {
-            Char = s.charAt(poc);
-            poc++;
-        }
-        return poc - 1;
-    }
-
-    public static void setAxesName(String[] values) {
-        String Xaxis = values[0].substring(0,findAxisEnd(values[0]));
-        String Yaxis1 = values[1].substring(0,findAxisEnd(values[1]));
-        String Yaxis2 = values[2].substring(0,findAxisEnd(values[2]));
-        chart.getXYPlot().getDomainAxis().setLabel(Xaxis);
-        chart.getXYPlot().getRangeAxis(0).setLabel(Yaxis1);
-        chart.getXYPlot().getRangeAxis(1).setLabel(Yaxis2);
-    }
-
-    public static ArrayList<Double> inputChange(String measurement) {
-        String[] values = measurement.split(",");
-        if (setAxisData == false) {
-            setAxesName(values);
-            setAxisData = true;
-        }
-
-        for (int i = 0; i < values.length; i++) {
-            values[i] = values[i].substring(findAxisEnd(values[i]), values[i].length());
-        }
-
-        ArrayList<Double> values_long = new ArrayList<Double>();
-        values_long.add(Double.parseDouble(values[0])); // frequency / voltage
-        values_long.add(Double.parseDouble(values[1]));
-        values_long.add(Double.parseDouble(values[2]));
-
-        return values_long;
     }
 
 }

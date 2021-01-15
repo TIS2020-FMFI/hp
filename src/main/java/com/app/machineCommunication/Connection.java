@@ -160,7 +160,7 @@ public class Connection extends Thread{
                        write("n");
                        break;
                    } else {
-                       data.addSingleValue(parseSingleValue(result.toString()));
+                       data.addSingleValue(new SingleValue(result.toString()));
                        result = new StringBuilder();
                    }
                } else
@@ -175,7 +175,7 @@ public class Connection extends Thread{
            write("s SU");
            write("q 1");
            StringBuilder result = read();
-           data.addSingleValue(parseSingleValue(result.toString()));
+           data.addSingleValue(new SingleValue(result.toString()));
            // TODO: Kedy je koniec ? manualSweep = false
        }
 
@@ -269,25 +269,5 @@ public class Connection extends Thread{
 
         return true;
     }
-
-    public static SingleValue parseSingleValue(String measurement) {
-        String[] values = measurement.split(",");
-        for (int i = 0; i < values.length; i++) {
-            if (i == 0)
-            {
-                int numSpaces = 0;
-                while (values[i].charAt(numSpaces) == ' ') numSpaces++;
-                values[i] = values[i].substring(numSpaces + 1,values[i].length());
-            }
-            else values[i] = values[i].substring(3,values[i].length());
-        }
-        ArrayList<Double> values_long = new ArrayList<Double>();
-        values_long.add(Double.parseDouble(values[0])); // frequency / voltage
-        values_long.add(Double.parseDouble(values[1]));
-        values_long.add(Double.parseDouble(values[2]));
-        return new SingleValue(Double.parseDouble(values[0]), Double.parseDouble(values[1]), Double.parseDouble(values[2]));
-    }
-
-
 }
 

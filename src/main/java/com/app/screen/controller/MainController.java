@@ -262,7 +262,7 @@ public class MainController implements Initializable {
 //            AppMain.communicationService.runMeasurement(newParameters.getDisplayYY().getX()); // TODO: uncomment when testing with machine
             toggleDisabling();
             triggerButton.setText("Abort");
-        } catch ( NullPointerException e) {
+        } catch (NullPointerException e) {
             if (graphType.equals(GraphType.UPPER)) {
                 gs.upperGraph.setState(GraphState.EMPTY);
             } else {

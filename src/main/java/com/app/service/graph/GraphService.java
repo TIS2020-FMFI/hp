@@ -4,6 +4,8 @@ import com.app.service.AppMain;
 import com.app.service.notification.NotificationType;
 import javafx.scene.Parent;
 
+import java.io.FileNotFoundException;
+
 
 public class GraphService {
     public Graph upperGraph;
@@ -50,6 +52,10 @@ public class GraphService {
     public void loadGraph(GraphType type) {
         try {
             getGraph(type).load();
+        } catch (FileNotFoundException e) {
+            AppMain.notificationService.createNotification("File you are trying to load does not exist", NotificationType.ERROR);
+        } catch (NumberFormatException e) {
+            AppMain.notificationService.createNotification("Could not parse loaded data -> " + e.getMessage(), NotificationType.ERROR);
         } catch (Exception e) {
             AppMain.notificationService.createNotification("Error occurred while loading measurement -> " + e.getMessage(), NotificationType.ERROR);
         }

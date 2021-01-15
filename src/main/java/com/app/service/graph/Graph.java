@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import org.jfree.chart.fx.ChartViewer;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 
 public class Graph {
@@ -50,15 +51,16 @@ public class Graph {
 
     public void setState(GraphState state) { this.state = state; }
 
-    public void run() throws Exception {
+    public void run() {
         measurement = new Measurement(AppMain.environmentParameters);
         scene.getChildren().clear();
         scene.getChildren().add(chartViewer);
         chart = new CustomChart(measurement);
         chartViewer.setChart(chart.getChart());
+        state = GraphState.RUNNING;
     }
 
-    public void load() {
+    public void load() throws FileNotFoundException {
         measurement = new Measurement(null);
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File("src/main/resources"));
@@ -71,6 +73,7 @@ public class Graph {
 
     public void abort() {
         measurement.setState(MeasurementState.ABORTED);
+        scene.getChildren().clear();
         state = GraphState.EMPTY;
     }
 
