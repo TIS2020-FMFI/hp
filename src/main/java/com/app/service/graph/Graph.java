@@ -72,6 +72,7 @@ public class Graph {
     }
 
     public void abort() {
+        chart.abortMeasurement();
         measurement.setState(MeasurementState.ABORTED);
         scene.getChildren().clear();
         state = GraphState.EMPTY;

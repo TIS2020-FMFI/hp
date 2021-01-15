@@ -1,6 +1,9 @@
 package com.app.service.graph;
 
 import com.app.service.file.parameters.EnvironmentParameters;
+import com.app.service.graph.dataset.AutoUpdatingDataset;
+import com.app.service.graph.dataset.DatasetType;
+import com.app.service.graph.dataset.StaticDataset;
 import com.app.service.measurement.Measurement;
 import com.app.service.measurement.MeasurementState;
 import com.app.service.measurement.SingleValue;
@@ -9,19 +12,19 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.SamplingXYLineRenderer;
+import org.jfree.data.xy.AbstractXYDataset;
 
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
 
 public class CustomChart extends ChartPanel {
-    private static AutoUpdatingDataset series1;
-    private static AutoUpdatingDataset series2;
+    private static AbstractXYDataset series1;
+    private static AbstractXYDataset series2;
     private static JFreeChart chart;
 
     public CustomChart(Measurement measurement) {
@@ -39,18 +42,27 @@ public class CustomChart extends ChartPanel {
         measurement.setState(MeasurementState.SAVED);
         measurement.setParameters(new EnvironmentParameters()); // TODO: parseMeasurementSettings and set envParams accordingly
         measurement.getData().addAll(parseMeasurement(file));
-        chart = new JFreeChart(new XYPlot());
 
-        chart.getXYPlot().getDomainAxis().setLabel(measurement.getParameters().getDisplayYY().getX().toString());
-        chart.getXYPlot().getRangeAxis(0).setLabel(measurement.getParameters().getDisplayYY().getA());
-        chart.getXYPlot().getRangeAxis(1).setLabel(measurement.getParameters().getDisplayYY().getB());
+        series1 = new StaticDataset(measurement, DatasetType.LEFT);
+        series2 = new StaticDataset(measurement, DatasetType.RIGHT);
+
+        createChart(measurement.getParameters().getDisplayYY().getX().name(), measurement.getParameters().getDisplayYY().getA(), measurement.getParameters().getDisplayYY().getB());
         return chart;
     }
 
     private static JFreeChart createChart(Measurement measurement) {
-        series1 = new AutoUpdatingDataset(measurement, measurement.getParameters().getDisplayYY().getA(),100000, 100, 100,0);
-        series2 = new AutoUpdatingDataset(measurement, measurement.getParameters().getDisplayYY().getB(),100000,100, 100,1);
+        series1 = new AutoUpdatingDataset(measurement, DatasetType.LEFT);
+        series2 = new AutoUpdatingDataset(measurement, DatasetType.RIGHT);
+        createChart(measurement.getParameters().getDisplayYY().getX().name(), measurement.getParameters().getDisplayYY().getA(), measurement.getParameters().getDisplayYY().getB());
 
+        AutoUpdatingDataset as1 = (AutoUpdatingDataset) series1;
+        AutoUpdatingDataset as2 = (AutoUpdatingDataset) series2;
+        as1.start();
+        as2.start();
+        return chart;
+    }
+
+    private static void createChart(String Xname, String Y1name, String Y2name) {
         //construct the plot
         XYPlot plot = new XYPlot();
         plot.setDataset(0, series1);
@@ -61,9 +73,9 @@ public class CustomChart extends ChartPanel {
         SamplingXYLineRenderer splinerenderer = new SamplingXYLineRenderer();
         splinerenderer.setSeriesFillPaint(0, Color.BLUE);
         plot.setRenderer(1, splinerenderer);
-        plot.setRangeAxis(0, new NumberAxis(measurement.getParameters().getDisplayYY().getA()));
-        plot.setRangeAxis(1, new NumberAxis(measurement.getParameters().getDisplayYY().getB()));
-        plot.setDomainAxis(new NumberAxis(measurement.getParameters().getDisplayYY().getX().toString()));
+        plot.setRangeAxis(0, new NumberAxis(Y1name));
+        plot.setRangeAxis(1, new NumberAxis(Y2name));
+        plot.setDomainAxis(new NumberAxis(Xname));
 
         //Map the data to the appropriate axis
         plot.mapDatasetToRangeAxis(0, 0);
@@ -87,11 +99,9 @@ public class CustomChart extends ChartPanel {
         chart.setBackgroundPaint(null);
         chart.setBorderVisible(false);
         chart.removeLegend();
-
-        return chart;
     }
 
-    private static List<SingleValue> parseMeasurement(File file) throws FileNotFoundException, NumberFormatException {
+        private static List<SingleValue> parseMeasurement(File file) throws FileNotFoundException, NumberFormatException {
         Scanner scanner = new Scanner(file);
         List<SingleValue> data = new ArrayList<>();
         while (scanner.hasNext()) {
@@ -105,15 +115,11 @@ public class CustomChart extends ChartPanel {
         return data;
     }
 
-    public static void addData(ArrayList<ArrayList<Double>> all_values) {
-        final int COLUMN = 0;
-        Comparator<ArrayList<Double>> myComparator = Comparator.comparing(o -> o.get(COLUMN));
-        all_values.sort(myComparator);
-
-        for (ArrayList<Double> all_value : all_values) {
-            series1.addValue(all_value.get(0), all_value.get(1));
-            series2.addValue(all_value.get(0), all_value.get(2));
-        }
+    public void abortMeasurement() {
+        AutoUpdatingDataset as1 = (AutoUpdatingDataset) series1;
+        AutoUpdatingDataset as2 = (AutoUpdatingDataset) series2;
+        as1.abortMeasurement();
+        as2.abortMeasurement();
     }
 
 }
