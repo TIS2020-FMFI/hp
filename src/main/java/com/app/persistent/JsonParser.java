@@ -76,7 +76,7 @@ public class JsonParser {
         return true;
     }
 
-    public static EnvironmentParameters readParameters(String fileName) throws Exception {
+    public static EnvironmentParameters readParameters(String fileName) {
         try {
             Object obj = new JSONParser().parse(new FileReader(fileName));
 
@@ -117,7 +117,7 @@ public class JsonParser {
             environmentParameters.setOther(other);
             environmentParameters.checkAll();
             return environmentParameters;
-        }catch (Exception e){
+        } catch (Exception e) {
             EnvironmentParameters parameters = new EnvironmentParameters();
 
             DisplayYY displayYY = new DisplayYY();

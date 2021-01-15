@@ -6,20 +6,15 @@ import com.app.service.AppMain;
 import com.app.service.calibration.CalibrationType;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.file.parameters.MeasuredQuantity;
-import com.app.service.graph.AutoUpdatingDataset;
-import com.app.service.graph.GraphService;
 import com.app.service.measurement.Measurement;
 import com.app.service.measurement.SingleValue;
 import com.app.service.notification.NotificationService;
 import com.app.service.notification.NotificationType;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -47,7 +42,7 @@ public class Connection extends Thread{
             AppMain.notificationService.createNotification("hpctrl script missing, read help for more info", NotificationType.ERROR);
         }
         environmentParameters = AppMain.environmentParameters;
-        commands = new ArrayList<String>();
+        commands = new ArrayList<>();
         Parent root = FXMLLoader.load(getClass().getResource("/views/mainScreen.fxml"));
 
 
@@ -59,19 +54,27 @@ public class Connection extends Thread{
 
     }
 
+    public boolean isConnected() {
+        return connected;
+    }
+
+
+
     public boolean connect() {
-        if (connected){
-            if(cmd)
-                write(".");
-            write("exit");
-        }
-        else{
-            write("connect 19");
-            writer();
-        }
-        //TODO: what happens if it doesn't connect?
-        cmd = false;
-        connected = !connected;
+        connected = true; // TODO: remove this line and uncomment all lines below when testing with machine
+
+//        if (connected){
+//            if(cmd)
+//                write(".");
+//            write("exit");
+//        }
+//        else{
+//            write("connect 19");
+//            writer();
+//        }
+//        //TODO: what happens if it doesn't connect?
+//        cmd = false;
+//        connected = !connected;
 
         return connected;
     }
@@ -111,11 +114,12 @@ public class Connection extends Thread{
                 if (!commands.isEmpty()){
                     try {
                         System.out.println("sending '" + commands.get(0) + "'");
-                        writeEnd.write(commands.get(0));
-                        commands.remove(0);
-                        writeEnd.newLine();
-                        writeEnd.flush();
-
+                        if (commands.size() > 0) {
+                            writeEnd.write(commands.get(0));
+                            commands.remove(0);
+                            writeEnd.newLine();
+                            writeEnd.flush();
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -151,7 +155,7 @@ public class Connection extends Thread{
                        write("n");
                        break;
                    } else {
-                       data.addSingleValue(parseSingleValue(result.toString()));
+                       data.addSingleValue(new SingleValue(result.toString()));
                        result = new StringBuilder();
                    }
                } else
@@ -166,13 +170,13 @@ public class Connection extends Thread{
            write("s SU");
            write("q 1");
            StringBuilder result = read();
-           data.addSingleValue(parseSingleValue(result.toString()));
+           data.addSingleValue(new SingleValue(result.toString()));
            // TODO: Kedy je koniec ? manualSweep = false
        }
 
     }
 
-    public void measurement(MeasuredQuantity type) throws IOException, InterruptedException {
+    public void measurement(MeasuredQuantity type) throws IOException {
         if (connected) {
             if (!cmd)
                 toggleCmdMode();
@@ -186,7 +190,7 @@ public class Connection extends Thread{
                 if (type == MeasuredQuantity.VOLTAGE)
                     voltageSweep();
                 if (!environmentParameters.getOther().isAutoSweep()) manualSweep=true;
-                startMeasurement(AppMain.graphService.rtcpUpper.getMeasurementInstance());
+                startMeasurement(AppMain.graphService.getRunningGraph().getMeasurement());
             }
         }
     }
@@ -260,25 +264,5 @@ public class Connection extends Thread{
 
         return true;
     }
-
-    public static SingleValue parseSingleValue(String measurement) {
-        String[] values = measurement.split(",");
-        for (int i = 0; i < values.length; i++) {
-            if (i == 0)
-            {
-                int numSpaces = 0;
-                while (values[i].charAt(numSpaces) == ' ') numSpaces++;
-                values[i] = values[i].substring(numSpaces + 1,values[i].length());
-            }
-            else values[i] = values[i].substring(3,values[i].length());
-        }
-        ArrayList<Double> values_long = new ArrayList<Double>();
-        values_long.add(Double.parseDouble(values[0])); // frequency / voltage
-        values_long.add(Double.parseDouble(values[1]));
-        values_long.add(Double.parseDouble(values[2]));
-        return new SingleValue(Double.parseDouble(values[0]), Double.parseDouble(values[1]), Double.parseDouble(values[2]));
-    }
-
-
 }
 

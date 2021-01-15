@@ -1,171 +1,81 @@
 package com.app.service.graph;
 
-import com.app.service.file.parameters.EnvironmentParameters;
+import com.app.service.AppMain;
 import com.app.service.measurement.Measurement;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.SamplingXYLineRenderer;
+import com.app.service.measurement.MeasurementState;
+import com.app.service.notification.NotificationType;
+import javafx.scene.Parent;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import org.jfree.chart.fx.ChartViewer;
 
-import java.awt.*;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Scanner;
+import java.io.FileNotFoundException;
 
-public class Graph extends ChartPanel
-{
-    private static boolean setAxisData;
-    private static AutoUpdatingDataset series1;
-    private static AutoUpdatingDataset series2 ;
-    private static JFreeChart chart;
-    private static Measurement measurement;
-    public static boolean running;
 
-    public Graph(String yaxisName1, String yaxisName2, String xaxisName,boolean isRunning, File data) throws Exception {
-        super(createChart(yaxisName1,yaxisName2,xaxisName, isRunning, data));
-    }
+public class Graph {
+    private AnchorPane scene;
+    private ChartViewer chartViewer;
+    private GraphState state;
+    private GraphType type;
+    private Measurement measurement;
+    private CustomChart chart;
 
-    public JFreeChart getChart() {
-        return chart;
-    }
+    public Graph(Parent root, String fxmlId, GraphType type) {
+        this.state = GraphState.EMPTY;
+        this.type = type;
+        this.chartViewer = createChartViewer();
 
-    private static JFreeChart createChart(String yaxisName1, String yaxisName2, String xaxisName, boolean isRunning, File data ) throws Exception { // ak no running, tak klasicky chart z dat, ktore poslem cez parameter
-
-        running = isRunning;
-        if (running) {
-            measurement = new Measurement(new EnvironmentParameters());
-        }
-        setAxisData = false;
-
-        series1 = new AutoUpdatingDataset(measurement, yaxisName1,100000, 100, 100,0);
-        series2 = new AutoUpdatingDataset(measurement, yaxisName2,100000,100, 100,1);
-
-        //construct the plot
-        XYPlot plot = new XYPlot();
-        plot.setDataset(0, series1);
-        plot.setDataset(1, series2);
-
-        //customize the plot with renderers and axis
-        plot.setRenderer(0, new SamplingXYLineRenderer());//use default fill paint for first series
-        SamplingXYLineRenderer splinerenderer = new  SamplingXYLineRenderer();
-        splinerenderer.setSeriesFillPaint(0, Color.BLUE);
-        plot.setRenderer(1, splinerenderer);
-        plot.setRangeAxis(0, new NumberAxis(yaxisName1));
-        plot.setRangeAxis(1, new NumberAxis(yaxisName2));
-        plot.setDomainAxis(new NumberAxis(xaxisName));
-
-        //Map the data to the appropriate axis
-        plot.mapDatasetToRangeAxis(0, 0);
-        plot.mapDatasetToRangeAxis(1, 1);
-
-        //generate the chart
-        chart = new JFreeChart(plot);
-
-        //configure the chart
-        plot.setDomainPannable(true);
-        plot.setRangePannable(true);
-        plot.getDomainAxis().setAutoRange(true);
-        plot.getRangeAxis(0).setAutoRange(true);
-        plot.getRangeAxis(1).setAutoRange(true);
-        plot.getDomainAxis().setFixedAutoRange(30);
-        plot.getRangeAxis(0).setUpperMargin(0.1);
-        plot.getRangeAxis(1).setUpperMargin(1.5);
-        plot.getRangeAxis(0).setLabelPaint(Color.BLUE);
-        plot.getRangeAxis(1).setLabelPaint(Color.RED);
-        plot.setOutlinePaint(null);
-        chart.setBackgroundPaint(null);
-        chart.setBorderVisible(false);
-        chart.removeLegend();
-
-        if (running) {
-            series1.start();
-            series2.start();
-            return chart ;
-        }
-        if (!running) { // loaded
-            if (data != null) {
-                addData(parseData(data));
-                return chart ;
-            }
-        }
-        chart = null;
-        return null;
-    }
-
-    public static ArrayList<ArrayList<Double>> parseData(File data) throws Exception {
-        Scanner scanner = new Scanner(data);
-        ArrayList<ArrayList<Double>> all_values = new ArrayList<ArrayList<Double>>();
-        while(scanner.hasNext()){
-            try {
-                ArrayList<Double> values_long = inputChange(scanner.nextLine());
-                all_values.add(values_long);
-            } catch (Exception e) {
-                throw new Exception("Could not parse data");
-            }
-        }
-        return all_values;
-    }
-
-    public static void addData(ArrayList<ArrayList<Double>> all_values) {
-        final int COLUMN = 0;
-        Comparator<ArrayList<Double>> myComparator = new Comparator<ArrayList<Double>>() {
-            @Override
-            public int compare(ArrayList<Double> o1, ArrayList<Double> o2) {
-                return o1.get(COLUMN).compareTo(o2.get(COLUMN));
-            }
-        };
-        Collections.sort(all_values, myComparator);
-
-        for (int i = 0; i < all_values.size(); i++) {
-            series1.addValue(all_values.get(i).get(0),all_values.get(i).get(1));
-            series2.addValue(all_values.get(i).get(0),all_values.get(i).get(2));
+        this.scene = (AnchorPane) root.lookup(fxmlId);
+        if (this.scene == null) {
+            AppMain.notificationService.createNotification("Graph could not be initialized -> pane with id '" + fxmlId + "' not found", NotificationType.ERROR);
         }
     }
 
-    public static int findAxisEnd(String s) {
-        int poc = 0;
-        Character Char = s.charAt(poc);;
-        while (Char != '-' & !Character.isDigit(Char) & Char != ' ') {
-            Char = s.charAt(poc);
-            poc++;
-        }
-        return poc-1;
+    private ChartViewer createChartViewer() {
+        ChartViewer chartViewer = new ChartViewer();
+        chartViewer.setPrefWidth(680);
+        chartViewer.setPrefHeight(260);
+
+        AnchorPane.setBottomAnchor(chartViewer, 0.0);
+        AnchorPane.setLeftAnchor(chartViewer, 0.0);
+        AnchorPane.setRightAnchor(chartViewer, 0.0);
+        AnchorPane.setTopAnchor(chartViewer, 0.0);
+        return chartViewer;
     }
 
-    public static void setAxesName(String[] values) {
-        String Xaxis = values[0].substring(0,findAxisEnd(values[0]));
-        String Yaxis1 = values[1].substring(0,findAxisEnd(values[1]));
-        String Yaxis2 = values[2].substring(0,findAxisEnd(values[2]));
-        chart.getXYPlot().getDomainAxis().setLabel(Xaxis);
-        chart.getXYPlot().getRangeAxis(0).setLabel(Yaxis1);
-        chart.getXYPlot().getRangeAxis(1).setLabel(Yaxis2);
+    public Measurement getMeasurement() { return measurement; }
+    public GraphState getState() { return state; }
+    public GraphType getType() { return type; }
+
+    public void setState(GraphState state) { this.state = state; }
+
+    public void run() {
+        measurement = new Measurement(AppMain.environmentParameters);
+        scene.getChildren().clear();
+        scene.getChildren().add(chartViewer);
+        chart = new CustomChart(measurement);
+        chartViewer.setChart(chart.getChart());
+        state = GraphState.RUNNING;
     }
 
-    public static ArrayList<Double> inputChange(String measurement) {
-
-
-        String[] values = measurement.split(",");
-        if (setAxisData == false) {
-            setAxesName(values);
-            setAxisData = true;
-        }
-
-        for (int i = 0; i < values.length; i++) {
-            values[i] = values[i].substring(findAxisEnd(values[i]),values[i].length());
-        }
-
-        ArrayList<Double> values_long = new ArrayList<Double>();
-        values_long.add(Double.parseDouble(values[0])); // frequency / voltage
-        values_long.add(Double.parseDouble(values[1]));
-        values_long.add(Double.parseDouble(values[2]));
-
-        return values_long;
+    public void load() throws FileNotFoundException {
+        measurement = new Measurement(null);
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File("src/main/resources"));
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+        fileChooser.getExtensionFilters().add(extFilter);
+        File selectedFile = fileChooser.showOpenDialog(new Stage());
+        CustomChart rtcp = new CustomChart(measurement, selectedFile);
+        chartViewer.setChart(rtcp.getChart());
     }
-    public Measurement getMeasurementInstance() {
-        return measurement;
+
+    public void abort() {
+        chart.abortMeasurement();
+        measurement.setState(MeasurementState.ABORTED);
+        scene.getChildren().clear();
+        state = GraphState.EMPTY;
     }
 
 }

@@ -14,6 +14,10 @@ public class CommunicationService {
         connection = new Connection();
     }
 
+    public boolean isConnected() {
+        return connection.isConnected();
+    }
+
     public boolean connect() throws Exception {
         try {
             return connection.connect();
@@ -21,6 +25,7 @@ public class CommunicationService {
             return false;
         }
     }
+
 
     public void runMeasurement(MeasuredQuantity mq) throws IOException, InterruptedException {
         connection.measurement(mq);

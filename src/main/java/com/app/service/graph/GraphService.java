@@ -1,124 +1,72 @@
 package com.app.service.graph;
 
+import com.app.service.AppMain;
+import com.app.service.notification.NotificationType;
 import javafx.scene.Parent;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.fx.ChartViewer;
 
-import java.io.File;
+import java.io.FileNotFoundException;
 
 
 public class GraphService {
-    private AnchorPane anchorPaneUpper;
-    private AnchorPane anchorPaneLower;
-    private GraphState stateUpper = GraphState.NOT_RUNNING;
-    private GraphState stateLower = GraphState.NOT_RUNNING;
-    private boolean running = false;
-    private String loadingTo = null;
-    private ChartViewer chartViewerUpper = new ChartViewer();
-    private ChartViewer chartViewerLower = new ChartViewer();
-    public Graph rtcpUpper = null;
-    public Graph rtcpLower = null;
+    public Graph upperGraph;
+    public Graph lowerGraph;
 
-
-    public GraphService(Parent rootPrimary) {
-
-        anchorPaneUpper = (AnchorPane) rootPrimary.lookup("#upperPane");
-        anchorPaneLower = (AnchorPane) rootPrimary.lookup("#lowerPane");
-
-        configChartViewer(chartViewerUpper);
-        configChartViewer(chartViewerLower);
-
-        anchorPaneUpper.getChildren().addAll(chartViewerUpper);
-        anchorPaneLower.getChildren().addAll(chartViewerLower);
+    public GraphService() {
     }
 
-    public void configChartViewer(ChartViewer chartViewer) {
-        chartViewer.setPrefWidth(680);
-        chartViewer.setPrefHeight(260);
-
-        AnchorPane.setBottomAnchor(chartViewer, 0.0);
-        AnchorPane.setLeftAnchor(chartViewer, 0.0);
-        AnchorPane.setRightAnchor(chartViewer, 0.0);
-        AnchorPane.setTopAnchor(chartViewer, 0.0);
+    public Graph getGraph(GraphType type) {
+        return type.equals(GraphType.UPPER) ? upperGraph:lowerGraph;
     }
 
-    public void setUpperRunning() { if (!isRunning()) stateUpper = GraphState.UPPER_RUNNING; }
-
-    public void setLowerRunning() { if (!isRunning()) stateLower = GraphState.LOWER_RUNNING; }
-
-    public boolean isUpperRunning() {
-        return (stateUpper == GraphState.UPPER_RUNNING);
+    public boolean isRunningGraph() {
+        if (upperGraph != null && lowerGraph != null) {
+            return upperGraph.getState().equals(GraphState.RUNNING) || lowerGraph.getState().equals(GraphState.RUNNING);
+        }
+        return false;
     }
 
-    public boolean isLowerRunning() {
-        return (stateLower == GraphState.LOWER_RUNNING);
+    public boolean isLoadedGraph(GraphType type) {
+        return type.equals(GraphType.UPPER) ? upperGraph.getState().equals(GraphState.LOADED) : lowerGraph.getState().equals(GraphState.LOADED);
     }
 
-    public boolean isRunning(){
-        return running;
+    public Graph getRunningGraph() {
+        if (upperGraph != null && lowerGraph != null && isRunningGraph()) {
+            return upperGraph.getState().equals(GraphState.RUNNING) ? upperGraph : lowerGraph;
+        }
+        return null;
     }
 
-    public void setUpperLoaded() {
-        if (stateUpper != GraphState.UPPER_RUNNING)  {
-            stateUpper = GraphState.UPPER_LOADED;
-            loadingTo = "upper";
+    public void setRoot(Parent root) {
+        upperGraph = new Graph(root, "#upperPane", GraphType.UPPER);
+        lowerGraph = new Graph(root, "#lowerPane", GraphType.LOWER);
+    }
+
+    public void run(GraphType type) {
+        try {
+            getGraph(type).run();
+        } catch (Exception e) {
+            AppMain.notificationService.createNotification("Error occurred while running measurement -> " + e.getMessage(), NotificationType.ERROR);
         }
     }
 
-    public void setLowerLoaded() {
-        if (stateLower != GraphState.LOWER_RUNNING)  {
-            stateLower = GraphState.LOWER_LOADED;
-            loadingTo = "lower";
+    public void loadGraph(GraphType type) {
+        try {
+            getGraph(type).load();
+        } catch (FileNotFoundException e) {
+            AppMain.notificationService.createNotification("File you are trying to load does not exist", NotificationType.ERROR);
+        } catch (NumberFormatException e) {
+            AppMain.notificationService.createNotification("Could not parse loaded data -> " + e.getMessage(), NotificationType.ERROR);
+        } catch (Exception e) {
+            AppMain.notificationService.createNotification("Error occurred while loading measurement -> " + e.getMessage(), NotificationType.ERROR);
         }
     }
 
-    public boolean isLowerLoaded(){ return (stateLower == GraphState.LOWER_LOADED); }
-
-    public boolean isUpperLoaded(){ return (stateUpper == GraphState.UPPER_LOADED); }
-
-    public boolean isLoaded(){ return (stateUpper == GraphState.UPPER_LOADED || stateLower == GraphState.LOWER_LOADED); }
-
-    public void createGraphRun(String XAxisName, String Yaxis1, String Yaxis2) throws Exception {
-        if (!running) {
-            running = true;
-            if (stateUpper == GraphState.UPPER_RUNNING) {
-                rtcpUpper = new Graph(Yaxis1, Yaxis2, XAxisName, running, null);
-                chartViewerUpper.setChart(rtcpUpper.getChart());
-            }
-            if (stateLower == GraphState.LOWER_RUNNING) {
-                rtcpLower = new Graph(Yaxis1, Yaxis2, XAxisName, running, null);
-                chartViewerLower.setChart(rtcpLower.getChart());
-            }
+    public void abortGraph(GraphType type) {
+        try {
+            getGraph(type).abort();
+        } catch (Exception e) {
+            AppMain.notificationService.createNotification("Error occurred while aborting measurement -> " + e.getMessage(), NotificationType.ERROR);
         }
     }
 
-    public void LoadGraph() throws Exception {
-        if (isLoaded() && loadingTo != null) {
-
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setInitialDirectory(new File("src/main/resources"));
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
-            fileChooser.getExtensionFilters().add(extFilter);
-            File selectedFile = fileChooser.showOpenDialog(new Stage());
-
-            Graph rtcp = new Graph(" ", " ", " ", false, selectedFile);
-            JFreeChart chart = rtcp.getChart();
-            if (chart == null) {
-                loadingTo = null;
-                return;
-            }
-            if (stateUpper == GraphState.UPPER_LOADED && loadingTo.equals("upper")) {
-                rtcpUpper = rtcp;
-                chartViewerUpper.setChart(chart);
-            }
-            if (stateLower == GraphState.LOWER_LOADED && loadingTo.equals("lower")) {
-                rtcpLower = rtcp;
-                chartViewerLower.setChart(chart);
-            }
-            loadingTo = null;
-        }
-    }
 }

@@ -1,11 +1,11 @@
 package com.app.service.file.parameters;
 
 public class EnvironmentParameters {
-
     private DisplayYY displayYY;
     private FrequencySweep frequencySweep;
     private VoltageSweep voltageSweep;
     private Other other;
+    private String comment;
 
 
     public FrequencySweep getFrequencySweep() {
@@ -65,4 +65,8 @@ public class EnvironmentParameters {
         other.check();
 
     }
+
+    public String getComment() { return comment; }
+
+    public void setComment(String comment) { this.comment = comment; }
 }
