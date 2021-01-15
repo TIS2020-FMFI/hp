@@ -1,14 +1,27 @@
 package com.app.service.measurement;
 
+import com.app.service.utils.Utils;
+
+
 public class SingleValue {
-    double displayA;
-    double displayB;
-    double displayX;
+    private double displayA;
+    private double displayB;
+    private double displayX;
 
     public SingleValue(double displayA, double displayB, double displayX) {
         this.displayA = displayA;
         this.displayB = displayB;
         this.displayX = displayX;
+    }
+
+    public SingleValue(String input) throws NumberFormatException {
+        String[] values = Utils.lineSplitAndExtractNumbers(input, ",");
+        if (values.length != 3) {
+            throw new ArrayStoreException("Parsed measurement line does not hold 3 values -> length: " + values.length);
+        }
+        this.displayX = Double.parseDouble(values[0]);
+        this.displayA = Double.parseDouble(values[1]);
+        this.displayB = Double.parseDouble(values[2]);
     }
 
     public void setDisplayA(double displayA) {

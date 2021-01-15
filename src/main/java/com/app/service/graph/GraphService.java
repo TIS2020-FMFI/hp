@@ -1,46 +1,72 @@
 package com.app.service.graph;
 
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
-import org.jfree.chart.fx.ChartViewer;
+import com.app.service.AppMain;
+import com.app.service.notification.NotificationType;
+import javafx.scene.Parent;
+
+import java.io.FileNotFoundException;
 
 
 public class GraphService {
-    AnchorPane anchorPane;
-    Stage stage;
-    int poc = 0;
+    public Graph upperGraph;
+    public Graph lowerGraph;
 
-    public GraphService(AnchorPane aP, Stage s) {
-        anchorPane = aP;
-        stage = s;
+    public GraphService() {
     }
 
-    public void createGraphRun() {
-        Graph rtcp = new Graph("Chart", "Resistance", "Capacity", "Frequency");
-
-        ChartViewer chartViewer = new ChartViewer(rtcp.chart);
-        chartViewer.setPrefWidth(680);
-        chartViewer.setPrefHeight(260);
-
-        AnchorPane.setBottomAnchor(chartViewer, 0.0);
-        AnchorPane.setLeftAnchor(chartViewer, 0.0);
-        AnchorPane.setRightAnchor(chartViewer, 0.0);
-        AnchorPane.setTopAnchor(chartViewer, 0.0);
-
-        anchorPane.getChildren().addAll(chartViewer);
-
-//        // real-time plotting
-
-        //now make your timer
-//        int delay = 500; //milliseconds
-//        ActionListener actionListener = e -> {
-//            rtcp.series1.add(poc, (Math.random() * 20 + 80));
-//            rtcp.series2.add(poc, (Math.random() * 20 + 80));
-//            System.out.print(poc);
-//            poc++;
-//
-//        };
-//        new Timer(delay, actionListener).start();
-
+    public Graph getGraph(GraphType type) {
+        return type.equals(GraphType.UPPER) ? upperGraph:lowerGraph;
     }
+
+    public boolean isRunningGraph() {
+        if (upperGraph != null && lowerGraph != null) {
+            return upperGraph.getState().equals(GraphState.RUNNING) || lowerGraph.getState().equals(GraphState.RUNNING);
+        }
+        return false;
+    }
+
+    public boolean isLoadedGraph(GraphType type) {
+        return type.equals(GraphType.UPPER) ? upperGraph.getState().equals(GraphState.LOADED) : lowerGraph.getState().equals(GraphState.LOADED);
+    }
+
+    public Graph getRunningGraph() {
+        if (upperGraph != null && lowerGraph != null && isRunningGraph()) {
+            return upperGraph.getState().equals(GraphState.RUNNING) ? upperGraph : lowerGraph;
+        }
+        return null;
+    }
+
+    public void setRoot(Parent root) {
+        upperGraph = new Graph(root, "#upperPane", GraphType.UPPER);
+        lowerGraph = new Graph(root, "#lowerPane", GraphType.LOWER);
+    }
+
+    public void run(GraphType type) {
+        try {
+            getGraph(type).run();
+        } catch (Exception e) {
+            AppMain.notificationService.createNotification("Error occurred while running measurement -> " + e.getMessage(), NotificationType.ERROR);
+        }
+    }
+
+    public void loadGraph(GraphType type) {
+        try {
+            getGraph(type).load();
+        } catch (FileNotFoundException e) {
+            AppMain.notificationService.createNotification("File you are trying to load does not exist", NotificationType.ERROR);
+        } catch (NumberFormatException e) {
+            AppMain.notificationService.createNotification("Could not parse loaded data -> " + e.getMessage(), NotificationType.ERROR);
+        } catch (Exception e) {
+            AppMain.notificationService.createNotification("Error occurred while loading measurement -> " + e.getMessage(), NotificationType.ERROR);
+        }
+    }
+
+    public void abortGraph(GraphType type) {
+        try {
+            getGraph(type).abort();
+        } catch (Exception e) {
+            AppMain.notificationService.createNotification("Error occurred while aborting measurement -> " + e.getMessage(), NotificationType.ERROR);
+        }
+    }
+
 }

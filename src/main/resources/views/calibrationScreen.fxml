@@ -79,7 +79,7 @@
                                           <Insets left="10.0" right="10.0" />
                                        </HBox.margin>
                                     </Label>
-                                    <TextField fx:id="eletricalLengthInput" />
+                                    <TextField fx:id="electricalLengthInput" />
                                     <Label text="pf">
                                        <padding>
                                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -94,7 +94,7 @@
                         </GridPane>
                         <HBox alignment="CENTER" minHeight="50.0" prefHeight="70.0" prefWidth="200.0" spacing="30.0">
                            <children>
-                              <RadioButton mnemonicParsing="false" selected="true" text="short">
+                              <RadioButton fx:id="shortType" mnemonicParsing="false" selected="true" text="short">
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
@@ -102,12 +102,12 @@
                                     <ToggleGroup fx:id="calibrationType" />
                                  </toggleGroup>
                               </RadioButton>
-                              <RadioButton mnemonicParsing="false" text="open" toggleGroup="$calibrationType">
+                              <RadioButton fx:id="openType" mnemonicParsing="false" text="open" toggleGroup="$calibrationType">
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
                               </RadioButton>
-                              <RadioButton mnemonicParsing="false" text="load" toggleGroup="$calibrationType">
+                              <RadioButton fx:id="loadType" mnemonicParsing="false" text="load" toggleGroup="$calibrationType">
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>

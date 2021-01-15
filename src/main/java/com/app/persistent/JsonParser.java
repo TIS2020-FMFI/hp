@@ -1,12 +1,17 @@
 package com.app.persistent;
 
 import com.app.service.file.parameters.*;
+import com.app.service.measurement.Measurement;
+import com.app.service.measurement.MeasurementState;
+import com.app.service.measurement.SingleValue;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,9 +21,9 @@ import java.util.Map;
 
 public class JsonParser {
 
-    public static boolean writeConfig(String fileName, EnvironmentParameters environmentParameters) throws FileNotFoundException {
+    public static boolean writeParameters(String fileName, EnvironmentParameters environmentParameters) throws FileNotFoundException {
 
-        environmentParameters = checkParameters(environmentParameters);
+        environmentParameters.checkAll();
 
         // creating JSONObject
         JSONObject jo = new JSONObject();
@@ -71,7 +76,7 @@ public class JsonParser {
         return true;
     }
 
-    public static EnvironmentParameters readConfig(String fileName) throws Exception {
+    public static EnvironmentParameters readParameters(String fileName) {
         try {
             Object obj = new JSONParser().parse(new FileReader(fileName));
 
@@ -110,8 +115,9 @@ public class JsonParser {
             other.setHighSpeed((Boolean) o.get("highSpeed"));
             other.setAutoSweep((Boolean) o.get("autoSweep"));
             environmentParameters.setOther(other);
+            environmentParameters.checkAll();
             return environmentParameters;
-        }catch (Exception e){
+        } catch (Exception e) {
             EnvironmentParameters parameters = new EnvironmentParameters();
 
             DisplayYY displayYY = new DisplayYY();
@@ -145,42 +151,115 @@ public class JsonParser {
             voltageSweep.setStep(voltageSweep.getMinStep());
             voltageSweep.setSpot(voltageSweep.getMinSpot());
             parameters.setVoltageSweep(voltageSweep);
+            parameters.checkAll();
+
             return parameters;
         }
-        // TODO: add reading saving dir + auto save
 
-        // getting map
-//        Map address = ((Map)jo.get("address"));
-        // iterating map
-//        Iterator<Map.Entry> itr1 = address.entrySet().iterator();
-//        while (itr1.hasNext()) {
-//            Map.Entry pair = itr1.next();
-//            System.out.println(pair.getKey() + " : " + pair.getValue());
-//        }
-
-        // getting array
-//        JSONArray ja = (JSONArray) jo.get("phoneNumbers");
-        // iterating array
-//        Iterator itr2 = ja.iterator();
-//
-//        while (itr2.hasNext()) {
-//            itr1 = ((Map) itr2.next()).entrySet().iterator();
-//            while (itr1.hasNext()) {
-//                Map.Entry pair = itr1.next();
-//                System.out.println(pair.getKey() + " : " + pair.getValue());
-//            }
-//        }
     }
 
-    public static EnvironmentParameters checkParameters(EnvironmentParameters environmentParameters){
-        if(environmentParameters.getDisplayYY().getA() == null) environmentParameters.getDisplayYY().setA("L");
+    public static boolean writeNewMeasurement(String autoSavingDir, Measurement measurement) {
+        try {
+            writeParameters(autoSavingDir, measurement.getParameters());
+            Object obj = new JSONParser().parse(new FileReader(autoSavingDir));
+            JSONObject jo = (JSONObject) obj;
 
-        if(environmentParameters.getDisplayYY().getB() == null) environmentParameters.getDisplayYY().setB("R");
+            if(measurement.getComment() != null){
+                jo.put("comment", measurement.getComment().toString());
+            }
 
-        if(environmentParameters.getDisplayYY().getX() == null) environmentParameters.getDisplayYY().setX(MeasuredQuantity.FREQUENCY);
+            JSONArray jsonArray = new JSONArray();
 
-        if(environmentParameters.getOther().getSweepType() == null) environmentParameters.getOther().setSweepType(SweepType.LOG);
+            for(int i=0; i < measurement.getData().size(); i++){
+                JSONObject singleValue = new JSONObject();
+                SingleValue singleV = measurement.getData().get(i);
+                singleValue.put("valueDisplayA", singleV.getDisplayA());
+                singleValue.put("valueDisplayB", singleV.getDisplayB());
+                singleValue.put("valueDisplayX", singleV.getDisplayX());
 
-        return environmentParameters;
+                jsonArray.add(singleValue);
+            }
+            measurement.setIndexOfTheValueToSave(jsonArray.size());
+
+            jo.put("values", jsonArray);
+
+            PrintWriter pw = new PrintWriter(autoSavingDir);
+            pw.write(jo.toJSONString());
+
+            pw.flush();
+            pw.close();
+
+            return true;
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
+
+    public static boolean writeNewValues(String autoSavingDir, Measurement measurement) {
+        try {
+            Object obj = new JSONParser().parse(new FileReader(autoSavingDir));
+            JSONObject jo = (JSONObject) obj;
+            JSONArray jsonArray = (JSONArray) jo.get("values");
+
+            int index = measurement.getIndexOfTheValueToSave();
+            for(int i = index; i < measurement.getData().size(); i++){
+                JSONObject singleValue = new JSONObject();
+                SingleValue singleV = measurement.getData().get(i);
+                singleValue.put("valueDisplayA", singleV.getDisplayA());
+                singleValue.put("valueDisplayB", singleV.getDisplayB());
+                singleValue.put("valueDisplayX", singleV.getDisplayX());
+
+                jsonArray.add(singleValue);
+            }
+            measurement.setIndexOfTheValueToSave(jsonArray.size());
+
+            jo.put("values", jsonArray);
+
+            PrintWriter pw = new PrintWriter(autoSavingDir);
+
+            pw.write(jo.toJSONString());
+
+            pw.flush();
+            pw.close();
+
+            return true;
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static Measurement readMeasurement(String fileName){
+        Measurement measurement = null;
+        try {
+            measurement = new Measurement(readParameters(fileName));
+
+            Object obj = new JSONParser().parse(new FileReader(fileName));
+            JSONObject jo = (JSONObject) obj;
+            String comment = jo.get("comment").toString();
+            if(comment != null) {
+                measurement.updateComment(comment);
+            }
+
+            JSONArray jsonArray = (JSONArray) jo.get("values");
+
+
+            for (Object o : jsonArray) {
+                JSONObject value = (JSONObject) o;
+                SingleValue singleValue = new SingleValue((Double) value.get("valueDisplayA"),
+                        (Double) value.get("valueDisplayB"), (Double) value.get("valueDisplayX"));
+                measurement.addSingleValue(singleValue);
+            }
+
+            measurement.setState(MeasurementState.SAVED);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return measurement;
+    }
+
+
 }

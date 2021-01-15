@@ -1,18 +1,19 @@
 package com.app.screen.controller;
 
 import com.app.service.AppMain;
+import com.app.service.calibration.CalibrationType;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class CalibrationController implements Initializable {
 
@@ -30,21 +31,49 @@ public class CalibrationController implements Initializable {
 
     // contentContainer
     @FXML
+    TextField calibrationInput;
+    @FXML
+    TextField electricalLengthInput;
+
+    @FXML
     ToggleGroup calibrationType;
+    @FXML
+    RadioButton shortType;
+    @FXML
+    RadioButton loadType;
+    @FXML
+    RadioButton openType;
     // actionContainer
     @FXML
     Button runCalibrationBtn;
 
 
     public void runCalibration(MouseEvent event) {
-        AppMain.calibrationService.runCalibration();
+        if (AppMain.calibrationService.isCalibrated()) {
+            AppMain.calibrationService.closeCalibration();
+        }
+        RadioButton selectedRadioButton = (RadioButton) calibrationType.getSelectedToggle();
+        AppMain.calibrationService.runCalibration(selectedRadioButton.getText());
+        calibrationInput.setDisable(true);
+        electricalLengthInput.setDisable(true);
+        if (AppMain.calibrationService.isCalibrated()) {
+            runCalibrationBtn.setText("Close");
+        }
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        RadioButton rb = (RadioButton) calibrationType.getSelectedToggle();
-        rb.getText();
+        AppMain.calibrationService.addRadioButtons(new LinkedList<>(Arrays.asList(shortType, openType, loadType)));
 
+        if (AppMain.calibrationService.isCalibrated()) {
+            runCalibrationBtn.setText("Close");
+        }
+        calibrationInput.setText(AppMain.environmentParameters.getOther().getCapacitance() + "");
+        electricalLengthInput.setText(AppMain.environmentParameters.getOther().getElectricalLength() + "");
+        if (AppMain.calibrationService.isCalibrationInProcess()) {
+            calibrationInput.setDisable(true);
+            electricalLengthInput.setDisable(true);
+        }
     }
 
 }

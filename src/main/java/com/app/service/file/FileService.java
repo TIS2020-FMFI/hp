@@ -1,6 +1,7 @@
 package com.app.service.file;
 
 import com.app.persistent.JsonParser;
+import com.app.service.AppMain;
 import com.app.service.file.parameters.EnvironmentParameters;
 
 import java.io.FileNotFoundException;
@@ -9,7 +10,7 @@ public class FileService {
     private final String configPath;
     private String autoSavingDir;
     private boolean autoSave;
-    private EnvironmentParameters environmentParameters;
+
 
     public FileService(String configPath) {
         this.configPath = configPath;
@@ -31,19 +32,33 @@ public class FileService {
         this.autoSave = autoSave;
     }
 
-    public EnvironmentParameters getEnvironmentParameters() {
-        return environmentParameters;
-    }
-
-    public void setEnvironmentParameters(EnvironmentParameters environmentParameters) {
-        this.environmentParameters = environmentParameters;
-    }
-
     public boolean saveConfig() throws FileNotFoundException {
-        return JsonParser.writeConfig(configPath, environmentParameters);
+        return JsonParser.writeParameters(configPath, AppMain.environmentParameters);
     }
 
-    public EnvironmentParameters loadConfig() throws Exception {
-        return JsonParser.readConfig(configPath);
+    public EnvironmentParameters loadConfig() {
+        return JsonParser.readParameters(configPath);
     }
+
+//    public boolean saveData(){
+//        if (measurement != null && (measurement.getState().equals(MeasurementState.STARTED) ||
+//                measurement.getState().equals(MeasurementState.FINISHED))){
+//            if(measurement.getIndexOfTheValueToSave() == 0 && measurement.getData().size() > 0){
+//                LocalTime localTime = LocalTime.now();
+//                autoSavingDir = autoSavingDir + localTime.getHour() + "." + localTime.getMinute() +
+//                        "-" + measurement.getParameters().getDisplayYY().getA() + "-" +
+//                        measurement.getParameters().getDisplayYY().getB() + "-" +
+//                        measurement.getParameters().getDisplayYY().getX().toString();
+//                return JsonParser.writeNewMeasurement(autoSavingDir,measurement);
+//            }
+//            else if(measurement.getIndexOfTheValueToSave() < measurement.getData().size()-1){
+//                return JsonParser.writeNewValues(autoSavingDir, measurement);
+//            }
+//        }
+//        return false;
+//    }
+//
+//    public Measurement loadData(String path){
+//        return JsonParser.readMeasurement(autoSavingDir);
+//    }
 }

@@ -2,14 +2,20 @@ package com.app.service.communication;
 
 
 import com.app.machineCommunication.Connection;
+import com.app.service.calibration.CalibrationType;
+import com.app.service.file.parameters.MeasuredQuantity;
 
 import java.io.IOException;
 
 public class CommunicationService {
     Connection connection;
 
-    public CommunicationService() throws IOException {
+    public CommunicationService() throws Exception {
         connection = new Connection();
+    }
+
+    public boolean isConnected() {
+        return connection.isConnected();
     }
 
     public boolean connect() throws Exception {
@@ -20,7 +26,12 @@ public class CommunicationService {
         }
     }
 
-    public void runMeasurement() throws IOException, InterruptedException {
-        connection.measurement();
+
+    public void runMeasurement(MeasuredQuantity mq) throws IOException, InterruptedException {
+        connection.measurement(mq);
+    }
+
+    public boolean runCalibration(CalibrationType calibrationType) throws IOException, InterruptedException {
+        return connection.calibrationHandler(calibrationType);
     }
 }
