@@ -24,7 +24,7 @@
 .item-header {
     -fx-background-color: white;
     -fx-background-radius: 15px;
-    -fx-pref-width: 100px;
+    -fx-pref-width: 130px;
 }
 .item-input {
     -fx-border-radius: 5px;
@@ -32,7 +32,7 @@
     -fx-pref-width: 150px;
 }
 .item-desc {
-    -fx-pref-width: 140px;
+    -fx-pref-width: 160px;
     -fx-fill-width: true;
     -fx-start-margin: 10px;
     -fx-padding: 0 10px;
