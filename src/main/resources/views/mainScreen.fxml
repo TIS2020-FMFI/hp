@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
@@ -20,7 +25,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1450.0" styleClass="try" stylesheets="@styles/mainScreenStyles.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.screen.controller.MainController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1450.0" styleClass="try" stylesheets="@styles/mainScreenStyles.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.screen.controller.MainController">
    <children>
       <VBox fx:id="mainContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1450.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -81,16 +86,16 @@
                                  <children>
                                     <GridPane minHeight="90.0" minWidth="400.0" styleClass="simple-border">
                                       <columnConstraints>
-                                        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="400.0" minWidth="10.0" prefWidth="183.0" />
-                                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="423.0" minWidth="207.0" prefWidth="207.0" />
+                                        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="300.0" minWidth="150.0" prefWidth="200.0" />
+                                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="400.0" minWidth="150.0" prefWidth="180.0" />
                                       </columnConstraints>
                                       <rowConstraints>
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="BOTTOM" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
                                       </rowConstraints>
                                        <VBox.margin>
                                           <Insets />
@@ -274,7 +279,7 @@
                                     </Button>
                                     <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Display B" StackPane.alignment="TOP_LEFT">
                                        <StackPane.margin>
-                                          <Insets left="230.0" />
+                                          <Insets left="305.0" />
                                        </StackPane.margin>
                                     </Button>
                                  </children>
@@ -289,11 +294,11 @@
                                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                       </columnConstraints>
                                       <rowConstraints>
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="BOTTOM" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
                                       </rowConstraints>
                                        <VBox.margin>
                                           <Insets />
@@ -371,6 +376,9 @@
                                        <StackPane.margin>
                                           <Insets top="10.0" />
                                        </StackPane.margin>
+                                       <padding>
+                                          <Insets bottom="5.0" />
+                                       </padding>
                                     </GridPane>
                                     <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Frequency sweep" StackPane.alignment="TOP_LEFT">
                                        <StackPane.margin>
@@ -394,7 +402,7 @@
                                                    </HBox.margin>
                                                 </Label>
                                                 <TextField fx:id="voltageStart" styleClass="item-input" />
-                                                <Label maxWidth="1.7976931348623157E308" styleClass="item-desc" text="(-40.00 - 40.00 Volts)" />
+                                                <Label maxWidth="1.7976931348623157E308" styleClass="item-desc" text="(-40.00 - 40.00 V)" />
                                              </children>
                                              <padding>
                                                 <Insets left="10.0" right="10.0" />
@@ -411,7 +419,7 @@
                                                    </HBox.margin>
                                                 </Label>
                                                 <TextField fx:id="voltageStop" styleClass="item-input" />
-                                                <Label styleClass="item-desc" text="(-40.00 - 40.00 Volts)" />
+                                                <Label styleClass="item-desc" text="(-40.00 - 40.00 V)" />
                                              </children>
                                              <padding>
                                                 <Insets left="10.0" right="10.0" />
@@ -428,7 +436,7 @@
                                                    </HBox.margin>
                                                 </Label>
                                                 <TextField fx:id="voltageStep" styleClass="item-input" />
-                                                <Label styleClass="item-desc" text="(0.01 - 40.00 Volts)" />
+                                                <Label styleClass="item-desc" text="(0.01 - 40.00 V)" />
                                              </children>
                                              <padding>
                                                 <Insets left="10.0" right="10.0" />
@@ -445,7 +453,7 @@
                                                    </HBox.margin>
                                                 </Label>
                                                 <TextField fx:id="voltageSpot" styleClass="item-input" />
-                                                <Label styleClass="item-desc" text="(-40.00 - 40.00 Volts)" />
+                                                <Label styleClass="item-desc" text="(-40.00 - 40.00 V)" />
                                              </children>
                                              <padding>
                                                 <Insets left="10.0" right="10.0" />
@@ -456,11 +464,11 @@
                                           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                        </columnConstraints>
                                        <rowConstraints>
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="CENTER" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
                                        </rowConstraints>
                                        <VBox.margin>
                                           <Insets />
@@ -468,6 +476,9 @@
                                        <StackPane.margin>
                                           <Insets top="10.0" />
                                        </StackPane.margin>
+                                       <padding>
+                                          <Insets bottom="5.0" />
+                                       </padding>
                                     </GridPane>
                                     <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Voltage sweep" StackPane.alignment="TOP_LEFT">
                                        <StackPane.margin>
@@ -478,7 +489,7 @@
                               </StackPane>
                               <StackPane>
                                  <children>
-                                    <GridPane minHeight="200.0" minWidth="400.0" styleClass="simple-border">
+                                    <GridPane minHeight="150.0" minWidth="400.0" styleClass="simple-border">
                                        <children>
                                           <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" prefHeight="20.0" prefWidth="200.0" GridPane.rowIndex="1">
                                              <children>
@@ -524,7 +535,7 @@
                                                       <Insets left="5.0" right="5.0" />
                                                    </HBox.margin>
                                                 </Label>
-                                                <ChoiceBox fx:id="otherSweepType" prefWidth="150.0" />
+                                                <ChoiceBox fx:id="otherSweepType" prefWidth="150.0" styleClass="item-input" />
                                              </children>
                                              <padding>
                                                 <Insets left="10.0" right="10.0" />
@@ -567,12 +578,12 @@
                                           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                        </columnConstraints>
                                        <rowConstraints>
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="BOTTOM" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="BOTTOM" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="CENTER" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="25.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
                                        </rowConstraints>
                                        <VBox.margin>
                                           <Insets />
@@ -580,6 +591,9 @@
                                        <StackPane.margin>
                                           <Insets top="10.0" />
                                        </StackPane.margin>
+                                       <padding>
+                                          <Insets bottom="5.0" />
+                                       </padding>
                                     </GridPane>
                                     <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Other" StackPane.alignment="TOP_LEFT">
                                        <StackPane.margin>
@@ -590,7 +604,7 @@
                               </StackPane>
                               <StackPane>
                                  <children>
-                                    <GridPane minHeight="200.0" minWidth="400.0" styleClass="simple-border">
+                                    <GridPane minHeight="160.0" minWidth="400.0" styleClass="simple-border">
                                        <columnConstraints>
                                           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                        </columnConstraints>
