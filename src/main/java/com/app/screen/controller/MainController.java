@@ -5,7 +5,10 @@ import com.app.service.file.parameters.*;
 import com.app.service.graph.GraphService;
 import com.app.service.graph.GraphState;
 import com.app.service.graph.GraphType;
+import com.app.service.measurement.Measurement;
+import com.app.service.measurement.MeasurementState;
 import com.app.service.notification.NotificationType;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -323,7 +326,7 @@ public class MainController implements Initializable {
     }
 
     public void resetInstrument(MouseEvent event) {
-        // TODO: send command to reset instrument
+        // TODO: send command to reset instrument ???
     }
 
     public void triggerCalibration(MouseEvent event) {
@@ -335,21 +338,22 @@ public class MainController implements Initializable {
     }
 
     public void quitApp(MouseEvent event) {
-        // TODO: if not all data saved -> notification and abort quit
-        // save global props into config
-//        if (AppMain.measurement.getState().equals(MeasurementState.SAVED) ||
-//                AppMain.measurement.getState().equals(MeasurementState.ABORTED) ||
-//                AppMain.measurement.getState().equals(MeasurementState.WAITING)) {
-//            try {
-//                if (!AppMain.measurement.getState().equals(MeasurementState.WAITING)) AppMain.fileService.saveConfig();
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//            }
-//            Platform.exit();
-//            System.exit(0);
-//        } else if (!AppMain.measurement.getState().equals(MeasurementState.SAVED)) {
-//            AppMain.notificationService.createNotification("There is some data that has not been saved yet, do you want to quit anyway?", NotificationType.WARNING);
-//        }
+        if (gs.isRunningGraph()) {
+            AppMain.notificationService.createNotification("There is a measurement in process, either wait or abort it.", NotificationType.WARNING);
+        } else if (gs.measurementSaved(GraphType.UPPER) && gs.measurementSaved(GraphType.LOWER)) {
+            // TODO: save global props into config
+            Platform.runLater(() -> {
+                try {
+                    Thread.sleep(300);
+                    Platform.exit();
+                    System.exit(0);
+                } catch (InterruptedException e) {
+                    AppMain.notificationService.createNotification("Could not quit -> " + e.getMessage(), NotificationType.ERROR);
+                }
+            });
+        } else {
+            AppMain.dataNotSavedDialog.openDialog();
+        }
     }
 
     public void showHelpWindow(MouseEvent event) {
