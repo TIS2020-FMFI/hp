@@ -25,7 +25,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1450.0" styleClass="try" stylesheets="@styles/mainScreenStyles.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.screen.controller.MainController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="850.0" prefWidth="1200.0" stylesheets="@styles/mainScreenStyles.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.screen.controller.MainController">
    <children>
       <VBox fx:id="mainContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1450.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -80,588 +80,1181 @@
                <children>
                   <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <VBox maxHeight="1.7976931348623157E308" maxWidth="-Infinity" prefWidth="500.0" spacing="5.0" HBox.hgrow="ALWAYS">
-                           <children>
-                              <StackPane>
-                                 <children>
-                                    <GridPane minHeight="90.0" minWidth="400.0" styleClass="simple-border">
-                                      <columnConstraints>
-                                        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="300.0" minWidth="150.0" prefWidth="200.0" />
-                                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="400.0" minWidth="150.0" prefWidth="180.0" />
-                                      </columnConstraints>
-                                      <rowConstraints>
-                                          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="BOTTOM" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
-                                      </rowConstraints>
-                                       <VBox.margin>
-                                          <Insets />
-                                       </VBox.margin>
+                        <TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="tab-pane" tabClosingPolicy="UNAVAILABLE">
+                           <tabs>
+                              <Tab text="Upper graph">
+                                 <content>
+                                    <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                                        <children>
-                                          <HBox alignment="CENTER_LEFT" prefHeight="17.0" prefWidth="207.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                             <padding>
-                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                             </padding>
+                                          <VBox maxHeight="1.7976931348623157E308" maxWidth="-Infinity" prefWidth="500.0" spacing="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                              <children>
-                                                <RadioButton mnemonicParsing="false" text="R">
-                                                   <toggleGroup>
-                                                      <ToggleGroup fx:id="displayB" />
-                                                   </toggleGroup>
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                </RadioButton>
-                                                <RadioButton mnemonicParsing="false" text="G" toggleGroup="$displayB">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                </RadioButton>
-                                                <RadioButton mnemonicParsing="false" text="D" toggleGroup="$displayB">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                </RadioButton>
-                                                <RadioButton mnemonicParsing="false" text="Q" toggleGroup="$displayB">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                </RadioButton>
-                                             </children>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                                             <children>
-                                                <RadioButton mnemonicParsing="false" text="0(rad)" toggleGroup="$displayB">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                </RadioButton>
-                                                <RadioButton mnemonicParsing="false" text="0(deg)" toggleGroup="$displayB">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                </RadioButton>
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                             </padding>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                                             <children>
-                                                <RadioButton mnemonicParsing="false" text="ry" toggleGroup="$displayB">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                </RadioButton>
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                             </padding>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" prefWidth="200.0" spacing="5.0" GridPane.rowIndex="1">
-                                             <children>
-                                                <RadioButton mnemonicParsing="false" text="L">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                   <toggleGroup>
-                                                      <ToggleGroup fx:id="displayA" />
-                                                   </toggleGroup>
-                                                </RadioButton>
-                                                <RadioButton mnemonicParsing="false" text="C" toggleGroup="$displayA">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                </RadioButton>
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                             </padding>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
-                                             <children>
-                                                <RadioButton mnemonicParsing="false" text="rx" toggleGroup="$displayA">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                </RadioButton>
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                             </padding>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.rowIndex="2">
-                                             <children>
-                                                <RadioButton mnemonicParsing="false" text="Z" toggleGroup="$displayA">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                </RadioButton>
-                                                <RadioButton mnemonicParsing="false" text="Y" toggleGroup="$displayA">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                </RadioButton>
-                                                <RadioButton mnemonicParsing="false" text="r" toggleGroup="$displayA">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                </RadioButton>
-                                                <CheckBox mnemonicParsing="false" prefHeight="27.0" text="abs">
-                                                   <HBox.margin>
-                                                      <Insets />
-                                                   </HBox.margin>
-                                                </CheckBox>
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                             </padding>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="4">
-                                             <children>
-                                                <RadioButton mnemonicParsing="false" text="G" toggleGroup="$displayA">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                </RadioButton>
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                             </padding>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
-                                             <children>
-                                                <RadioButton mnemonicParsing="false" text="B" toggleGroup="$displayB">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                </RadioButton>
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                             </padding>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
-                                             <children>
-                                                <RadioButton mnemonicParsing="false" text="Xs (Zplots)" toggleGroup="$displayB">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                </RadioButton>
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                             </padding>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="5">
-                                             <children>
-                                                <RadioButton mnemonicParsing="false" text="R" toggleGroup="$displayA">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                </RadioButton>
-                                             </children>
-                                             <padding>
-                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                             </padding>
-                                          </HBox>
-                                       </children>
-                                       <StackPane.margin>
-                                          <Insets top="10.0" />
-                                       </StackPane.margin>
-                                    </GridPane>
-                                    <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Dispaly A" StackPane.alignment="TOP_LEFT">
-                                       <StackPane.margin>
-                                          <Insets left="15.0" />
-                                       </StackPane.margin>
-                                    </Button>
-                                    <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Display B" StackPane.alignment="TOP_LEFT">
-                                       <StackPane.margin>
-                                          <Insets left="305.0" />
-                                       </StackPane.margin>
-                                    </Button>
-                                 </children>
-                                 <VBox.margin>
-                                    <Insets />
-                                 </VBox.margin>
-                              </StackPane>
-                              <StackPane>
-                                 <children>
-                                    <GridPane minHeight="120.0" minWidth="400.0" styleClass="simple-border">
-                                      <columnConstraints>
-                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                      </columnConstraints>
-                                      <rowConstraints>
-                                          <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="BOTTOM" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
-                                      </rowConstraints>
-                                       <VBox.margin>
-                                          <Insets />
-                                       </VBox.margin>
-                                       <children>
-                                          <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" prefHeight="20.0" prefWidth="200.0" GridPane.rowIndex="1">
-                                             <children>
-                                                <Label styleClass="item-header" text="Start">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                   <HBox.margin>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </HBox.margin>
-                                                </Label>
-                                                <TextField fx:id="frequencyStart" styleClass="item-input" />
-                                                <Label maxWidth="1.7976931348623157E308" prefHeight="17.0" prefWidth="105.0" styleClass="item-desc" text="(1.0 - 1000 Mhz)" />
-                                             </children>
-                                             <padding>
-                                                <Insets left="10.0" right="10.0" />
-                                             </padding>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
-                                             <children>
-                                                <Label styleClass="item-header" text="Stop">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                   <HBox.margin>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </HBox.margin>
-                                                </Label>
-                                                <TextField fx:id="frequencyStop" styleClass="item-input" />
-                                                <Label styleClass="item-desc" text="(1.0 - 1000 Mhz)" />
-                                             </children>
-                                             <padding>
-                                                <Insets left="10.0" right="10.0" />
-                                             </padding>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="3">
-                                             <children>
-                                                <Label styleClass="item-header" text="Step">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                   <HBox.margin>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </HBox.margin>
-                                                </Label>
-                                                <TextField fx:id="frequencyStep" styleClass="item-input" />
-                                                <Label styleClass="item-desc" text="(0.1 - 999 Mhz)" />
-                                             </children>
-                                             <padding>
-                                                <Insets left="10.0" right="10.0" />
-                                             </padding>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="4">
-                                             <children>
-                                                <Label styleClass="item-header" text="Spot">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                   <HBox.margin>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </HBox.margin>
-                                                </Label>
-                                                <TextField fx:id="frequencySpot" styleClass="item-input" />
-                                                <Label styleClass="item-desc" text="(1.0 - 1000 Mhz)" />
-                                             </children>
-                                             <padding>
-                                                <Insets left="10.0" right="10.0" />
-                                             </padding>
-                                          </HBox>
-                                       </children>
-                                       <StackPane.margin>
-                                          <Insets top="10.0" />
-                                       </StackPane.margin>
-                                       <padding>
-                                          <Insets bottom="5.0" />
-                                       </padding>
-                                    </GridPane>
-                                    <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Frequency sweep" StackPane.alignment="TOP_LEFT">
-                                       <StackPane.margin>
-                                          <Insets left="15.0" />
-                                       </StackPane.margin>
-                                    </Button>
-                                 </children>
-                              </StackPane>
-                              <StackPane>
-                                 <children>
-                                    <GridPane minHeight="120.0" minWidth="400.0" styleClass="simple-border">
-                                       <children>
-                                          <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" prefHeight="20.0" prefWidth="200.0" GridPane.rowIndex="1">
-                                             <children>
-                                                <Label styleClass="item-header" text="Start">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                   <HBox.margin>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </HBox.margin>
-                                                </Label>
-                                                <TextField fx:id="voltageStart" styleClass="item-input" />
-                                                <Label maxWidth="1.7976931348623157E308" styleClass="item-desc" text="(-40.00 - 40.00 V)" />
-                                             </children>
-                                             <padding>
-                                                <Insets left="10.0" right="10.0" />
-                                             </padding>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
-                                             <children>
-                                                <Label styleClass="item-header" text="Stop">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                   <HBox.margin>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </HBox.margin>
-                                                </Label>
-                                                <TextField fx:id="voltageStop" styleClass="item-input" />
-                                                <Label styleClass="item-desc" text="(-40.00 - 40.00 V)" />
-                                             </children>
-                                             <padding>
-                                                <Insets left="10.0" right="10.0" />
-                                             </padding>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="3">
-                                             <children>
-                                                <Label styleClass="item-header" text="Step">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                   <HBox.margin>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </HBox.margin>
-                                                </Label>
-                                                <TextField fx:id="voltageStep" styleClass="item-input" />
-                                                <Label styleClass="item-desc" text="(0.01 - 40.00 V)" />
-                                             </children>
-                                             <padding>
-                                                <Insets left="10.0" right="10.0" />
-                                             </padding>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="4">
-                                             <children>
-                                                <Label styleClass="item-header" text="Spot">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                   <HBox.margin>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </HBox.margin>
-                                                </Label>
-                                                <TextField fx:id="voltageSpot" styleClass="item-input" />
-                                                <Label styleClass="item-desc" text="(-40.00 - 40.00 V)" />
-                                             </children>
-                                             <padding>
-                                                <Insets left="10.0" right="10.0" />
-                                             </padding>
-                                          </HBox>
-                                       </children>
-                                       <columnConstraints>
-                                          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                       </columnConstraints>
-                                       <rowConstraints>
-                                          <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="CENTER" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
-                                       </rowConstraints>
-                                       <VBox.margin>
-                                          <Insets />
-                                       </VBox.margin>
-                                       <StackPane.margin>
-                                          <Insets top="10.0" />
-                                       </StackPane.margin>
-                                       <padding>
-                                          <Insets bottom="5.0" />
-                                       </padding>
-                                    </GridPane>
-                                    <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Voltage sweep" StackPane.alignment="TOP_LEFT">
-                                       <StackPane.margin>
-                                          <Insets left="15.0" />
-                                       </StackPane.margin>
-                                    </Button>
-                                 </children>
-                              </StackPane>
-                              <StackPane>
-                                 <children>
-                                    <GridPane minHeight="150.0" minWidth="400.0" styleClass="simple-border">
-                                       <children>
-                                          <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" prefHeight="20.0" prefWidth="200.0" GridPane.rowIndex="1">
-                                             <children>
-                                                <Label styleClass="item-header" text="Capacitance 'C0'">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                   <HBox.margin>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </HBox.margin>
-                                                </Label>
-                                                <TextField fx:id="otherCapacitance" styleClass="item-input" />
-                                                <Label maxWidth="1.7976931348623157E308" prefHeight="17.0" prefWidth="105.0" styleClass="item-desc" text="(-1.000 - 1.000 pf)" />
-                                             </children>
-                                             <padding>
-                                                <Insets left="10.0" right="10.0" />
-                                             </padding>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
-                                             <children>
-                                                <Label styleClass="item-header" text="Electrical length">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                   <HBox.margin>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </HBox.margin>
-                                                </Label>
-                                                <TextField fx:id="otherElectricalLength" styleClass="item-input" />
-                                                <Label styleClass="item-desc" text="(0.00 - 99.99 cm)" />
-                                             </children>
-                                             <padding>
-                                                <Insets left="10.0" right="10.0" />
-                                             </padding>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="3">
-                                             <children>
-                                                <Label styleClass="item-header" text="Sweep type">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                   <HBox.margin>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </HBox.margin>
-                                                </Label>
-                                                <ChoiceBox fx:id="otherSweepType" prefWidth="150.0" styleClass="item-input" />
-                                             </children>
-                                             <padding>
-                                                <Insets left="10.0" right="10.0" />
-                                             </padding>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="4">
-                                             <children>
-                                                <Label styleClass="item-header" text="High speed">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                   <HBox.margin>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </HBox.margin>
-                                                </Label>
-                                                <ChoiceBox fx:id="otherHighSpeed" prefWidth="150.0" />
-                                             </children>
-                                             <padding>
-                                                <Insets left="10.0" right="10.0" />
-                                             </padding>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="5">
-                                             <children>
-                                                <Label styleClass="item-header" text="Auto sweep">
-                                                   <padding>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </padding>
-                                                   <HBox.margin>
-                                                      <Insets left="5.0" right="5.0" />
-                                                   </HBox.margin>
-                                                </Label>
-                                                <ChoiceBox fx:id="otherAutoSweep" prefWidth="150.0" />
-                                             </children>
-                                             <padding>
-                                                <Insets left="10.0" right="10.0" />
-                                             </padding>
-                                          </HBox>
-                                       </children>
-                                       <columnConstraints>
-                                          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                       </columnConstraints>
-                                       <rowConstraints>
-                                          <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="CENTER" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="25.0" valignment="BOTTOM" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
-                                       </rowConstraints>
-                                       <VBox.margin>
-                                          <Insets />
-                                       </VBox.margin>
-                                       <StackPane.margin>
-                                          <Insets top="10.0" />
-                                       </StackPane.margin>
-                                       <padding>
-                                          <Insets bottom="5.0" />
-                                       </padding>
-                                    </GridPane>
-                                    <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Other" StackPane.alignment="TOP_LEFT">
-                                       <StackPane.margin>
-                                          <Insets left="15.0" />
-                                       </StackPane.margin>
-                                    </Button>
-                                 </children>
-                              </StackPane>
-                              <StackPane>
-                                 <children>
-                                    <GridPane minHeight="160.0" minWidth="400.0" styleClass="simple-border">
-                                       <columnConstraints>
-                                          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                       </columnConstraints>
-                                       <rowConstraints>
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="BOTTOM" vgrow="SOMETIMES" />
-                                       </rowConstraints>
-                                       <StackPane.margin>
-                                          <Insets top="10.0" />
-                                       </StackPane.margin>
-                                       <VBox.margin>
-                                          <Insets />
-                                       </VBox.margin>
-                                       <children>
-                                          <VBox>
-                                             <children>
-                                                <TextArea fx:id="commentInput" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
-                                                   <GridPane.margin>
-                                                      <Insets />
-                                                   </GridPane.margin>
-                                                   <VBox.margin>
-                                                      <Insets bottom="10.0" left="10.0" right="10.0" top="20.0" />
-                                                   </VBox.margin>
-                                                </TextArea>
-                                                <HBox alignment="BOTTOM_RIGHT" fillHeight="false" VBox.vgrow="NEVER">
+                                                <StackPane>
                                                    <children>
-                                                      <Button alignment="CENTER" mnemonicParsing="false" onMouseReleased="#updateComment" styleClass="graph-btn" text="Save" textAlignment="CENTER">
-                                                         <HBox.margin>
-                                                            <Insets bottom="10.0" left="10.0" right="10.0" />
-                                                         </HBox.margin>
+                                                      <GridPane minHeight="90.0" minWidth="400.0" styleClass="simple-border">
+                                                         <children>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="17.0" prefWidth="207.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                                               <children>
+                                                                  <RadioButton mnemonicParsing="false" text="R">
+                                                                     <toggleGroup>
+                                                                        <ToggleGroup fx:id="displayBUpper" />
+                                                                     </toggleGroup>
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                                  <RadioButton mnemonicParsing="false" text="G" toggleGroup="$displayBUpper">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                                  <RadioButton mnemonicParsing="false" text="D" toggleGroup="$displayBUpper">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                                  <RadioButton mnemonicParsing="false" text="Q" toggleGroup="$displayBUpper">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                                               <children>
+                                                                  <RadioButton mnemonicParsing="false" text="0(rad)" toggleGroup="$displayBUpper">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                                  <RadioButton mnemonicParsing="false" text="0(deg)" toggleGroup="$displayBUpper">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                                               <children>
+                                                                  <RadioButton mnemonicParsing="false" text="ry" toggleGroup="$displayBUpper">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefWidth="200.0" spacing="5.0" GridPane.rowIndex="1">
+                                                               <children>
+                                                                  <RadioButton mnemonicParsing="false" text="L">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <toggleGroup>
+                                                                        <ToggleGroup fx:id="displayAUpper" />
+                                                                     </toggleGroup>
+                                                                  </RadioButton>
+                                                                  <RadioButton mnemonicParsing="false" text="C" toggleGroup="$displayAUpper">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                                                               <children>
+                                                                  <RadioButton mnemonicParsing="false" text="rx" toggleGroup="$displayAUpper">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.rowIndex="2">
+                                                               <children>
+                                                                  <RadioButton mnemonicParsing="false" text="Z" toggleGroup="$displayAUpper">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                                  <RadioButton mnemonicParsing="false" text="Y" toggleGroup="$displayAUpper">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                                  <RadioButton mnemonicParsing="false" text="r" toggleGroup="$displayAUpper">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                                  <CheckBox mnemonicParsing="false" prefHeight="27.0" text="abs">
+                                                                     <HBox.margin>
+                                                                        <Insets />
+                                                                     </HBox.margin>
+                                                                  </CheckBox>
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="4">
+                                                               <children>
+                                                                  <RadioButton mnemonicParsing="false" text="G" toggleGroup="$displayAUpper">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                                                               <children>
+                                                                  <RadioButton mnemonicParsing="false" text="B" toggleGroup="$displayBUpper">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                                               <children>
+                                                                  <RadioButton mnemonicParsing="false" text="Xs (Zplots)" toggleGroup="$displayBUpper">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="5">
+                                                               <children>
+                                                                  <RadioButton mnemonicParsing="false" text="R" toggleGroup="$displayAUpper">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                         </children>
+                                                         <columnConstraints>
+                                                            <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="300.0" minWidth="150.0" prefWidth="200.0" />
+                                                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="400.0" minWidth="150.0" prefWidth="180.0" />
+                                                         </columnConstraints>
+                                                         <rowConstraints>
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+                                                         </rowConstraints>
+                                                         <StackPane.margin>
+                                                            <Insets top="10.0" />
+                                                         </StackPane.margin>
+                                                         <VBox.margin>
+                                                            <Insets />
+                                                         </VBox.margin>
+                                                      </GridPane>
+                                                      <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Dispaly A" StackPane.alignment="TOP_LEFT">
+                                                         <StackPane.margin>
+                                                            <Insets left="15.0" />
+                                                         </StackPane.margin>
+                                                      </Button>
+                                                      <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Display B" StackPane.alignment="TOP_LEFT">
+                                                         <StackPane.margin>
+                                                            <Insets left="280.0" />
+                                                         </StackPane.margin>
                                                       </Button>
                                                    </children>
-                                                </HBox>
+                                                   <VBox.margin>
+                                                      <Insets />
+                                                   </VBox.margin>
+                                                </StackPane>
+                                                <StackPane>
+                                                   <children>
+                                                      <GridPane minHeight="120.0" minWidth="400.0" styleClass="simple-border">
+                                                         <children>
+                                                            <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" prefHeight="20.0" prefWidth="200.0" GridPane.rowIndex="1">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Start">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <TextField fx:id="frequencyStartUpper" styleClass="item-input" />
+                                                                  <Label maxWidth="1.7976931348623157E308" prefHeight="17.0" prefWidth="105.0" styleClass="item-desc" text="(1.0 - 1000 Mhz)" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Stop">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <TextField fx:id="frequencyStopUpper" styleClass="item-input" />
+                                                                  <Label styleClass="item-desc" text="(1.0 - 1000 Mhz)" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="3">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Step">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <TextField fx:id="frequencyStepUpper" styleClass="item-input" />
+                                                                  <Label styleClass="item-desc" text="(0.1 - 999 Mhz)" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="4">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Spot">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <TextField fx:id="frequencySpotUpper" styleClass="item-input" />
+                                                                  <Label styleClass="item-desc" text="(1.0 - 1000 Mhz)" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                         </children>
+                                                         <columnConstraints>
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                         </columnConstraints>
+                                                         <padding>
+                                                            <Insets bottom="5.0" />
+                                                         </padding>
+                                                         <rowConstraints>
+                                                            <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                         </rowConstraints>
+                                                         <StackPane.margin>
+                                                            <Insets top="10.0" />
+                                                         </StackPane.margin>
+                                                         <VBox.margin>
+                                                            <Insets />
+                                                         </VBox.margin>
+                                                      </GridPane>
+                                                      <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Frequency sweep" StackPane.alignment="TOP_LEFT">
+                                                         <StackPane.margin>
+                                                            <Insets left="15.0" />
+                                                         </StackPane.margin>
+                                                      </Button>
+                                                   </children>
+                                                </StackPane>
+                                                <StackPane>
+                                                   <children>
+                                                      <GridPane minHeight="120.0" minWidth="400.0" styleClass="simple-border">
+                                                         <children>
+                                                            <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" prefHeight="20.0" prefWidth="200.0" GridPane.rowIndex="1">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Start">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <TextField fx:id="voltageStartUpper" styleClass="item-input" />
+                                                                  <Label maxWidth="1.7976931348623157E308" styleClass="item-desc" text="(-40.00 - 40.00 V)" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Stop">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <TextField fx:id="voltageStopUpper" styleClass="item-input" />
+                                                                  <Label styleClass="item-desc" text="(-40.00 - 40.00 V)" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="3">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Step">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <TextField fx:id="voltageStepUpper" styleClass="item-input" />
+                                                                  <Label styleClass="item-desc" text="(0.01 - 40.00 V)" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="4">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Spot">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <TextField fx:id="voltageSpotUpper" styleClass="item-input" />
+                                                                  <Label styleClass="item-desc" text="(-40.00 - 40.00 V)" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                         </children>
+                                                         <columnConstraints>
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                         </columnConstraints>
+                                                         <padding>
+                                                            <Insets bottom="5.0" />
+                                                         </padding>
+                                                         <rowConstraints>
+                                                            <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="CENTER" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                         </rowConstraints>
+                                                         <StackPane.margin>
+                                                            <Insets top="10.0" />
+                                                         </StackPane.margin>
+                                                         <VBox.margin>
+                                                            <Insets />
+                                                         </VBox.margin>
+                                                      </GridPane>
+                                                      <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Voltage sweep" StackPane.alignment="TOP_LEFT">
+                                                         <StackPane.margin>
+                                                            <Insets left="15.0" />
+                                                         </StackPane.margin>
+                                                      </Button>
+                                                   </children>
+                                                </StackPane>
+                                                <StackPane>
+                                                   <children>
+                                                      <GridPane minHeight="150.0" minWidth="400.0" styleClass="simple-border">
+                                                         <children>
+                                                            <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" prefHeight="20.0" prefWidth="200.0" GridPane.rowIndex="1">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Capacitance 'C0'">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <TextField fx:id="otherCapacitanceUpper" styleClass="item-input" />
+                                                                  <Label maxWidth="1.7976931348623157E308" prefHeight="17.0" prefWidth="105.0" styleClass="item-desc" text="(-1.000 - 1.000 pf)" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Electrical length">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <TextField fx:id="otherElectricalLengthUpper" styleClass="item-input" />
+                                                                  <Label styleClass="item-desc" text="(0.00 - 99.99 cm)" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="3">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Sweep type">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <ChoiceBox fx:id="otherSweepTypeUpper" prefWidth="150.0" styleClass="item-input" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="4">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="High speed">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <ChoiceBox fx:id="otherHighSpeedUpper" prefWidth="150.0" styleClass="item-input" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="5">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Auto sweep">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <ChoiceBox fx:id="otherAutoSweepUpper" prefWidth="150.0" styleClass="item-input" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                         </children>
+                                                         <columnConstraints>
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                         </columnConstraints>
+                                                         <padding>
+                                                            <Insets bottom="5.0" />
+                                                         </padding>
+                                                         <rowConstraints>
+                                                            <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="CENTER" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                         </rowConstraints>
+                                                         <StackPane.margin>
+                                                            <Insets top="10.0" />
+                                                         </StackPane.margin>
+                                                         <VBox.margin>
+                                                            <Insets />
+                                                         </VBox.margin>
+                                                      </GridPane>
+                                                      <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Other" StackPane.alignment="TOP_LEFT">
+                                                         <StackPane.margin>
+                                                            <Insets left="15.0" />
+                                                         </StackPane.margin>
+                                                      </Button>
+                                                   </children>
+                                                </StackPane>
+                                                <StackPane>
+                                                   <children>
+                                                      <GridPane minHeight="150.0" minWidth="400.0" styleClass="simple-border">
+                                                         <children>
+                                                            <VBox>
+                                                               <children>
+                                                                  <TextArea fx:id="commentInputUpper" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                                                                     <GridPane.margin>
+                                                                        <Insets />
+                                                                     </GridPane.margin>
+                                                                     <VBox.margin>
+                                                                        <Insets bottom="5.0" left="10.0" right="10.0" top="20.0" />
+                                                                     </VBox.margin>
+                                                                  </TextArea>
+                                                                  <HBox alignment="BOTTOM_RIGHT" fillHeight="false" VBox.vgrow="NEVER">
+                                                                     <children>
+                                                                        <Button alignment="CENTER" mnemonicParsing="false" onMouseReleased="#updateComment" styleClass="graph-btn" text="Save" textAlignment="CENTER">
+                                                                           <HBox.margin>
+                                                                              <Insets bottom="5.0" left="10.0" right="10.0" />
+                                                                           </HBox.margin>
+                                                                        </Button>
+                                                                     </children>
+                                                                  </HBox>
+                                                               </children>
+                                                            </VBox>
+                                                         </children>
+                                                         <columnConstraints>
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                         </columnConstraints>
+                                                         <rowConstraints>
+                                                            <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                                                         </rowConstraints>
+                                                         <StackPane.margin>
+                                                            <Insets top="10.0" />
+                                                         </StackPane.margin>
+                                                         <VBox.margin>
+                                                            <Insets />
+                                                         </VBox.margin>
+                                                      </GridPane>
+                                                      <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Comment" StackPane.alignment="TOP_LEFT">
+                                                         <StackPane.margin>
+                                                            <Insets left="15.0" />
+                                                         </StackPane.margin>
+                                                      </Button>
+                                                   </children>
+                                                </StackPane>
                                              </children>
+                                             <padding>
+                                                <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+                                             </padding>
                                           </VBox>
                                        </children>
-                                    </GridPane>
-                                    <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Comment" StackPane.alignment="TOP_LEFT">
-                                       <StackPane.margin>
-                                          <Insets left="15.0" />
-                                       </StackPane.margin>
-                                    </Button>
-                                 </children>
-                              </StackPane>
-                           </children>
-                           <padding>
-                              <Insets bottom="30.0" left="30.0" top="30.0" />
-                           </padding>
-                        </VBox>
+                                    </AnchorPane>
+                                 </content>
+                              </Tab>
+                              <Tab text="Lower graph">
+                                 <content>
+                                    <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                                       <children>
+                                          <VBox maxHeight="1.7976931348623157E308" maxWidth="-Infinity" prefWidth="500.0" spacing="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <children>
+                                                <StackPane>
+                                                   <children>
+                                                      <GridPane minHeight="90.0" minWidth="400.0" styleClass="simple-border">
+                                                         <children>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="17.0" prefWidth="207.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                                               <children>
+                                                                  <RadioButton mnemonicParsing="false" text="R">
+                                                                     <toggleGroup>
+                                                                        <ToggleGroup fx:id="displayBLower" />
+                                                                     </toggleGroup>
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                                  <RadioButton mnemonicParsing="false" text="G" toggleGroup="$displayBLower">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                                  <RadioButton mnemonicParsing="false" text="D" toggleGroup="$displayBLower">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                                  <RadioButton mnemonicParsing="false" text="Q" toggleGroup="$displayBLower">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                                               <children>
+                                                                  <RadioButton mnemonicParsing="false" text="0(rad)" toggleGroup="$displayBLower">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                                  <RadioButton mnemonicParsing="false" text="0(deg)" toggleGroup="$displayBLower">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                                               <children>
+                                                                  <RadioButton mnemonicParsing="false" text="ry" toggleGroup="$displayBLower">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefWidth="200.0" spacing="5.0" GridPane.rowIndex="1">
+                                                               <children>
+                                                                  <RadioButton mnemonicParsing="false" text="L">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <toggleGroup>
+                                                                        <ToggleGroup fx:id="displayALower" />
+                                                                     </toggleGroup>
+                                                                  </RadioButton>
+                                                                  <RadioButton mnemonicParsing="false" text="C" toggleGroup="$displayALower">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                                                               <children>
+                                                                  <RadioButton mnemonicParsing="false" text="rx" toggleGroup="$displayALower">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.rowIndex="2">
+                                                               <children>
+                                                                  <RadioButton mnemonicParsing="false" text="Z" toggleGroup="$displayALower">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                                  <RadioButton mnemonicParsing="false" text="Y" toggleGroup="$displayALower">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                                  <RadioButton mnemonicParsing="false" text="r" toggleGroup="$displayALower">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                                  <CheckBox mnemonicParsing="false" prefHeight="27.0" text="abs">
+                                                                     <HBox.margin>
+                                                                        <Insets />
+                                                                     </HBox.margin>
+                                                                  </CheckBox>
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="4">
+                                                               <children>
+                                                                  <RadioButton mnemonicParsing="false" text="G" toggleGroup="$displayALower">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                                                               <children>
+                                                                  <RadioButton mnemonicParsing="false" text="B" toggleGroup="$displayBLower">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                                               <children>
+                                                                  <RadioButton mnemonicParsing="false" text="Xs (Zplots)" toggleGroup="$displayBLower">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="5">
+                                                               <children>
+                                                                  <RadioButton mnemonicParsing="false" text="R" toggleGroup="$displayALower">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                  </RadioButton>
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                         </children>
+                                                         <columnConstraints>
+                                                            <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="300.0" minWidth="150.0" prefWidth="200.0" />
+                                                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="400.0" minWidth="150.0" prefWidth="180.0" />
+                                                         </columnConstraints>
+                                                         <rowConstraints>
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+                                                         </rowConstraints>
+                                                         <StackPane.margin>
+                                                            <Insets top="10.0" />
+                                                         </StackPane.margin>
+                                                         <VBox.margin>
+                                                            <Insets />
+                                                         </VBox.margin>
+                                                      </GridPane>
+                                                      <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Dispaly A" StackPane.alignment="TOP_LEFT">
+                                                         <StackPane.margin>
+                                                            <Insets left="15.0" />
+                                                         </StackPane.margin>
+                                                      </Button>
+                                                      <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Display B" StackPane.alignment="TOP_LEFT">
+                                                         <StackPane.margin>
+                                                            <Insets left="280.0" />
+                                                         </StackPane.margin>
+                                                      </Button>
+                                                   </children>
+                                                   <VBox.margin>
+                                                      <Insets />
+                                                   </VBox.margin>
+                                                </StackPane>
+                                                <StackPane>
+                                                   <children>
+                                                      <GridPane minHeight="120.0" minWidth="400.0" styleClass="simple-border">
+                                                         <children>
+                                                            <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" prefHeight="20.0" prefWidth="200.0" GridPane.rowIndex="1">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Start">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <TextField fx:id="frequencyStartLower" styleClass="item-input" />
+                                                                  <Label maxWidth="1.7976931348623157E308" prefHeight="17.0" prefWidth="105.0" styleClass="item-desc" text="(1.0 - 1000 Mhz)" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Stop">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <TextField fx:id="frequencyStopLower" styleClass="item-input" />
+                                                                  <Label styleClass="item-desc" text="(1.0 - 1000 Mhz)" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="3">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Step">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <TextField fx:id="frequencyStepLower" styleClass="item-input" />
+                                                                  <Label styleClass="item-desc" text="(0.1 - 999 Mhz)" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="4">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Spot">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <TextField fx:id="frequencySpotLower" styleClass="item-input" />
+                                                                  <Label styleClass="item-desc" text="(1.0 - 1000 Mhz)" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                         </children>
+                                                         <columnConstraints>
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                         </columnConstraints>
+                                                         <padding>
+                                                            <Insets bottom="5.0" />
+                                                         </padding>
+                                                         <rowConstraints>
+                                                            <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                         </rowConstraints>
+                                                         <StackPane.margin>
+                                                            <Insets top="10.0" />
+                                                         </StackPane.margin>
+                                                         <VBox.margin>
+                                                            <Insets />
+                                                         </VBox.margin>
+                                                      </GridPane>
+                                                      <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Frequency sweep" StackPane.alignment="TOP_LEFT">
+                                                         <StackPane.margin>
+                                                            <Insets left="15.0" />
+                                                         </StackPane.margin>
+                                                      </Button>
+                                                   </children>
+                                                </StackPane>
+                                                <StackPane>
+                                                   <children>
+                                                      <GridPane minHeight="120.0" minWidth="400.0" styleClass="simple-border">
+                                                         <children>
+                                                            <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" prefHeight="20.0" prefWidth="200.0" GridPane.rowIndex="1">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Start">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <TextField fx:id="voltageStartLower" styleClass="item-input" />
+                                                                  <Label maxWidth="1.7976931348623157E308" styleClass="item-desc" text="(-40.00 - 40.00 V)" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Stop">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <TextField fx:id="voltageStopLower" styleClass="item-input" />
+                                                                  <Label styleClass="item-desc" text="(-40.00 - 40.00 V)" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="3">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Step">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <TextField fx:id="voltageStepLower" styleClass="item-input" />
+                                                                  <Label styleClass="item-desc" text="(0.01 - 40.00 V)" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="4">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Spot">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <TextField fx:id="voltageSpotLower" styleClass="item-input" />
+                                                                  <Label styleClass="item-desc" text="(-40.00 - 40.00 V)" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                         </children>
+                                                         <columnConstraints>
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                         </columnConstraints>
+                                                         <padding>
+                                                            <Insets bottom="5.0" />
+                                                         </padding>
+                                                         <rowConstraints>
+                                                            <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="CENTER" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                         </rowConstraints>
+                                                         <StackPane.margin>
+                                                            <Insets top="10.0" />
+                                                         </StackPane.margin>
+                                                         <VBox.margin>
+                                                            <Insets />
+                                                         </VBox.margin>
+                                                      </GridPane>
+                                                      <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Voltage sweep" StackPane.alignment="TOP_LEFT">
+                                                         <StackPane.margin>
+                                                            <Insets left="15.0" />
+                                                         </StackPane.margin>
+                                                      </Button>
+                                                   </children>
+                                                </StackPane>
+                                                <StackPane>
+                                                   <children>
+                                                      <GridPane minHeight="150.0" minWidth="400.0" styleClass="simple-border">
+                                                         <children>
+                                                            <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" prefHeight="20.0" prefWidth="200.0" GridPane.rowIndex="1">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Capacitance 'C0'">
+                                                                     <padding>
+                                                                        <Insets left="10.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <TextField fx:id="otherCapacitanceLower" styleClass="item-input" />
+                                                                  <Label maxWidth="1.7976931348623157E308" prefHeight="17.0" prefWidth="105.0" styleClass="item-desc" text="(-1.000 - 1.000 pf)" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Electrical length">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <TextField fx:id="otherElectricalLengthLower" styleClass="item-input" />
+                                                                  <Label styleClass="item-desc" text="(0.00 - 99.99 cm)" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="3">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Sweep type">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <ChoiceBox fx:id="otherSweepTypeLower" prefWidth="150.0" styleClass="item-input" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="4">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="High speed">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <ChoiceBox fx:id="otherHighSpeedLower" prefWidth="150.0" styleClass="item-input" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="5">
+                                                               <children>
+                                                                  <Label styleClass="item-header" text="Auto sweep">
+                                                                     <padding>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </padding>
+                                                                     <HBox.margin>
+                                                                        <Insets left="5.0" right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <ChoiceBox fx:id="otherAutoSweepLower" prefWidth="150.0" styleClass="item-input" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets left="10.0" right="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                         </children>
+                                                         <columnConstraints>
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                         </columnConstraints>
+                                                         <padding>
+                                                            <Insets bottom="5.0" />
+                                                         </padding>
+                                                         <rowConstraints>
+                                                            <RowConstraints minHeight="10.0" prefHeight="20.0" valignment="CENTER" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                                                         </rowConstraints>
+                                                         <StackPane.margin>
+                                                            <Insets top="10.0" />
+                                                         </StackPane.margin>
+                                                         <VBox.margin>
+                                                            <Insets />
+                                                         </VBox.margin>
+                                                      </GridPane>
+                                                      <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Other" StackPane.alignment="TOP_LEFT">
+                                                         <StackPane.margin>
+                                                            <Insets left="15.0" />
+                                                         </StackPane.margin>
+                                                      </Button>
+                                                   </children>
+                                                </StackPane>
+                                                <StackPane>
+                                                   <children>
+                                                      <GridPane minHeight="150.0" minWidth="400.0" styleClass="simple-border">
+                                                         <children>
+                                                            <VBox>
+                                                               <children>
+                                                                  <TextArea fx:id="commentInputLower" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                                                                     <GridPane.margin>
+                                                                        <Insets />
+                                                                     </GridPane.margin>
+                                                                     <VBox.margin>
+                                                                        <Insets bottom="5.0" left="10.0" right="10.0" top="20.0" />
+                                                                     </VBox.margin>
+                                                                  </TextArea>
+                                                                  <HBox alignment="BOTTOM_RIGHT" fillHeight="false" VBox.vgrow="NEVER">
+                                                                     <children>
+                                                                        <Button alignment="CENTER" mnemonicParsing="false" onMouseReleased="#updateComment" styleClass="graph-btn" text="Save" textAlignment="CENTER">
+                                                                           <HBox.margin>
+                                                                              <Insets bottom="5.0" left="10.0" right="10.0" />
+                                                                           </HBox.margin>
+                                                                        </Button>
+                                                                     </children>
+                                                                  </HBox>
+                                                               </children>
+                                                            </VBox>
+                                                         </children>
+                                                         <columnConstraints>
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                         </columnConstraints>
+                                                         <rowConstraints>
+                                                            <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                                                         </rowConstraints>
+                                                         <StackPane.margin>
+                                                            <Insets top="10.0" />
+                                                         </StackPane.margin>
+                                                         <VBox.margin>
+                                                            <Insets />
+                                                         </VBox.margin>
+                                                      </GridPane>
+                                                      <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Comment" StackPane.alignment="TOP_LEFT">
+                                                         <StackPane.margin>
+                                                            <Insets left="15.0" />
+                                                         </StackPane.margin>
+                                                      </Button>
+                                                   </children>
+                                                </StackPane>
+                                             </children>
+                                             <padding>
+                                                <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+                                             </padding>
+                                          </VBox>
+                                       </children>
+                                    </AnchorPane>
+                                 </content>
+                              </Tab>
+                           </tabs>
+                        </TabPane>
                         <VBox fx:id="VBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
                            <children>
-                              <VBox fx:id="notificationContainer" alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="70.0" stylesheets="@styles/notificationStyles.css" VBox.vgrow="NEVER">
+                              <VBox fx:id="notificationContainer" alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" stylesheets="@styles/notificationStyles.css" VBox.vgrow="NEVER">
                                  <VBox.margin>
                                     <Insets left="30.0" />
                                  </VBox.margin></VBox>
-                              <VBox fx:id="VBox1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="60.0" minWidth="500.0" prefHeight="265.0" prefWidth="691.0" styleClass="graph-area" VBox.vgrow="ALWAYS">
+                              <VBox fx:id="VBox1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="60.0" minWidth="500.0" styleClass="graph-area" VBox.vgrow="ALWAYS">
                                  <VBox.margin>
-                                    <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+                                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                                  </VBox.margin>
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -681,10 +1274,10 @@
                                                       <Insets left="5.0" right="5.0" />
                                                    </padding>
                                                    <toggleGroup>
-                                                      <ToggleGroup fx:id="toogleUpperXAxis" />
+                                                      <ToggleGroup fx:id="toggleUpperXAxis" />
                                                    </toggleGroup>
                                                 </RadioButton>
-                                                <RadioButton mnemonicParsing="false" text="Voltage" toggleGroup="$toogleUpperXAxis">
+                                                <RadioButton mnemonicParsing="false" text="Voltage" toggleGroup="$toggleUpperXAxis">
                                                    <padding>
                                                       <Insets left="5.0" right="5.0" />
                                                    </padding>
@@ -698,12 +1291,12 @@
                                     </ToolBar>
                                  </children>
                               </VBox>
-                              <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="60.0" minWidth="500.0" prefHeight="263.0" prefWidth="688.0" styleClass="graph-area" VBox.vgrow="ALWAYS">
+                              <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="60.0" minWidth="500.0" styleClass="graph-area" VBox.vgrow="ALWAYS">
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
                                  <VBox.margin>
-                                    <Insets bottom="30.0" left="30.0" right="30.0" />
+                                    <Insets bottom="20.0" left="20.0" right="20.0" />
                                  </VBox.margin>
                                  <children>
                                     <AnchorPane fx:id="lowerPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="260.0" prefWidth="680.0" VBox.vgrow="ALWAYS" />
@@ -720,10 +1313,10 @@
                                                       <Insets left="5.0" right="5.0" />
                                                    </padding>
                                                    <toggleGroup>
-                                                      <ToggleGroup fx:id="toogleLowerXAxis" />
+                                                      <ToggleGroup fx:id="toggleLowerXAxis" />
                                                    </toggleGroup>
                                                 </RadioButton>
-                                                <RadioButton mnemonicParsing="false" text="Voltage" toggleGroup="$toogleLowerXAxis">
+                                                <RadioButton mnemonicParsing="false" text="Voltage" toggleGroup="$toggleLowerXAxis">
                                                    <padding>
                                                       <Insets left="5.0" right="5.0" />
                                                    </padding>

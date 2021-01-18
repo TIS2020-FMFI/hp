@@ -1,17 +1,18 @@
 package com.app.service.measurement;
 
 import com.app.service.file.parameters.EnvironmentParameters;
+import com.app.service.file.parameters.Parameters;
 
 import java.util.LinkedList;
 
 public class Measurement {
     LinkedList<SingleValue> data;
-    EnvironmentParameters parameters;
+    Parameters parameters;
     StringBuilder comment;
     int indexOfTheValueToSave = 0;
     MeasurementState state;
 
-    public Measurement(EnvironmentParameters parameters) {
+    public Measurement(Parameters parameters) {
         this.data = new LinkedList<>();
         this.parameters = parameters;
         this.state = MeasurementState.WAITING;
@@ -22,7 +23,7 @@ public class Measurement {
         data.add(singleValue);
     }
 
-    public void setParameters(EnvironmentParameters parameters) {
+    public void setParameters(Parameters parameters) {
         this.parameters = parameters;
     }
 
@@ -38,7 +39,7 @@ public class Measurement {
         return data;
     }
 
-    public EnvironmentParameters getParameters() {
+    public Parameters getParameters() {
         return parameters;
     }
 
