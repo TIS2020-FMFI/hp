@@ -52,7 +52,7 @@ public class Graph {
     public void setState(GraphState state) { this.state = state; }
 
     public void run() {
-        measurement = new Measurement(AppMain.environmentParameters);
+        measurement = new Measurement(AppMain.environmentParameters.getActive());
         scene.getChildren().clear();
         scene.getChildren().add(chartViewer);
         chart = new CustomChart(measurement);

@@ -61,21 +61,22 @@ public class Connection extends Thread{
 
 
     public boolean connect() {
-        connected = true; // TODO: remove this line and uncomment all lines below when testing with machine
-
-//        if (connected){
-//            if(cmd)
-//                write(".");
-//            write("exit");
-//        }
-//        else{
-//            write("connect 19");
-//            writer();
-//        }
-//        //TODO: what happens if it doesn't connect?
-//        cmd = false;
-//        connected = !connected;
-
+        if (AppMain.debugMode) {
+            connected = true;
+        } else {
+            if (connected){
+                if(cmd)
+                    write(".");
+                write("exit");
+            }
+            else{
+                write("connect 19");
+                writer();
+            }
+            //TODO: what happens if it doesn't connect?
+            cmd = false;
+            connected = !connected;
+        }
         return connected;
     }
 
@@ -127,13 +128,12 @@ public class Connection extends Thread{
                 }
             }
         }, 0, 200);
-
-        }
+    }
 
 
 
     public void startMeasurement(Measurement data) throws IOException {
-       if (environmentParameters.getOther().isAutoSweep()) {
+       if (environmentParameters.getActive().getOther().isAutoSweep()) {
            write("s WU");
            write("c");
            StringBuilder result = new StringBuilder();
@@ -189,31 +189,31 @@ public class Connection extends Thread{
                     frequencySweep();
                 if (type == MeasuredQuantity.VOLTAGE)
                     voltageSweep();
-                if (!environmentParameters.getOther().isAutoSweep()) manualSweep=true;
+                if (!environmentParameters.getActive().getOther().isAutoSweep()) manualSweep=true;
                 startMeasurement(AppMain.graphService.getRunningGraph().getMeasurement());
             }
         }
     }
 
     public void highSpeed() {
-        if (environmentParameters.getOther().isHighSpeed())
+        if (environmentParameters.getActive().getOther().isHighSpeed())
             write("s H1");
         else
             write("s H0");
     }
 
     public void frequencySweep() {
-        write("s TF" + environmentParameters.getFrequencySweep().getStart() + "EN");
-        write("s PF" + environmentParameters.getFrequencySweep().getStop() + "EN");
-        write("s SF" + environmentParameters.getFrequencySweep().getStep() + "EN");
-        write("s FR" + environmentParameters.getFrequencySweep().getSpot() + "EN");
+        write("s TF" + environmentParameters.getActive().getFrequencySweep().getStart() + "EN");
+        write("s PF" + environmentParameters.getActive().getFrequencySweep().getStop() + "EN");
+        write("s SF" + environmentParameters.getActive().getFrequencySweep().getStep() + "EN");
+        write("s FR" + environmentParameters.getActive().getFrequencySweep().getSpot() + "EN");
     }
 
     public void voltageSweep()  {
-        write("s TB" + environmentParameters.getVoltageSweep().getStart() + "EN");
-        write("s PB" + environmentParameters.getVoltageSweep().getStop() + "EN");
-        write("s SB" + environmentParameters.getVoltageSweep().getStep() + "EN");
-        write("s BI" + environmentParameters.getVoltageSweep().getSpot() + "EN");
+        write("s TB" + environmentParameters.getActive().getVoltageSweep().getStart() + "EN");
+        write("s PB" + environmentParameters.getActive().getVoltageSweep().getStop() + "EN");
+        write("s SB" + environmentParameters.getActive().getVoltageSweep().getStep() + "EN");
+        write("s BI" + environmentParameters.getActive().getVoltageSweep().getSpot() + "EN");
     }
 //TODO: calibration parameters
     public void openCalibration() throws IOException {
@@ -239,7 +239,7 @@ public class Connection extends Thread{
             if (cmd){
                 if (!calibrationMode){
                     write("s C1");
-                    write("s EL" + environmentParameters.getOther().getElectricalLength() + "EN");
+                    write("s EL" + environmentParameters.getActive().getOther().getElectricalLength() + "EN");
                     highSpeed();
                     calibrationMode = !calibrationMode;
                     }

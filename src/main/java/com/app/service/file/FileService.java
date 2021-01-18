@@ -4,7 +4,8 @@ import com.app.persistent.JsonParser;
 import com.app.service.AppMain;
 import com.app.service.file.parameters.EnvironmentParameters;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.time.LocalDate;
 
 public class FileService {
     private final String configPath;
@@ -14,6 +15,9 @@ public class FileService {
 
     public FileService(String configPath) {
         this.configPath = configPath;
+        LocalDate localDate = LocalDate.now();
+        String dir = System.getProperty("user.dir");
+        autoSavingDir = dir + "\\" + localDate.getYear() + "\\" + localDate.getMonthValue() + "\\" + localDate.getDayOfMonth() + "\\";
     }
 
     public String getAutoSavingDir() {
@@ -32,12 +36,12 @@ public class FileService {
         this.autoSave = autoSave;
     }
 
-    public boolean saveConfig() throws FileNotFoundException {
-        return JsonParser.writeParameters(configPath, AppMain.environmentParameters);
+    public boolean saveConfig() throws IOException {
+        return JsonParser.saveEnvironmentParameters(configPath, AppMain.environmentParameters);
     }
 
     public EnvironmentParameters loadConfig() {
-        return JsonParser.readParameters(configPath);
+        return JsonParser.readEnvironmentParameters(configPath);
     }
 
 //    public boolean saveData(){

@@ -1,12 +1,12 @@
 package com.app.service.file.parameters;
 
 public class Other {
-    private double electricalLength;
-    private double capacitance;
     private static final double minElectricalLength = 0;
     private static final double maxElectricalLength = 99.99;
     private static final double minCapacitance = -1;
     private static final double maxCapacitance = 1;
+    private double electricalLength;
+    private double capacitance;
     private SweepType sweepType;
     private boolean highSpeed;
     private boolean autoSweep;

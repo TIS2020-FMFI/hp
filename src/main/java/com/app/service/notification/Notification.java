@@ -20,7 +20,7 @@ public class Notification extends HBox {
 
     public Notification show() {
         Label label = new Label(message);
-        label.setPrefWidth(800);
+        label.setPrefWidth(650);
         this.getChildren().addAll(label, removeIcon);
         this.setAlignment(Pos.CENTER_RIGHT);
         this.getStyleClass().addAll("notification", NotificationType.getClassName(type), "border");
