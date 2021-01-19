@@ -5,8 +5,8 @@ import com.app.service.file.parameters.*;
 import com.app.service.graph.GraphService;
 import com.app.service.graph.GraphState;
 import com.app.service.graph.GraphType;
-import com.app.service.measurement.Measurement;
-import com.app.service.measurement.MeasurementState;
+import com.app.service.measurement.DisplayAOption;
+import com.app.service.measurement.DisplayBOption;
 import com.app.service.notification.NotificationType;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -425,13 +426,84 @@ public class MainController implements Initializable {
         otherHighSpeedLower.getItems().addAll("ON", "OFF");
         otherHighSpeedLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isHighSpeed() ? 0:1);
 
-
         otherAutoSweepUpper.getItems().addAll("ON", "OFF");
-        otherHighSpeedUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isAutoSweep() ? 0:1);
+        otherAutoSweepUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isAutoSweep() ? 0:1);
         otherAutoSweepLower.getItems().addAll("ON", "OFF");
-        otherHighSpeedLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isAutoSweep() ? 0:1);
+        otherAutoSweepLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isAutoSweep() ? 0:1);
 
         savingDirMenu.setText(AppMain.fileService.getAutoSavingDir().replaceAll("\\\\", "/"));
+        createConstraintListener();
+    }
+
+    private void createConstraintListener() {
+        displayAUpper.selectedToggleProperty().addListener((observableValue, oldValue, newValue) -> {
+            List<DisplayBOption> bOptions = DisplayBOption.getBOptionsByA(DisplayAOption.getOptionFromString(((RadioButton) newValue).getText()));
+            if (bOptions != null) {
+                if (bOptions.contains(DisplayBOption.getOptionFromString(((RadioButton) displayBUpper.getSelectedToggle()).getText()))) {
+                    return;
+                }
+                DisplayBOption first = bOptions.stream().findFirst().get();
+                displayBUpper.getToggles().forEach(item -> {
+                    ToggleButton btn = (ToggleButton) item;
+                    if (btn.getText().contains(first.toString())) {
+                        item.setSelected(true);
+                    }
+                });
+            } else {
+                AppMain.notificationService.createNotification("Display B upper values array is empty!", NotificationType.ERROR);
+            }
+        });
+        displayBUpper.selectedToggleProperty().addListener((observableValue, oldValue, newValue) -> {
+            List<DisplayAOption> aOptions = DisplayAOption.getAOptionsByB(DisplayBOption.getOptionFromString(((RadioButton) newValue).getText()));
+            if (aOptions != null) {
+                if (aOptions.contains(DisplayAOption.getOptionFromString(((RadioButton) displayAUpper.getSelectedToggle()).getText()))) {
+                    return;
+                }
+                DisplayAOption first = aOptions.stream().findFirst().get();
+                displayAUpper.getToggles().forEach(item -> {
+                    ToggleButton btn = (ToggleButton) item;
+                    if (btn.getText().contains(first.toString())) {
+                        item.setSelected(true);
+                    }
+                });
+            } else {
+                AppMain.notificationService.createNotification("Display A upper values array is empty!", NotificationType.ERROR);
+            }
+        });
+        displayALower.selectedToggleProperty().addListener((observableValue, oldValue, newValue) -> {
+            List<DisplayBOption> bOptions = DisplayBOption.getBOptionsByA(DisplayAOption.getOptionFromString(((RadioButton) newValue).getText()));
+            if (bOptions != null) {
+                if (bOptions.contains(DisplayBOption.getOptionFromString(((RadioButton) displayBLower.getSelectedToggle()).getText()))) {
+                    return;
+                }
+                DisplayBOption first = bOptions.stream().findFirst().get();
+                displayBLower.getToggles().forEach(item -> {
+                    ToggleButton btn = (ToggleButton) item;
+                    if (btn.getText().contains(first.toString())) {
+                        item.setSelected(true);
+                    }
+                });
+            } else {
+                AppMain.notificationService.createNotification("Display B upper values array is empty!", NotificationType.ERROR);
+            }
+        });
+        displayBLower.selectedToggleProperty().addListener((observableValue, oldValue, newValue) -> {
+            List<DisplayAOption> aOptions = DisplayAOption.getAOptionsByB(DisplayBOption.getOptionFromString(((RadioButton) newValue).getText()));
+            if (aOptions != null) {
+                if (aOptions.contains(DisplayAOption.getOptionFromString(((RadioButton) displayALower.getSelectedToggle()).getText()))) {
+                    return;
+                }
+                DisplayAOption first = aOptions.stream().findFirst().get();
+                displayALower.getToggles().forEach(item -> {
+                    ToggleButton btn = (ToggleButton) item;
+                    if (btn.getText().contains(first.toString())) {
+                        item.setSelected(true);
+                    }
+                });
+            } else {
+                AppMain.notificationService.createNotification("Display B lower values array is empty!", NotificationType.ERROR);
+            }
+        });
     }
 
     public void runConnection(MouseEvent mouseEvent) throws Exception {
