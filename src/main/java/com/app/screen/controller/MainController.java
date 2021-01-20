@@ -7,6 +7,8 @@ import com.app.service.graph.GraphState;
 import com.app.service.graph.GraphType;
 import com.app.service.measurement.DisplayAOption;
 import com.app.service.measurement.DisplayBOption;
+import com.app.service.measurement.Measurement;
+import com.app.service.measurement.MeasurementState;
 import com.app.service.notification.NotificationType;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -23,6 +25,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Stack;
 
 public class MainController implements Initializable {
 
@@ -319,11 +322,17 @@ public class MainController implements Initializable {
     public void loadUpperGraph(MouseEvent event) {
         parametersTabPane.getSelectionModel().select(upperGraphTab);
         gs.loadGraph(GraphType.UPPER);
+        AppMain.environmentParameters.setUpperGraphParameters(gs.upperGraph.getMeasurement().getParameters());
+        ep = AppMain.environmentParameters;
+        inicialUpper();
     }
 
     public void loadLowerGraph(MouseEvent event) {
         parametersTabPane.getSelectionModel().select(lowerGraphTab);
         gs.loadGraph(GraphType.LOWER);
+        AppMain.environmentParameters.setUpperGraphParameters(gs.lowerGraph.getMeasurement().getParameters());
+        ep = AppMain.environmentParameters;
+        inicialLower();
     }
 
     public void toggleAutoSave(MouseEvent event) {
@@ -374,6 +383,14 @@ public class MainController implements Initializable {
 
         toggleDisabling();
 
+        inicialUpper();
+        inicialLower();
+
+        savingDirMenu.setText(AppMain.fileService.getAutoSavingDir());
+        createConstraintListener();
+    }
+
+    private void inicialUpper(){
         displayAUpper.getToggles().forEach(item -> {
             ToggleButton btn = (ToggleButton) item;
             if (btn.getText().equals(ep.getByType(GraphType.UPPER).getDisplayYY().getA())) {
@@ -386,6 +403,34 @@ public class MainController implements Initializable {
                 item.setSelected(true);
             }
         });
+
+        frequencyStartUpper.setText("" + ep.getByType(GraphType.UPPER).getFrequencySweep().getStart());
+        frequencyStopUpper.setText("" + ep.getByType(GraphType.UPPER).getFrequencySweep().getStop());
+        frequencySpotUpper.setText("" + ep.getByType(GraphType.UPPER).getFrequencySweep().getSpot());
+        frequencyStepUpper.setText("" + ep.getByType(GraphType.UPPER).getFrequencySweep().getStep());
+
+        voltageStartUpper.setText("" + ep.getByType(GraphType.UPPER).getVoltageSweep().getStart());
+        voltageStopUpper.setText("" + ep.getByType(GraphType.UPPER).getVoltageSweep().getStop());
+        voltageSpotUpper.setText("" + ep.getByType(GraphType.UPPER).getVoltageSweep().getSpot());
+        voltageStepUpper.setText("" + ep.getByType(GraphType.UPPER).getVoltageSweep().getStep());
+
+        otherCapacitanceUpper.setText("" + ep.getByType(GraphType.UPPER).getOther().getCapacitance());
+        otherElectricalLengthUpper.setText("" + ep.getByType(GraphType.UPPER).getOther().getElectricalLength());
+
+        otherSweepTypeUpper.getItems().addAll("LINEAR", "LOG");
+        otherSweepTypeUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0:1);
+
+        otherHighSpeedUpper.getItems().addAll("ON", "OFF");
+        otherHighSpeedUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isHighSpeed() ? 0:1);
+
+        otherAutoSweepUpper.getItems().addAll("ON", "OFF");
+        otherAutoSweepUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isAutoSweep() ? 0:1);
+
+    }
+
+    private void inicialLower(){
+
+
         displayALower.getToggles().forEach(item -> {
             ToggleButton btn = (ToggleButton) item;
             if (btn.getText().equals(ep.getByType(GraphType.LOWER).getDisplayYY().getA())) {
@@ -399,46 +444,30 @@ public class MainController implements Initializable {
             }
         });
 
-        frequencyStartUpper.setText("" + ep.getByType(GraphType.UPPER).getFrequencySweep().getStart());
-        frequencyStopUpper.setText("" + ep.getByType(GraphType.UPPER).getFrequencySweep().getStop());
-        frequencySpotUpper.setText("" + ep.getByType(GraphType.UPPER).getFrequencySweep().getSpot());
-        frequencyStepUpper.setText("" + ep.getByType(GraphType.UPPER).getFrequencySweep().getStep());
+
         frequencyStartLower.setText("" + ep.getByType(GraphType.LOWER).getFrequencySweep().getStart());
         frequencyStopLower.setText("" + ep.getByType(GraphType.LOWER).getFrequencySweep().getStop());
         frequencySpotLower.setText("" + ep.getByType(GraphType.LOWER).getFrequencySweep().getSpot());
         frequencyStepLower.setText("" + ep.getByType(GraphType.LOWER).getFrequencySweep().getStep());
 
-        voltageStartUpper.setText("" + ep.getByType(GraphType.UPPER).getVoltageSweep().getStart());
-        voltageStopUpper.setText("" + ep.getByType(GraphType.UPPER).getVoltageSweep().getStop());
-        voltageSpotUpper.setText("" + ep.getByType(GraphType.UPPER).getVoltageSweep().getSpot());
-        voltageStepUpper.setText("" + ep.getByType(GraphType.UPPER).getVoltageSweep().getStep());
+
         voltageStartLower.setText("" + ep.getByType(GraphType.LOWER).getVoltageSweep().getStart());
         voltageStopLower.setText("" + ep.getByType(GraphType.LOWER).getVoltageSweep().getStop());
         voltageSpotLower.setText("" + ep.getByType(GraphType.LOWER).getVoltageSweep().getSpot());
         voltageStepLower.setText("" + ep.getByType(GraphType.LOWER).getVoltageSweep().getStep());
 
-        otherCapacitanceUpper.setText("" + ep.getByType(GraphType.UPPER).getOther().getCapacitance());
-        otherElectricalLengthUpper.setText("" + ep.getByType(GraphType.UPPER).getOther().getElectricalLength());
         otherCapacitanceLower.setText("" + ep.getByType(GraphType.LOWER).getOther().getCapacitance());
         otherElectricalLengthLower.setText("" + ep.getByType(GraphType.LOWER).getOther().getElectricalLength());
         // ----- initialize all dropbox -> coz its not possible to do so in sceneBuilder yet
-        otherSweepTypeUpper.getItems().addAll("LINEAR", "LOG");
-        otherSweepTypeUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0:1);
         otherSweepTypeLower.getItems().addAll("LINEAR", "LOG");
         otherSweepTypeLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0:1);
 
-        otherHighSpeedUpper.getItems().addAll("ON", "OFF");
-        otherHighSpeedUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isHighSpeed() ? 0:1);
         otherHighSpeedLower.getItems().addAll("ON", "OFF");
         otherHighSpeedLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isHighSpeed() ? 0:1);
 
-        otherAutoSweepUpper.getItems().addAll("ON", "OFF");
-        otherAutoSweepUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isAutoSweep() ? 0:1);
         otherAutoSweepLower.getItems().addAll("ON", "OFF");
         otherAutoSweepLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isAutoSweep() ? 0:1);
 
-        savingDirMenu.setText(AppMain.fileService.getAutoSavingDir().replaceAll("\\\\", "/"));
-        createConstraintListener();
     }
 
     private void createConstraintListener() {
@@ -522,14 +551,41 @@ public class MainController implements Initializable {
     }
 
     public void AutoSaveDirectory(MouseEvent mouseEvent) {
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        File dir = directoryChooser.showDialog(AppMain.ps);
-        if (dir != null) {
+        String newAutoSavingDir = AppMain.fileService.chooseSavingDirectory();
+        if(newAutoSavingDir != "") {
             LocalDate localDate = LocalDate.now();
-            String newAutoSavingDir = dir.getAbsolutePath() + "\\" + localDate.getYear() + "\\" + localDate.getMonthValue() + "\\" + localDate.getDayOfMonth() + "\\";
+            newAutoSavingDir = newAutoSavingDir + "/" +
+                    localDate.getYear() + "/" + localDate.getMonthValue() + "/" +
+                    localDate.getDayOfMonth() + "/";
             AppMain.fileService.setAutoSavingDir(newAutoSavingDir);
-            savingDirMenu.setText(newAutoSavingDir);
+            savingDirMenu.setText(AppMain.fileService.getAutoSavingDir());
+        }
 //            System.out.println(dir.getAbsolutePath());
+    }
+
+    public void exportLowerGraph(MouseEvent mouseEvent) {
+    }
+
+    public void saveLowerGraph(MouseEvent mouseEvent) {
+        if(gs.lowerGraph != null && gs.lowerGraph.getMeasurement() != null ){
+            String newSavingDir = AppMain.fileService.chooseSavingDirectory();
+            AppMain.fileService.saveAsMeasurement(gs.lowerGraph.getMeasurement(), newSavingDir);
+
+        }else{
+
+        }
+    }
+
+    public void exportUpperGraph(MouseEvent mouseEvent) {
+    }
+
+    public void saveUpperGraph(MouseEvent mouseEvent) {
+        if(gs.upperGraph != null && gs.upperGraph.getMeasurement() != null ){
+            String newSavingDir = AppMain.fileService.chooseSavingDirectory();
+            AppMain.fileService.saveAsMeasurement(gs.upperGraph.getMeasurement(), newSavingDir);
+
+        }else{
+
         }
     }
 }

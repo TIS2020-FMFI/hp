@@ -1265,8 +1265,8 @@
                                       <items>
                                         <Button fx:id="upperGraphRun" mnemonicParsing="false" onMouseReleased="#runUpperGraph" styleClass="graph-btn" text="Run" />
                                           <Button fx:id="upperGraphLoad" mnemonicParsing="false" onMouseReleased="#loadUpperGraph" styleClass="graph-btn" text="Load" />
-                                          <Button fx:id="upperGraphExport" mnemonicParsing="false" styleClass="graph-btn" text="Export" />
-                                          <Button fx:id="upperGraphSave" mnemonicParsing="false" styleClass="graph-btn" text="Save as" />
+                                          <Button fx:id="upperGraphExport" mnemonicParsing="false" onMouseReleased="#exportUpperGraph" styleClass="graph-btn" text="Export" />
+                                          <Button fx:id="upperGraphSave" mnemonicParsing="false" onMouseReleased="#saveUpperGraph" styleClass="graph-btn" text="Save as" />
                                           <HBox alignment="CENTER_LEFT" prefHeight="0.0" prefWidth="206.0" spacing="5.0">
                                              <children>
                                                 <RadioButton mnemonicParsing="false" selected="true" text="Frequency">
@@ -1304,8 +1304,8 @@
                                       <items>
                                         <Button fx:id="lowerGraphRun" mnemonicParsing="false" onMouseReleased="#runLowerGraph" styleClass="graph-btn" text="Run" />
                                           <Button fx:id="lowerGraphLoad" mnemonicParsing="false" onMouseReleased="#loadLowerGraph" styleClass="graph-btn" text="Load" />
-                                          <Button fx:id="lowerGraphExport" mnemonicParsing="false" styleClass="graph-btn" text="Export" />
-                                          <Button fx:id="lowerGraphSave" mnemonicParsing="false" styleClass="graph-btn" text="Save as" />
+                                          <Button fx:id="lowerGraphExport" mnemonicParsing="false" onMouseReleased="#exportLowerGraph" styleClass="graph-btn" text="Export" />
+                                          <Button fx:id="lowerGraphSave" mnemonicParsing="false" onMouseReleased="#saveLowerGraph" styleClass="graph-btn" text="Save as" />
                                           <HBox alignment="CENTER_LEFT" prefHeight="24.0" prefWidth="206.0" spacing="5.0">
                                              <children>
                                                 <RadioButton mnemonicParsing="false" selected="true" text="Frequency">

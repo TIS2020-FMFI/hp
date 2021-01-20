@@ -1,5 +1,6 @@
 package com.app.service.graph;
 
+import com.app.service.AppMain;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.file.parameters.Parameters;
 import com.app.service.graph.dataset.AutoUpdatingDataset;
@@ -40,9 +41,8 @@ public class CustomChart extends ChartPanel {
     }
 
     private static JFreeChart createChart(Measurement measurement, File file) throws FileNotFoundException {
-        measurement.setState(MeasurementState.SAVED);
-        measurement.setParameters(new Parameters()); // TODO: parseMeasurementSettings and set envParams accordingly
-        measurement.getData().addAll(parseMeasurement(file));
+        measurement = AppMain.fileService.loadMeasurement(file.getPath());
+//        measurement.getData().addAll(parseMeasurement(file));
 
         series1 = new StaticDataset(measurement, DatasetType.LEFT);
         series2 = new StaticDataset(measurement, DatasetType.RIGHT);
