@@ -163,7 +163,7 @@ public class Connection extends Thread{
                    if ((letter == '\n') && (result.length() > 1)) {
                        if (result.charAt(1) == 'N') {
                            write("n");
-                           data.addSingleValue(new SingleValue(null));
+                           data.addSingleValue(null);
                            break;
                        } else {
                            data.addSingleValue(new SingleValue(result.toString()));
