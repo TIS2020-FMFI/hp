@@ -1,19 +1,21 @@
 package com.app.screen.controller;
 
 import com.app.service.AppMain;
-import com.app.service.calibration.CalibrationType;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.ResourceBundle;
 
 public class CalibrationController implements Initializable {
 
@@ -68,8 +70,8 @@ public class CalibrationController implements Initializable {
         if (AppMain.calibrationService.isCalibrated()) {
             runCalibrationBtn.setText("Close");
         }
-        calibrationInput.setText(AppMain.environmentParameters.getOther().getCapacitance() + "");
-        electricalLengthInput.setText(AppMain.environmentParameters.getOther().getElectricalLength() + "");
+        calibrationInput.setText(AppMain.environmentParameters.getActive().getOther().getCapacitance() + "");
+        electricalLengthInput.setText(AppMain.environmentParameters.getActive().getOther().getElectricalLength() + "");
         if (AppMain.calibrationService.isCalibrationInProcess()) {
             calibrationInput.setDisable(true);
             electricalLengthInput.setDisable(true);

@@ -1,133 +1,111 @@
 package com.app.persistent;
 
+import com.app.service.AppMain;
 import com.app.service.file.parameters.*;
+import com.app.service.graph.GraphType;
 import com.app.service.measurement.Measurement;
 import com.app.service.measurement.MeasurementState;
 import com.app.service.measurement.SingleValue;
+import com.app.service.notification.NotificationType;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 
 public class JsonParser {
 
-    public static boolean writeParameters(String fileName, EnvironmentParameters environmentParameters) throws FileNotFoundException {
+    public static boolean saveEnvironmentParameters(String fileName, EnvironmentParameters ep) throws IOException {
+        ep.getByType(GraphType.UPPER).checkAll();
+        ep.getByType(GraphType.LOWER).checkAll();
 
-        environmentParameters.checkAll();
-
-        // creating JSONObject
         JSONObject jo = new JSONObject();
-
-        // putting data to JSONObject
-        jo.put("displayA", environmentParameters.getDisplayYY().getA());
-        jo.put("displayB", environmentParameters.getDisplayYY().getB());
-        jo.put("displayX", environmentParameters.getDisplayYY().getX().toString());
-
-        // for frequency data, create HashMap
-        Map<String, java.io.Serializable> m = new HashMap<>(4);
-        m.put("start", environmentParameters.getFrequencySweep().getStart());
-        m.put("stop", environmentParameters.getFrequencySweep().getStop());
-        m.put("step", environmentParameters.getFrequencySweep().getStep());
-        m.put("spot", environmentParameters.getFrequencySweep().getSpot());
-
-        // putting frequency to JSONObject
-        jo.put("frequency", m);
-
-        // for voltage data, create HashMap
-        m = new HashMap<>(4);
-        m.put("start", environmentParameters.getVoltageSweep().getStart());
-        m.put("stop", environmentParameters.getVoltageSweep().getStop());
-        m.put("step", environmentParameters.getVoltageSweep().getStep());
-        m.put("spot", environmentParameters.getVoltageSweep().getSpot());
-
-        // putting voltage to JSONObject
-        jo.put("voltage", m);
-
-        // for other data, create HashMap
-        m = new HashMap<>(5);
-        m.put("electricalLength", environmentParameters.getOther().getElectricalLength());
-        m.put("capacitance", environmentParameters.getOther().getCapacitance());
-        m.put("sweepType", environmentParameters.getOther().getSweepType().toString());
-        m.put("highSpeed", environmentParameters.getOther().isHighSpeed());
-        m.put("autoSweep", environmentParameters.getOther().isAutoSweep());
-
-
-        // putting other to JSONObject
-        jo.put("other", m);
-
-
-        // writing JSON to file: "filename.json" in cwd
-        PrintWriter pw = new PrintWriter(fileName);
-        pw.write(jo.toJSONString());
-
-        pw.flush();
-        pw.close();
-
+        jo.put("upper", getParametersMap(ep.getByType(GraphType.UPPER)));
+        jo.put("lower", getParametersMap(ep.getByType(GraphType.LOWER)));
+        Files.write(Paths.get("persistent/" + fileName), jo.toJSONString().getBytes());
         return true;
     }
 
-    public static EnvironmentParameters readParameters(String fileName) {
+    private static Map<String, Object> getParametersMap(Parameters params) {
+//        Parameters params = ep.getByType(type);
+        Map<String, Object> temp = new HashMap<>();
+
+        temp.put("displayA", params.getDisplayYY().getA());
+        temp.put("displayB", params.getDisplayYY().getB());
+        temp.put("displayX", params.getDisplayYY().getX().toString());
+
+        Map<String, Object> frequency = new HashMap<>();
+        frequency.put("start", params.getFrequencySweep().getStart());
+        frequency.put("stop", params.getFrequencySweep().getStop());
+        frequency.put("step", params.getFrequencySweep().getStep());
+        frequency.put("spot", params.getFrequencySweep().getSpot());
+
+        Map<String, Object> voltage = new HashMap<>();
+        voltage.put("start", params.getVoltageSweep().getStart());
+        voltage.put("stop", params.getVoltageSweep().getStop());
+        voltage.put("step", params.getVoltageSweep().getStep());
+        voltage.put("spot", params.getVoltageSweep().getSpot());
+
+        Map<String, Object> other = new HashMap<>();
+        other.put("electricalLength", params.getOther().getElectricalLength());
+        other.put("capacitance", params.getOther().getCapacitance());
+        other.put("sweepType", params.getOther().getSweepType().toString());
+        other.put("highSpeed", params.getOther().isHighSpeed());
+        other.put("autoSweep", params.getOther().isAutoSweep());
+
+        temp.put("frequency", frequency);
+        temp.put("voltage", voltage);
+        temp.put("other", other);
+        return temp;
+    }
+
+    public static EnvironmentParameters readEnvironmentParameters(String fileName) {
+        EnvironmentParameters ep = new EnvironmentParameters();
+        Parameters paramsUpper = new Parameters();
+        Parameters paramsLower = new Parameters();
+
         try {
             Object obj = new JSONParser().parse(new FileReader(fileName));
 
-            EnvironmentParameters environmentParameters = new EnvironmentParameters();
-
             JSONObject jo = (JSONObject) obj;
-            DisplayYY displayYY = new DisplayYY();
-            displayYY.setA((String) jo.get("displayA"));
-            displayYY.setB((String) jo.get("displayB"));
-            String tempX = (String) jo.get("displayX");
-            displayYY.setX(tempX != null ? MeasuredQuantity.valueOf(tempX) : null);
-            environmentParameters.setDisplayYY(displayYY);
 
-            Map frequency = (HashMap) jo.get("frequency");
+            paramsUpper = readParameters((HashMap) jo.get("upper"));
+            paramsLower = readParameters((HashMap) jo.get("lower"));
+
+//            paramsUpper = readParameters(GraphType.UPPER, jo);
+//            paramsLower = readParameters(GraphType.LOWER, jo);
+            paramsUpper.checkAll();
+            paramsLower.checkAll();
+        } catch (IOException | ParseException e) {
+            if (!AppMain.debugMode) {
+                AppMain.notificationService.createNotification("Failed to load previous values, setting to default", NotificationType.ANNOUNCEMENT);
+            }
+            DisplayYY displayYY = new DisplayYY();
             FrequencySweep frequencySweep = new FrequencySweep();
-            frequencySweep.setStart((Double) frequency.get("start"));
-            frequencySweep.setStop((Double) frequency.get("stop"));
-            frequencySweep.setStep((Double) frequency.get("step"));
-            frequencySweep.setSpot((Double) frequency.get("spot"));
-            environmentParameters.setFrequencySweep(frequencySweep);
-
-            Map voltage = (HashMap) jo.get("voltage");
             VoltageSweep voltageSweep = new VoltageSweep();
-            voltageSweep.setStart((Double) voltage.get("start"));
-            voltageSweep.setStop((Double) voltage.get("stop"));
-            voltageSweep.setStep((Double) voltage.get("step"));
-            voltageSweep.setSpot((Double) voltage.get("spot"));
-            environmentParameters.setVoltageSweep(voltageSweep);
-
-            Map o = (HashMap) jo.get("other");
             Other other = new Other();
-            other.setCapacitance((Double) o.get("capacitance"));
-            other.setElectricalLength((Double) o.get("electricalLength"));
-            String tempSweepType = (String) o.get("sweepType");
-            other.setSweepType(tempSweepType != null ? SweepType.valueOf(tempSweepType) : null);
-            other.setHighSpeed((Boolean) o.get("highSpeed"));
-            other.setAutoSweep((Boolean) o.get("autoSweep"));
-            environmentParameters.setOther(other);
-            environmentParameters.checkAll();
-            return environmentParameters;
-        } catch (Exception e) {
-            EnvironmentParameters parameters = new EnvironmentParameters();
 
-            DisplayYY displayYY = new DisplayYY();
             displayYY.setX(MeasuredQuantity.FREQUENCY);
             displayYY.setB("R");
             displayYY.setA("L");
 
-            parameters.setDisplayYY(displayYY);
+            frequencySweep.setStart(frequencySweep.getMinStart());
+            frequencySweep.setStop(frequencySweep.getMinStop());
+            frequencySweep.setStep(frequencySweep.getMinStep());
+            frequencySweep.setSpot(frequencySweep.getMinSpot());
 
-            Other other = new Other();
+            voltageSweep.setStart(voltageSweep.getMinStart());
+            voltageSweep.setStop(voltageSweep.getMinStop());
+            voltageSweep.setStep(voltageSweep.getMinStep());
+            voltageSweep.setSpot(voltageSweep.getMinSpot());
 
             other.setSweepType(SweepType.LOG);
             other.setHighSpeed(true);
@@ -135,34 +113,66 @@ public class JsonParser {
             other.setCapacitance(other.getMinCapacitance());
             other.setElectricalLength(other.getMinElectricalLength());
 
-            parameters.setOther(other);
-
-            FrequencySweep frequencySweep = new FrequencySweep();
-            frequencySweep.setStart(frequencySweep.getMinStart());
-            frequencySweep.setStop(frequencySweep.getMinStop());
-            frequencySweep.setStep(frequencySweep.getMinStep());
-            frequencySweep.setSpot(frequencySweep.getMinSpot());
-
-            parameters.setFrequencySweep(frequencySweep);
-
-            VoltageSweep voltageSweep = new VoltageSweep();
-            voltageSweep.setStart(voltageSweep.getMinStart());
-            voltageSweep.setStop(voltageSweep.getMinStop());
-            voltageSweep.setStep(voltageSweep.getMinStep());
-            voltageSweep.setSpot(voltageSweep.getMinSpot());
-            parameters.setVoltageSweep(voltageSweep);
-            parameters.checkAll();
-
-            return parameters;
+            paramsUpper.setDisplayYY(displayYY);
+            paramsUpper.setFrequencySweep(frequencySweep);
+            paramsUpper.setVoltageSweep(voltageSweep);
+            paramsUpper.setOther(other);
         }
+        ep.setUpperGraphParameters(paramsUpper);
+        ep.setLowerGraphParameters(paramsLower);
+        ep.setActive(GraphType.UPPER);
+        return ep;
+    }
 
+//    private static Parameters readParameters(GraphType type, JSONObject obj) {
+    private static Parameters readParameters(Map<String, Object> graphParams) {
+        Parameters params = new Parameters();
+
+        DisplayYY displayYY = new DisplayYY();
+        FrequencySweep frequencySweep = new FrequencySweep();
+        VoltageSweep voltageSweep = new VoltageSweep();
+        Other other = new Other();
+
+        displayYY.setA((String) graphParams.get("displayA"));
+        displayYY.setB((String) graphParams.get("displayB"));
+        String tempX = (String) graphParams.get("displayX");
+        displayYY.setX(tempX != null ? MeasuredQuantity.valueOf(tempX) : null);
+
+        Map<String, Object> frequency = (HashMap) graphParams.get("frequency");
+        frequencySweep.setStart((Double) frequency.get("start"));
+        frequencySweep.setStop((Double) frequency.get("stop"));
+        frequencySweep.setStep((Double) frequency.get("step"));
+        frequencySweep.setSpot((Double) frequency.get("spot"));
+
+        Map<String, Object> voltage = (HashMap) graphParams.get("voltage");
+        voltageSweep.setStart((Double) voltage.get("start"));
+        voltageSweep.setStop((Double) voltage.get("stop"));
+        voltageSweep.setStep((Double) voltage.get("step"));
+        voltageSweep.setSpot((Double) voltage.get("spot"));
+
+        Map<String, Object> o = (HashMap) graphParams.get("other");
+        other.setCapacitance((Double) o.get("capacitance"));
+        other.setElectricalLength((Double) o.get("electricalLength"));
+        String tempSweepType = (String) o.get("sweepType");
+        other.setSweepType(tempSweepType != null ? SweepType.valueOf(tempSweepType) : null);
+        other.setHighSpeed((Boolean) o.get("highSpeed"));
+        other.setAutoSweep((Boolean) o.get("autoSweep"));
+
+        params.setComment("manually added");
+        params.setDisplayYY(displayYY);
+        params.setFrequencySweep(frequencySweep);
+        params.setVoltageSweep(voltageSweep);
+        params.setOther(other);
+        return params;
     }
 
     public static boolean writeNewMeasurement(String autoSavingDir, Measurement measurement) {
         try {
-            writeParameters(autoSavingDir, measurement.getParameters());
             Object obj = new JSONParser().parse(new FileReader(autoSavingDir));
             JSONObject jo = (JSONObject) obj;
+            measurement.getParameters().checkAll();
+
+            jo.put("parameters", getParametersMap(measurement.getParameters()));
 
             if(measurement.getComment() != null){
                 jo.put("comment", measurement.getComment().toString());
@@ -232,12 +242,16 @@ public class JsonParser {
     }
 
     public static Measurement readMeasurement(String fileName){
-        Measurement measurement = null;
+        Measurement measurement = new Measurement(new Parameters());
         try {
-            measurement = new Measurement(readParameters(fileName));
 
             Object obj = new JSONParser().parse(new FileReader(fileName));
             JSONObject jo = (JSONObject) obj;
+
+            Parameters parameters = readParameters((HashMap) jo.get("parameters"));
+            parameters.checkAll();
+            measurement.setParameters(parameters);
+
             String comment = jo.get("comment").toString();
             if(comment != null) {
                 measurement.updateComment(comment);
@@ -253,7 +267,7 @@ public class JsonParser {
                 measurement.addSingleValue(singleValue);
             }
 
-            measurement.setState(MeasurementState.SAVED);
+            measurement.setState(MeasurementState.LOADED);
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -2,6 +2,7 @@ package com.app.service;
 
 import com.app.service.calibration.CalibrationService;
 import com.app.service.communication.CommunicationService;
+import com.app.service.file.DataNotSavedDialog;
 import com.app.service.file.FileService;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.graph.GraphService;
@@ -21,10 +22,12 @@ public class AppMain extends Application {
     public static NotificationService notificationService;
     public static CalibrationService calibrationService;
     public static HelpService helpService;
+    public static DataNotSavedDialog dataNotSavedDialog;
     public static FileService fileService;
     public static GraphService graphService;
     public static CommunicationService communicationService;
     public static EnvironmentParameters environmentParameters;
+    public static boolean debugMode = true;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -53,6 +56,7 @@ public class AppMain extends Application {
 
         calibrationService = new CalibrationService("/views/calibrationScreen.fxml");
         helpService = new HelpService("/views/helpScreen.fxml");
+        dataNotSavedDialog = new DataNotSavedDialog("/views/dataNotSavedDialog.fxml");
 
 
         // if all runs successfully then show

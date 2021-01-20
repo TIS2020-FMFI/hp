@@ -1,72 +1,34 @@
 package com.app.service.file.parameters;
 
+import com.app.service.graph.GraphType;
+
 public class EnvironmentParameters {
-    private DisplayYY displayYY;
-    private FrequencySweep frequencySweep;
-    private VoltageSweep voltageSweep;
-    private Other other;
-    private String comment;
+    private GraphType active;
+    private Parameters upperGraphParameters;
+    private Parameters lowerGraphParameters;
 
 
-    public FrequencySweep getFrequencySweep() {
-        return frequencySweep;
+    public Parameters getActive() {
+        return active.equals(GraphType.UPPER) ? upperGraphParameters:lowerGraphParameters;
     }
 
-    public void setFrequencySweep(FrequencySweep frequencySweep) {
-        this.frequencySweep = frequencySweep;
+    public Parameters getByType(GraphType type) {
+        return type.equals(GraphType.UPPER) ? upperGraphParameters:lowerGraphParameters;
     }
 
-    public VoltageSweep getVoltageSweep() {
-        return voltageSweep;
+    public GraphType getActiveGraphType() {
+        return active;
     }
 
-    public void setVoltageSweep(VoltageSweep voltageSweep) {
-        this.voltageSweep = voltageSweep;
+    public void setLowerGraphParameters(Parameters lowerGraphParameters) {
+        this.lowerGraphParameters = lowerGraphParameters;
     }
 
-    public Other getOther() {
-        return other;
+    public void setUpperGraphParameters(Parameters upperGraphParameters) {
+        this.upperGraphParameters = upperGraphParameters;
     }
 
-    public void setOther(Other other) {
-        this.other = other;
+    public void setActive(GraphType active) {
+        this.active = active;
     }
-
-    public DisplayYY getDisplayYY() {
-        return displayYY;
-    }
-
-    public void setDisplayYY(DisplayYY displayYY) {
-        this.displayYY = displayYY;
-    }
-
-    public void checkAll(){
-
-        if(displayYY == null){
-            displayYY = new DisplayYY();
-        }
-        if(displayYY.getA() == null) displayYY.setA("L");
-        if(displayYY.getB() == null) displayYY.setB("R");
-        if(displayYY.getX() == null) displayYY.setX(MeasuredQuantity.FREQUENCY);
-
-        if (frequencySweep == null){
-            frequencySweep = new FrequencySweep();
-        }
-        frequencySweep.check();
-
-        if (voltageSweep == null){
-            voltageSweep = new VoltageSweep();
-        }
-        voltageSweep.check();
-
-        if(other == null){
-            other = new Other();
-        }
-        other.check();
-
-    }
-
-    public String getComment() { return comment; }
-
-    public void setComment(String comment) { this.comment = comment; }
 }

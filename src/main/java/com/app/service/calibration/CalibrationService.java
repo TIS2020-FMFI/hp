@@ -22,6 +22,8 @@ public class CalibrationService {
     private LinkedList<RadioButton> toggleGroupType;
     private final LinkedList<Boolean> toggleGroupTypeDisabled;
     private Stage stage;
+    private double electricalLength;
+    private double capacitance;
 
     public CalibrationService(String controllerPath) {
         path = controllerPath;

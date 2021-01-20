@@ -1,6 +1,7 @@
 package com.app.service.graph;
 
 import com.app.service.AppMain;
+import com.app.service.measurement.MeasurementState;
 import com.app.service.notification.NotificationType;
 import javafx.scene.Parent;
 
@@ -11,8 +12,7 @@ public class GraphService {
     public Graph upperGraph;
     public Graph lowerGraph;
 
-    public GraphService() {
-    }
+    public GraphService() {}
 
     public Graph getGraph(GraphType type) {
         return type.equals(GraphType.UPPER) ? upperGraph:lowerGraph;
@@ -67,6 +67,14 @@ public class GraphService {
         } catch (Exception e) {
             AppMain.notificationService.createNotification("Error occurred while aborting measurement -> " + e.getMessage(), NotificationType.ERROR);
         }
+    }
+
+    public boolean measurementSaved(GraphType type) {
+        Graph temp = getGraph(type);
+        if (temp.getState().equals(GraphState.EMPTY) || temp.getState().equals(GraphState.RUNNING)) {
+            return true;
+        }
+        return !temp.getMeasurement().getState().equals(MeasurementState.WAITING) && !temp.getMeasurement().getState().equals(MeasurementState.STARTED);
     }
 
 }

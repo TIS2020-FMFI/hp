@@ -5,5 +5,6 @@ public enum MeasurementState {
     STARTED,
     FINISHED,
     ABORTED,
-    SAVED
+    SAVED,
+    LOADED
 }

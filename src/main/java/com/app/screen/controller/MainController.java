@@ -5,7 +5,12 @@ import com.app.service.file.parameters.*;
 import com.app.service.graph.GraphService;
 import com.app.service.graph.GraphState;
 import com.app.service.graph.GraphType;
+import com.app.service.measurement.DisplayAOption;
+import com.app.service.measurement.DisplayBOption;
+import com.app.service.measurement.Measurement;
+import com.app.service.measurement.MeasurementState;
 import com.app.service.notification.NotificationType;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -18,55 +23,28 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Stack;
 
 public class MainController implements Initializable {
 
     GraphService gs;
+    EnvironmentParameters ep;
+
+    @FXML
+    VBox VBox1;
 
     @FXML
     VBox mainContainer;
     @FXML
     VBox notificationContainer;
 
-    @FXML
-    ToggleGroup displayA;
 
     @FXML
-    ToggleGroup displayB;
-
+    AnchorPane upperPane;
     @FXML
-    TextField frequencyStart;
-    @FXML
-    TextField frequencyStop;
-    @FXML
-    TextField frequencyStep;
-    @FXML
-    TextField frequencySpot;
-
-    @FXML
-    TextField voltageStart;
-    @FXML
-    TextField voltageStop;
-    @FXML
-    TextField voltageStep;
-    @FXML
-    TextField voltageSpot;
-
-    @FXML
-    TextField otherCapacitance;
-    @FXML
-    TextField otherElectricalLength;
-    @FXML
-    ChoiceBox<String> otherSweepType;
-    @FXML
-    ChoiceBox<String> otherHighSpeed;
-    @FXML
-    ChoiceBox<String> otherAutoSweep;
-
-    @FXML
-    TextArea commentInput;
-
+    ToolBar upperToolbar;
     @FXML
     Button upperGraphRun;
     @FXML
@@ -76,8 +54,14 @@ public class MainController implements Initializable {
     @FXML
     Button upperGraphSave;
     @FXML
-    Button upperGraphPoint;
+    Button upperPointNext;
+    @FXML
+    ToggleGroup toggleUpperXAxis;
 
+    @FXML
+    AnchorPane lowerPane;
+    @FXML
+    ToolBar lowerToolbar;
     @FXML
     Button lowerGraphRun;
     @FXML
@@ -87,7 +71,94 @@ public class MainController implements Initializable {
     @FXML
     Button lowerGraphSave;
     @FXML
-    Button lowerGraphPoint;
+    Button lowerPointNext;
+    @FXML
+    ToggleGroup toggleLowerXAxis;
+
+    @FXML
+    TabPane parametersTabPane;
+    @FXML
+    Tab upperGraphTab;
+    @FXML
+    Tab lowerGraphTab;
+
+    // upper graph params
+    @FXML
+    ToggleGroup displayAUpper;
+
+    @FXML
+    ToggleGroup displayBUpper;
+
+    @FXML
+    TextField frequencyStartUpper;
+    @FXML
+    TextField frequencyStopUpper;
+    @FXML
+    TextField frequencyStepUpper;
+    @FXML
+    TextField frequencySpotUpper;
+
+    @FXML
+    TextField voltageStartUpper;
+    @FXML
+    TextField voltageStopUpper;
+    @FXML
+    TextField voltageStepUpper;
+    @FXML
+    TextField voltageSpotUpper;
+
+    @FXML
+    TextField otherCapacitanceUpper;
+    @FXML
+    TextField otherElectricalLengthUpper;
+    @FXML
+    ChoiceBox<String> otherSweepTypeUpper;
+    @FXML
+    ChoiceBox<String> otherHighSpeedUpper;
+    @FXML
+    ChoiceBox<String> otherAutoSweepUpper;
+
+    @FXML
+    TextArea commentInputUpper;
+
+    // lower graph params
+    @FXML
+    ToggleGroup displayALower;
+
+    @FXML
+    ToggleGroup displayBLower;
+
+    @FXML
+    TextField frequencyStartLower;
+    @FXML
+    TextField frequencyStopLower;
+    @FXML
+    TextField frequencyStepLower;
+    @FXML
+    TextField frequencySpotLower;
+
+    @FXML
+    TextField voltageStartLower;
+    @FXML
+    TextField voltageStopLower;
+    @FXML
+    TextField voltageStepLower;
+    @FXML
+    TextField voltageSpotLower;
+
+    @FXML
+    TextField otherCapacitanceLower;
+    @FXML
+    TextField otherElectricalLengthLower;
+    @FXML
+    ChoiceBox<String> otherSweepTypeLower;
+    @FXML
+    ChoiceBox<String> otherHighSpeedLower;
+    @FXML
+    ChoiceBox<String> otherAutoSweepLower;
+
+    @FXML
+    TextArea commentInputLower;
 
     @FXML
     Button gpibMenu;
@@ -104,27 +175,9 @@ public class MainController implements Initializable {
     @FXML
     Button quitMenu;
 
-    @FXML
-    AnchorPane upperPane;
-    @FXML
-    AnchorPane lowerPane;
-    @FXML
-    ToggleGroup toogleUpperXAxis;
-    @FXML
-    ToggleGroup toogleLowerXAxis;
-
-
-    @FXML
-    ToolBar upperToolbar;
-    @FXML
-    ToolBar lowerToolbar;
-
-
-    @FXML
-    VBox VBox1;
 
     public void updateComment(MouseEvent event) {
-        AppMain.environmentParameters.setComment(commentInput.getText());
+        ep.getActive().setComment(ep.getActiveGraphType().equals(GraphType.UPPER) ? commentInputUpper.getText():commentInputLower.getText());
     }
 
     private void toggleDisabling() {
@@ -146,8 +199,7 @@ public class MainController implements Initializable {
     }
 
     public void point() throws IOException, InterruptedException {
-        EnvironmentParameters newParameters = AppMain.environmentParameters;
-        if (newParameters.getDisplayYY().getX() == MeasuredQuantity.VOLTAGE)
+        if (ep.getActive().getDisplayYY().getX() == MeasuredQuantity.VOLTAGE)
             AppMain.communicationService.runMeasurement(MeasuredQuantity.VOLTAGE);
         else
             AppMain.communicationService.runMeasurement(MeasuredQuantity.FREQUENCY);
@@ -159,7 +211,9 @@ public class MainController implements Initializable {
             gs.abortGraph(GraphType.UPPER);
             toggleDisabling();
             upperGraphRun.setText("Run");
+            upperToolbar.getItems().remove(upperPointNext);
         } else if (!gs.isRunningGraph()) {
+            parametersTabPane.getSelectionModel().select(upperGraphTab);
             runMeasurement(GraphType.UPPER, (Button) event.getSource());
         }
     }
@@ -169,21 +223,20 @@ public class MainController implements Initializable {
             gs.abortGraph(GraphType.LOWER);
             toggleDisabling();
             lowerGraphRun.setText("Run");
+            lowerToolbar.getItems().remove(lowerPointNext);
         } else if (!gs.isRunningGraph()) {
+            parametersTabPane.getSelectionModel().select(lowerGraphTab);
             runMeasurement(GraphType.LOWER, (Button) event.getSource());
         }
     }
 
     private void runMeasurement(GraphType graphType, Button triggerButton) {
-        EnvironmentParameters newParameters = AppMain.environmentParameters;
-
         // TODO: doplnit ABS
 
         try {
-
-            DisplayYY newDisplayYY = newParameters.getDisplayYY();
-            RadioButton selectedDisplayA = (RadioButton) displayA.getSelectedToggle();
-            RadioButton selectedDisplayB = (RadioButton) displayB.getSelectedToggle();
+            DisplayYY newDisplayYY = ep.getActive().getDisplayYY();
+            RadioButton selectedDisplayA = (RadioButton) (graphType.equals(GraphType.UPPER) ? displayAUpper:displayALower).getSelectedToggle();
+            RadioButton selectedDisplayB = (RadioButton) (graphType.equals(GraphType.UPPER) ? displayBUpper:displayBLower).getSelectedToggle();
 
             if (selectedDisplayA == null || selectedDisplayB == null) {
                 throw new NullPointerException("Values not properly set! Display A or B not set.. or both :)");
@@ -191,43 +244,41 @@ public class MainController implements Initializable {
             newDisplayYY.setA(selectedDisplayA.getText());
             newDisplayYY.setA(selectedDisplayB.getText());
 
-            RadioButton selectedDisplayX = (RadioButton) (graphType.equals(GraphType.UPPER) ? toogleUpperXAxis.getSelectedToggle():toogleLowerXAxis.getSelectedToggle());
+            RadioButton selectedDisplayX = (RadioButton) ((graphType.equals(GraphType.UPPER) ? toggleUpperXAxis:toggleLowerXAxis).getSelectedToggle());
             newDisplayYY.setX( selectedDisplayX.getText().equals("Frequency") ? MeasuredQuantity.FREQUENCY:MeasuredQuantity.VOLTAGE);
 
-            newParameters.setDisplayYY(newDisplayYY);
+            ep.getActive().setDisplayYY(newDisplayYY);
 
-            FrequencySweep newFrequencySweep = newParameters.getFrequencySweep();
-            newFrequencySweep.setStart(Double.parseDouble(frequencyStart.getText()));
-            newFrequencySweep.setStop(Double.parseDouble(frequencyStop.getText()));
-            newFrequencySweep.setStep(Double.parseDouble(frequencyStep.getText()));
-            newFrequencySweep.setSpot(Double.parseDouble(frequencySpot.getText()));
-            newParameters.setFrequencySweep(newFrequencySweep);
+            FrequencySweep newFrequencySweep = ep.getActive().getFrequencySweep();
+            newFrequencySweep.setStart(Double.parseDouble((graphType.equals(GraphType.UPPER) ? frequencyStartUpper:frequencyStartLower).getText()));
+            newFrequencySweep.setStop(Double.parseDouble((graphType.equals(GraphType.UPPER) ? frequencyStopUpper:frequencyStopLower).getText()));
+            newFrequencySweep.setStep(Double.parseDouble((graphType.equals(GraphType.UPPER) ? frequencyStepUpper:frequencyStepLower).getText()));
+            newFrequencySweep.setSpot(Double.parseDouble((graphType.equals(GraphType.UPPER) ? frequencySpotUpper:frequencySpotLower).getText()));
+            ep.getActive().setFrequencySweep(newFrequencySweep);
 
-            VoltageSweep newVoltageSweep = newParameters.getVoltageSweep();
-            newVoltageSweep.setStart(Double.parseDouble(voltageStart.getText()));
-            newVoltageSweep.setStop(Double.parseDouble(voltageStop.getText()));
-            newVoltageSweep.setStep(Double.parseDouble(voltageStep.getText()));
-            newVoltageSweep.setSpot(Double.parseDouble(voltageSpot.getText()));
-            newParameters.setVoltageSweep(newVoltageSweep);
+            VoltageSweep newVoltageSweep = new VoltageSweep();
+            newVoltageSweep.setStart(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageStartUpper:voltageStartLower).getText()));
+            newVoltageSweep.setStop(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageStopUpper:voltageStartLower).getText()));
+            newVoltageSweep.setStep(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageStepUpper:voltageStepLower).getText()));
+            newVoltageSweep.setSpot(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageSpotUpper:voltageSpotUpper).getText()));
+            ep.getActive().setVoltageSweep(newVoltageSweep);
 
-            Other newOther = newParameters.getOther();
-            newOther.setCapacitance(Double.parseDouble(otherCapacitance.getText()));
-            newOther.setElectricalLength(Double.parseDouble(otherElectricalLength.getText()));
-            newOther.setAutoSweep(otherAutoSweep.getValue().equals("ON"));
-            newOther.setHighSpeed(otherHighSpeed.getValue().equals("ON"));
-            if (otherSweepType.getValue().equals("LINEAR")) {
-                newOther.setSweepType(SweepType.LINEAR);
-            } else newOther.setSweepType(SweepType.LOG);
+            Other newOther = new Other();
+            newOther.setCapacitance(Double.parseDouble((graphType.equals(GraphType.UPPER) ? otherCapacitanceUpper:otherCapacitanceLower).getText()));
+            newOther.setElectricalLength(Double.parseDouble((graphType.equals(GraphType.UPPER) ? otherElectricalLengthUpper:otherElectricalLengthLower).getText()));
+            newOther.setAutoSweep((graphType.equals(GraphType.UPPER) ? otherAutoSweepUpper:otherAutoSweepLower).getValue().equals("ON"));
+            newOther.setHighSpeed((graphType.equals(GraphType.UPPER) ? otherHighSpeedUpper:otherHighSpeedLower).getValue().equals("ON"));
+            newOther.setSweepType((graphType.equals(GraphType.UPPER) ? otherSweepTypeUpper:otherSweepTypeLower).getValue().equals("LINEAR") ? SweepType.LINEAR:SweepType.LOG);
 
-            newParameters.checkAll();
-            AppMain.environmentParameters = newParameters;
+            ep.getActive().checkAll();
+
             gs.run(graphType);
 
-            if (gs.isRunningGraph() && otherAutoSweep.getValue().equals("OFF")) {
+            if (gs.isRunningGraph() && (graphType.equals(GraphType.UPPER) ? otherAutoSweepUpper:otherAutoSweepLower).getValue().equals("OFF")) {
                 if (gs.getRunningGraph().getType().equals(GraphType.UPPER)) {
-                    Button button = new Button("Point");
-                    button.setId("upperPoint");
-                    button.setOnKeyPressed(e -> {
+                    upperPointNext = new Button("Next");
+                    upperPointNext.setId("upperPointNext");
+                    upperPointNext.setOnKeyPressed(e -> {
                         try {
                             point();
                         } catch (IOException ex) {
@@ -236,12 +287,12 @@ public class MainController implements Initializable {
                             ex.printStackTrace();
                         }
                     });
-                    upperToolbar.getItems().add(button);
+                    upperToolbar.getItems().add(upperPointNext);
                     //TODO: tu metoda, ktora prida measurement data, ktore v grafe uz on checkuje, je treba aj cez abort znicit ten button potom
                 } else {
-                    Button button = new Button("Point");
-                    button.setId("lowerPoint");
-                    button.setOnKeyPressed(e -> {
+                    lowerPointNext = new Button("Next");
+                    lowerPointNext.setId("lowerPointNext");
+                    lowerPointNext.setOnKeyPressed(e -> {
                         try {
                             point();
                         } catch (IOException ex) {
@@ -250,7 +301,7 @@ public class MainController implements Initializable {
                             ex.printStackTrace();
                         }
                     });
-                    lowerToolbar.getItems().add(button);
+                    lowerToolbar.getItems().add(lowerPointNext);
 
                     //TODO: tu metoda, ktora prida measurement data, ktore v grafe uz on checkuje, je treba aj cez abort znicit ten button potom
                 }
@@ -259,7 +310,7 @@ public class MainController implements Initializable {
                 AppMain.notificationService.createNotification("Auto sweep is on", NotificationType.ANNOUNCEMENT);
             }
 
-//            AppMain.communicationService.runMeasurement(newParameters.getDisplayYY().getX()); // TODO: uncomment when testing with machine
+//            AppMain.communicationService.runMeasurement(ep.getActive().getDisplayYY().getX()); // TODO: uncomment when testing with machine
             toggleDisabling();
             triggerButton.setText("Abort");
         } catch (NullPointerException e) {
@@ -275,26 +326,29 @@ public class MainController implements Initializable {
     }
 
     public void loadUpperGraph(MouseEvent event) {
+        parametersTabPane.getSelectionModel().select(upperGraphTab);
         gs.loadGraph(GraphType.UPPER);
+        AppMain.environmentParameters.setUpperGraphParameters(gs.upperGraph.getMeasurement().getParameters());
+        ep = AppMain.environmentParameters;
+        inicialUpper();
     }
 
     public void loadLowerGraph(MouseEvent event) {
+        parametersTabPane.getSelectionModel().select(lowerGraphTab);
         gs.loadGraph(GraphType.LOWER);
+        AppMain.environmentParameters.setUpperGraphParameters(gs.lowerGraph.getMeasurement().getParameters());
+        ep = AppMain.environmentParameters;
+        inicialLower();
     }
 
     public void toggleAutoSave(MouseEvent event) {
         // TODO: change autoSaveMode in global props global props
-        if (AppMain.fileService.isAutoSave()) {
-            autoSaveMenu.setText("Auto save: OFF");
-            AppMain.fileService.setAutoSave(false);
-        } else {
-            autoSaveMenu.setText("Auto save: ON");
-            AppMain.fileService.setAutoSave(true);
-        }
+        AppMain.fileService.setAutoSave(!AppMain.fileService.isAutoSave());
+        autoSaveMenu.setText("Auto save: " + (AppMain.fileService.isAutoSave() ? "ON":"OFF"));
     }
 
     public void resetInstrument(MouseEvent event) {
-        // TODO: send command to reset instrument
+        // TODO: send command to reset instrument ???
     }
 
     public void triggerCalibration(MouseEvent event) {
@@ -306,21 +360,22 @@ public class MainController implements Initializable {
     }
 
     public void quitApp(MouseEvent event) {
-        // TODO: if not all data saved -> notification and abort quit
-        // save global props into config
-//        if (AppMain.measurement.getState().equals(MeasurementState.SAVED) ||
-//                AppMain.measurement.getState().equals(MeasurementState.ABORTED) ||
-//                AppMain.measurement.getState().equals(MeasurementState.WAITING)) {
-//            try {
-//                if (!AppMain.measurement.getState().equals(MeasurementState.WAITING)) AppMain.fileService.saveConfig();
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//            }
-//            Platform.exit();
-//            System.exit(0);
-//        } else if (!AppMain.measurement.getState().equals(MeasurementState.SAVED)) {
-//            AppMain.notificationService.createNotification("There is some data that has not been saved yet, do you want to quit anyway?", NotificationType.WARNING);
-//        }
+        if (gs.isRunningGraph()) {
+            AppMain.notificationService.createNotification("There is a measurement in process, either wait or abort it.", NotificationType.WARNING);
+        } else if (gs.measurementSaved(GraphType.UPPER) && gs.measurementSaved(GraphType.LOWER)) {
+            // TODO: save global props into config
+            Platform.runLater(() -> {
+                try {
+                    Thread.sleep(300);
+                    Platform.exit();
+                    System.exit(0);
+                } catch (InterruptedException e) {
+                    AppMain.notificationService.createNotification("Could not quit -> " + e.getMessage(), NotificationType.ERROR);
+                }
+            });
+        } else {
+            AppMain.dataNotSavedDialog.openDialog();
+        }
     }
 
     public void showHelpWindow(MouseEvent event) {
@@ -330,44 +385,166 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         gs = AppMain.graphService;
+        ep = AppMain.environmentParameters;
+
         toggleDisabling();
 
-        frequencyStart.setText("" + AppMain.environmentParameters.getFrequencySweep().getStart());
-        frequencyStop.setText("" + AppMain.environmentParameters.getFrequencySweep().getStop());
-        frequencySpot.setText("" + AppMain.environmentParameters.getFrequencySweep().getSpot());
-        frequencyStep.setText("" + AppMain.environmentParameters.getFrequencySweep().getStep());
+        inicialUpper();
+        inicialLower();
 
-        voltageStart.setText("" + AppMain.environmentParameters.getVoltageSweep().getStart());
-        voltageStop.setText("" + AppMain.environmentParameters.getVoltageSweep().getStop());
-        voltageSpot.setText("" + AppMain.environmentParameters.getVoltageSweep().getSpot());
-        voltageStep.setText("" + AppMain.environmentParameters.getVoltageSweep().getStep());
+        savingDirMenu.setText(AppMain.fileService.getAutoSavingDir());
+        createConstraintListener();
+    }
 
-        otherCapacitance.setText("" + AppMain.environmentParameters.getOther().getCapacitance());
-        otherElectricalLength.setText("" + AppMain.environmentParameters.getOther().getElectricalLength());
+    private void inicialUpper(){
+        displayAUpper.getToggles().forEach(item -> {
+            ToggleButton btn = (ToggleButton) item;
+            if (btn.getText().equals(ep.getByType(GraphType.UPPER).getDisplayYY().getA())) {
+                item.setSelected(true);
+            }
+        });
+        displayBUpper.getToggles().forEach(item -> {
+            ToggleButton btn = (ToggleButton) item;
+            if (btn.getText().equals(ep.getByType(GraphType.UPPER).getDisplayYY().getB())) {
+                item.setSelected(true);
+            }
+        });
 
+        frequencyStartUpper.setText("" + ep.getByType(GraphType.UPPER).getFrequencySweep().getStart());
+        frequencyStopUpper.setText("" + ep.getByType(GraphType.UPPER).getFrequencySweep().getStop());
+        frequencySpotUpper.setText("" + ep.getByType(GraphType.UPPER).getFrequencySweep().getSpot());
+        frequencyStepUpper.setText("" + ep.getByType(GraphType.UPPER).getFrequencySweep().getStep());
+
+        voltageStartUpper.setText("" + ep.getByType(GraphType.UPPER).getVoltageSweep().getStart());
+        voltageStopUpper.setText("" + ep.getByType(GraphType.UPPER).getVoltageSweep().getStop());
+        voltageSpotUpper.setText("" + ep.getByType(GraphType.UPPER).getVoltageSweep().getSpot());
+        voltageStepUpper.setText("" + ep.getByType(GraphType.UPPER).getVoltageSweep().getStep());
+
+        otherCapacitanceUpper.setText("" + ep.getByType(GraphType.UPPER).getOther().getCapacitance());
+        otherElectricalLengthUpper.setText("" + ep.getByType(GraphType.UPPER).getOther().getElectricalLength());
+
+        otherSweepTypeUpper.getItems().addAll("LINEAR", "LOG");
+        otherSweepTypeUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0:1);
+
+        otherHighSpeedUpper.getItems().addAll("ON", "OFF");
+        otherHighSpeedUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isHighSpeed() ? 0:1);
+
+        otherAutoSweepUpper.getItems().addAll("ON", "OFF");
+        otherAutoSweepUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isAutoSweep() ? 0:1);
+
+    }
+
+    private void inicialLower(){
+
+
+        displayALower.getToggles().forEach(item -> {
+            ToggleButton btn = (ToggleButton) item;
+            if (btn.getText().equals(ep.getByType(GraphType.LOWER).getDisplayYY().getA())) {
+                item.setSelected(true);
+            }
+        });
+        displayBLower.getToggles().forEach(item -> {
+            ToggleButton btn = (ToggleButton) item;
+            if (btn.getText().equals(ep.getByType(GraphType.LOWER).getDisplayYY().getB())) {
+                item.setSelected(true);
+            }
+        });
+
+
+        frequencyStartLower.setText("" + ep.getByType(GraphType.LOWER).getFrequencySweep().getStart());
+        frequencyStopLower.setText("" + ep.getByType(GraphType.LOWER).getFrequencySweep().getStop());
+        frequencySpotLower.setText("" + ep.getByType(GraphType.LOWER).getFrequencySweep().getSpot());
+        frequencyStepLower.setText("" + ep.getByType(GraphType.LOWER).getFrequencySweep().getStep());
+
+
+        voltageStartLower.setText("" + ep.getByType(GraphType.LOWER).getVoltageSweep().getStart());
+        voltageStopLower.setText("" + ep.getByType(GraphType.LOWER).getVoltageSweep().getStop());
+        voltageSpotLower.setText("" + ep.getByType(GraphType.LOWER).getVoltageSweep().getSpot());
+        voltageStepLower.setText("" + ep.getByType(GraphType.LOWER).getVoltageSweep().getStep());
+
+        otherCapacitanceLower.setText("" + ep.getByType(GraphType.LOWER).getOther().getCapacitance());
+        otherElectricalLengthLower.setText("" + ep.getByType(GraphType.LOWER).getOther().getElectricalLength());
         // ----- initialize all dropbox -> coz its not possible to do so in sceneBuilder yet
-        otherSweepType.getItems().addAll("LINEAR", "LOG");
-        if (AppMain.environmentParameters.getOther().getSweepType() == SweepType.LINEAR) {
-            otherSweepType.getSelectionModel().select(0);
-        } else otherSweepType.getSelectionModel().select(1);
+        otherSweepTypeLower.getItems().addAll("LINEAR", "LOG");
+        otherSweepTypeLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0:1);
 
-        otherHighSpeed.getItems().addAll("ON", "OFF");
-        if (AppMain.environmentParameters.getOther().isHighSpeed()) {
-            otherHighSpeed.getSelectionModel().select(0);
-        } else otherHighSpeed.getSelectionModel().select(1);
+        otherHighSpeedLower.getItems().addAll("ON", "OFF");
+        otherHighSpeedLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isHighSpeed() ? 0:1);
 
-        otherAutoSweep.getItems().addAll("ON", "OFF");
-        if (AppMain.environmentParameters.getOther().isAutoSweep()) {
-            otherAutoSweep.getSelectionModel().select(0);
-        } else otherAutoSweep.getSelectionModel().select(1);
+        otherAutoSweepLower.getItems().addAll("ON", "OFF");
+        otherAutoSweepLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isAutoSweep() ? 0:1);
 
-        LocalDate localDate = LocalDate.now();
-        String dir = System.getProperty("user.dir");
-        String path = dir + "\\" + localDate.getYear() + "\\" + localDate.getMonth() + "\\" + localDate.getDayOfMonth() + "\\";
-        AppMain.fileService.setAutoSavingDir(path);
+    }
 
-        savingDirMenu.setText(path);
-
+    private void createConstraintListener() {
+        displayAUpper.selectedToggleProperty().addListener((observableValue, oldValue, newValue) -> {
+            List<DisplayBOption> bOptions = DisplayBOption.getBOptionsByA(DisplayAOption.getOptionFromString(((RadioButton) newValue).getText()));
+            if (bOptions != null) {
+                if (bOptions.contains(DisplayBOption.getOptionFromString(((RadioButton) displayBUpper.getSelectedToggle()).getText()))) {
+                    return;
+                }
+                DisplayBOption first = bOptions.stream().findFirst().get();
+                displayBUpper.getToggles().forEach(item -> {
+                    ToggleButton btn = (ToggleButton) item;
+                    if (btn.getText().contains(first.toString())) {
+                        item.setSelected(true);
+                    }
+                });
+            } else {
+                AppMain.notificationService.createNotification("Display B upper values array is empty!", NotificationType.ERROR);
+            }
+        });
+        displayBUpper.selectedToggleProperty().addListener((observableValue, oldValue, newValue) -> {
+            List<DisplayAOption> aOptions = DisplayAOption.getAOptionsByB(DisplayBOption.getOptionFromString(((RadioButton) newValue).getText()));
+            if (aOptions != null) {
+                if (aOptions.contains(DisplayAOption.getOptionFromString(((RadioButton) displayAUpper.getSelectedToggle()).getText()))) {
+                    return;
+                }
+                DisplayAOption first = aOptions.stream().findFirst().get();
+                displayAUpper.getToggles().forEach(item -> {
+                    ToggleButton btn = (ToggleButton) item;
+                    if (btn.getText().contains(first.toString())) {
+                        item.setSelected(true);
+                    }
+                });
+            } else {
+                AppMain.notificationService.createNotification("Display A upper values array is empty!", NotificationType.ERROR);
+            }
+        });
+        displayALower.selectedToggleProperty().addListener((observableValue, oldValue, newValue) -> {
+            List<DisplayBOption> bOptions = DisplayBOption.getBOptionsByA(DisplayAOption.getOptionFromString(((RadioButton) newValue).getText()));
+            if (bOptions != null) {
+                if (bOptions.contains(DisplayBOption.getOptionFromString(((RadioButton) displayBLower.getSelectedToggle()).getText()))) {
+                    return;
+                }
+                DisplayBOption first = bOptions.stream().findFirst().get();
+                displayBLower.getToggles().forEach(item -> {
+                    ToggleButton btn = (ToggleButton) item;
+                    if (btn.getText().contains(first.toString())) {
+                        item.setSelected(true);
+                    }
+                });
+            } else {
+                AppMain.notificationService.createNotification("Display B upper values array is empty!", NotificationType.ERROR);
+            }
+        });
+        displayBLower.selectedToggleProperty().addListener((observableValue, oldValue, newValue) -> {
+            List<DisplayAOption> aOptions = DisplayAOption.getAOptionsByB(DisplayBOption.getOptionFromString(((RadioButton) newValue).getText()));
+            if (aOptions != null) {
+                if (aOptions.contains(DisplayAOption.getOptionFromString(((RadioButton) displayALower.getSelectedToggle()).getText()))) {
+                    return;
+                }
+                DisplayAOption first = aOptions.stream().findFirst().get();
+                displayALower.getToggles().forEach(item -> {
+                    ToggleButton btn = (ToggleButton) item;
+                    if (btn.getText().contains(first.toString())) {
+                        item.setSelected(true);
+                    }
+                });
+            } else {
+                AppMain.notificationService.createNotification("Display B lower values array is empty!", NotificationType.ERROR);
+            }
+        });
     }
 
     public void runConnection(MouseEvent mouseEvent) throws Exception {
@@ -380,14 +557,41 @@ public class MainController implements Initializable {
     }
 
     public void AutoSaveDirectory(MouseEvent mouseEvent) {
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        File dir = directoryChooser.showDialog(AppMain.ps);
-        if (dir != null) {
+        String newAutoSavingDir = AppMain.fileService.chooseSavingDirectory();
+        if(newAutoSavingDir != "") {
             LocalDate localDate = LocalDate.now();
-            String newAutoSavingDir = dir.getAbsolutePath() + "\\" + localDate.getYear() + "\\" + localDate.getMonth() + "\\" + localDate.getDayOfMonth() + "\\";
+            newAutoSavingDir = newAutoSavingDir + "/" +
+                    localDate.getYear() + "/" + localDate.getMonthValue() + "/" +
+                    localDate.getDayOfMonth() + "/";
             AppMain.fileService.setAutoSavingDir(newAutoSavingDir);
-            savingDirMenu.setText(newAutoSavingDir);
+            savingDirMenu.setText(AppMain.fileService.getAutoSavingDir());
+        }
 //            System.out.println(dir.getAbsolutePath());
+    }
+
+    public void exportLowerGraph(MouseEvent mouseEvent) {
+    }
+
+    public void saveLowerGraph(MouseEvent mouseEvent) {
+        if(gs.lowerGraph != null && gs.lowerGraph.getMeasurement() != null ){
+            String newSavingDir = AppMain.fileService.chooseSavingDirectory();
+            AppMain.fileService.saveAsMeasurement(gs.lowerGraph.getMeasurement(), newSavingDir);
+
+        }else{
+
+        }
+    }
+
+    public void exportUpperGraph(MouseEvent mouseEvent) {
+    }
+
+    public void saveUpperGraph(MouseEvent mouseEvent) {
+        if(gs.upperGraph != null && gs.upperGraph.getMeasurement() != null ){
+            String newSavingDir = AppMain.fileService.chooseSavingDirectory();
+            AppMain.fileService.saveAsMeasurement(gs.upperGraph.getMeasurement(), newSavingDir);
+
+        }else{
+
         }
     }
 }

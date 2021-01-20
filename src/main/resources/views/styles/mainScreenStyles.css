@@ -24,15 +24,18 @@
 .item-header {
     -fx-background-color: white;
     -fx-background-radius: 15px;
-    -fx-pref-width: 100px;
+    -fx-pref-width: 135px;
+    -fx-max-width: 135px;
+    -fx-padding: 0.1em 1em;
 }
 .item-input {
     -fx-border-radius: 5px;
     -fx-pref-height: 25px;
-    -fx-pref-width: 150px;
+    -fx-pref-width: 120px;
+    -fx-max-width: 120px;
 }
 .item-desc {
-    -fx-pref-width: 140px;
+    -fx-pref-width: 155px;
     -fx-fill-width: true;
     -fx-start-margin: 10px;
     -fx-padding: 0 10px;
@@ -60,4 +63,10 @@
     -fx-border-color: black;
     -fx-border-radius: 6px;
     -fx-border-width: 1px;
+}
+
+.tab-pane {
+    /*-fx-background-color: -fx-outer-border, -fx-inner-border, derive(-fx-color, -20%);*/
+    -fx-effect: innershadow(two-pass-box , rgba(0,0,0,0.6) , 4, 0.0 , 0 , 0);
+    -fx-background-color: transparent;
 }

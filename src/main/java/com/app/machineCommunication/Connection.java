@@ -61,21 +61,22 @@ public class Connection extends Thread{
 
 
     public boolean connect() {
-        connected = true; // TODO: remove this line and uncomment all lines below when testing with machine
-
-//        if (connected){
-//            if(cmd)
-//                write(".");
-//            write("exit");
-//        }
-//        else{
-//            write("connect 19");
-//            writer();
-//        }
-//        //TODO: what happens if it doesn't connect?
-//        cmd = false;
-//        connected = !connected;
-
+        if (AppMain.debugMode) {
+            connected = true;
+        } else {
+            if (connected){
+                if(cmd)
+                    write(".");
+                write("exit");
+            }
+            else{
+                write("connect 19");
+                writer();
+            }
+            //TODO: what happens if it doesn't connect?
+            cmd = false;
+            connected = !connected;
+        }
         return connected;
     }
 
@@ -127,45 +128,59 @@ public class Connection extends Thread{
                 }
             }
         }, 0, 200);
-
-        }
+    }
 
 
 
     public void startMeasurement(Measurement data) throws IOException {
-       if (environmentParameters.getOther().isAutoSweep()) {
+       if (environmentParameters.getActive().getOther().isAutoSweep()) {
            write("s WU");
            write("c");
-           StringBuilder result = new StringBuilder();
-           LocalDateTime readingStarted = LocalDateTime.now();
-           LocalDateTime readingTimeouts = readingStarted.plus(20, ChronoUnit.SECONDS);
-           while (LocalDateTime.now().compareTo(readingTimeouts) < 0) {
-               if (!readEnd.ready())
-               {
+           new Thread(() -> {
+               StringBuilder result = new StringBuilder();
+               LocalDateTime readingStarted = LocalDateTime.now();
+               LocalDateTime readingTimeouts = readingStarted.plus(20, ChronoUnit.SECONDS);
+               while (LocalDateTime.now().compareTo(readingTimeouts) < 0) {
                    try {
-                       Thread.sleep(1);
-                   } catch (InterruptedException e) {
+                       if (!readEnd.ready())
+                       {
+                           try {
+                               Thread.sleep(1);
+                           } catch (InterruptedException e) {
+                               e.printStackTrace();
+                           }
+                           continue;
+                       }
+                   } catch (IOException e) {
                        e.printStackTrace();
                    }
-                   continue;
-               }
-               char letter = (char) readEnd.read();
-               if ((letter == '\n') && (result.length() > 1)) {
-                   if (result.charAt(1) == 'N') {
-                       write("n");
-                       break;
-                   } else {
-                       data.addSingleValue(new SingleValue(result.toString()));
-                       result = new StringBuilder();
+                   char letter = 0;
+                   try {
+                       letter = (char) readEnd.read();
+                   } catch (IOException e) {
+                       e.printStackTrace();
                    }
-               } else
-                   result.append(letter);
-           }
-           if (LocalDateTime.now().compareTo(readingTimeouts) >= 0)
-           {
-               System.out.println("c cmd timeouted");
-           }
+                   if ((letter == '\n') && (result.length() > 1)) {
+                       if (result.charAt(1) == 'N') {
+                           write("n");
+                           data.addSingleValue(null);
+                           break;
+                       } else {
+                           data.addSingleValue(new SingleValue(result.toString()));
+                           result = new StringBuilder();
+                       }
+                   } else
+                       result.append(letter);
+               }
+               if (LocalDateTime.now().compareTo(readingTimeouts) >= 0)
+               {
+                   System.out.println("c cmd timeouted");
+               }
+           });
+
        }
+
+
        else {
            write("s SU");
            write("q 1");
@@ -181,55 +196,103 @@ public class Connection extends Thread{
             if (!cmd)
                 toggleCmdMode();
             if (cmd && !manualSweep) {
-                // TODO:function for display functions
-                write("s A7");
-                write("s B1");
+                displayFunctions();
                 highSpeed();
                 if (type == MeasuredQuantity.FREQUENCY)
                     frequencySweep();
                 if (type == MeasuredQuantity.VOLTAGE)
                     voltageSweep();
-                if (!environmentParameters.getOther().isAutoSweep()) manualSweep=true;
+                if (!environmentParameters.getActive().getOther().isAutoSweep()) manualSweep=true;
                 startMeasurement(AppMain.graphService.getRunningGraph().getMeasurement());
             }
         }
     }
 
     public void highSpeed() {
-        if (environmentParameters.getOther().isHighSpeed())
+        if (environmentParameters.getActive().getOther().isHighSpeed())
             write("s H1");
         else
             write("s H0");
     }
 
+    public void displayFunctions() {
+        switch (environmentParameters.getActive().getDisplayYY().getA()){
+            case "L":
+                write("s A7");
+                break;
+            case "C":
+                write("s A8");
+                break;
+            case "Z":
+                write("s A1");
+                break;
+            case "Y":
+                write("s A2");
+                break;
+            case "r":
+                write("s A3");
+                break;
+            case "rx":
+                write("s A6");
+                break;
+            case "G":
+                write("s A5");
+                break;
+            case "R":
+                write("s A4");
+                break;
+        }
+        switch (environmentParameters.getActive().getDisplayYY().getB()){
+            case "R":
+                write("s B1");
+                break;
+            case "G":
+                write("s B2");
+                break;
+            case "D":
+                write("s B3");
+                break;
+            case "Q":
+                write("s B4");
+                break;
+            /*case "0(rad)":
+                write("s B2");
+                break;
+            case "0(deg)":
+                write("s B1"); //B3,B4?
+                break;*/
+
+
+        }
+    }
     public void frequencySweep() {
-        write("s TF" + environmentParameters.getFrequencySweep().getStart() + "EN");
-        write("s PF" + environmentParameters.getFrequencySweep().getStop() + "EN");
-        write("s SF" + environmentParameters.getFrequencySweep().getStep() + "EN");
-        write("s FR" + environmentParameters.getFrequencySweep().getSpot() + "EN");
+        write("s TF" + environmentParameters.getActive().getFrequencySweep().getStart() + "EN");
+        write("s PF" + environmentParameters.getActive().getFrequencySweep().getStop() + "EN");
+        write("s SF" + environmentParameters.getActive().getFrequencySweep().getStep() + "EN");
+        write("s FR" + environmentParameters.getActive().getFrequencySweep().getSpot() + "EN");
     }
 
     public void voltageSweep()  {
-        write("s TB" + environmentParameters.getVoltageSweep().getStart() + "EN");
-        write("s PB" + environmentParameters.getVoltageSweep().getStop() + "EN");
-        write("s SB" + environmentParameters.getVoltageSweep().getStep() + "EN");
-        write("s BI" + environmentParameters.getVoltageSweep().getSpot() + "EN");
+        write("s TB" + environmentParameters.getActive().getVoltageSweep().getStart() + "EN");
+        write("s PB" + environmentParameters.getActive().getVoltageSweep().getStop() + "EN");
+        write("s SB" + environmentParameters.getActive().getVoltageSweep().getStep() + "EN");
+        write("s BI" + environmentParameters.getActive().getVoltageSweep().getSpot() + "EN");
     }
 //TODO: calibration parameters
     public void openCalibration() throws IOException {
         write("s A4");
         write("s CS");
-        read(); // we don't need results for now
+        //read(); // we don't need results for now
     }
     public void shortCalibration() throws IOException {
         write("s A5");
         write("s CS");
-        read(); // we don't need results for now
+        //read(); // we don't need results for now
     }
     public void loadCalibration() throws IOException {
-        write("s A5");
+        write("s A6");
         write("s CS");
-        read(); // we don't need results for now
+        //read(); // we don't need results for now
     }
 
 
@@ -239,7 +302,7 @@ public class Connection extends Thread{
             if (cmd){
                 if (!calibrationMode){
                     write("s C1");
-                    write("s EL" + environmentParameters.getOther().getElectricalLength() + "EN");
+                    write("s EL" + environmentParameters.getActive().getOther().getElectricalLength() + "EN");
                     highSpeed();
                     calibrationMode = !calibrationMode;
                     }
