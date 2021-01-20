@@ -68,6 +68,13 @@ public class MainController implements Initializable {
     @FXML
     ToggleGroup toggleLowerXAxis;
 
+    @FXML
+    TabPane parametersTabPane;
+    @FXML
+    Tab upperGraphTab;
+    @FXML
+    Tab lowerGraphTab;
+
     // upper graph params
     @FXML
     ToggleGroup displayAUpper;
@@ -198,6 +205,7 @@ public class MainController implements Initializable {
             toggleDisabling();
             upperGraphRun.setText("Run");
         } else if (!gs.isRunningGraph()) {
+            parametersTabPane.getSelectionModel().select(upperGraphTab);
             runMeasurement(GraphType.UPPER, (Button) event.getSource());
         }
     }
@@ -208,6 +216,7 @@ public class MainController implements Initializable {
             toggleDisabling();
             lowerGraphRun.setText("Run");
         } else if (!gs.isRunningGraph()) {
+            parametersTabPane.getSelectionModel().select(lowerGraphTab);
             runMeasurement(GraphType.LOWER, (Button) event.getSource());
         }
     }
@@ -308,22 +317,19 @@ public class MainController implements Initializable {
     }
 
     public void loadUpperGraph(MouseEvent event) {
+        parametersTabPane.getSelectionModel().select(upperGraphTab);
         gs.loadGraph(GraphType.UPPER);
     }
 
     public void loadLowerGraph(MouseEvent event) {
+        parametersTabPane.getSelectionModel().select(lowerGraphTab);
         gs.loadGraph(GraphType.LOWER);
     }
 
     public void toggleAutoSave(MouseEvent event) {
         // TODO: change autoSaveMode in global props global props
-        if (AppMain.fileService.isAutoSave()) {
-            autoSaveMenu.setText("Auto save: OFF");
-            AppMain.fileService.setAutoSave(false);
-        } else {
-            autoSaveMenu.setText("Auto save: ON");
-            AppMain.fileService.setAutoSave(true);
-        }
+        AppMain.fileService.setAutoSave(!AppMain.fileService.isAutoSave());
+        autoSaveMenu.setText("Auto save: " + (AppMain.fileService.isAutoSave() ? "ON":"OFF"));
     }
 
     public void resetInstrument(MouseEvent event) {

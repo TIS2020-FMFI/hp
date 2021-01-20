@@ -80,9 +80,9 @@
                <children>
                   <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="tab-pane" tabClosingPolicy="UNAVAILABLE">
+                        <TabPane fx:id="parametersTabPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="tab-pane" tabClosingPolicy="UNAVAILABLE">
                            <tabs>
-                              <Tab text="Upper graph">
+                              <Tab fx:id="upperGraphTab" text="Upper graph">
                                  <content>
                                     <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                                        <children>
@@ -663,7 +663,7 @@
                                     </AnchorPane>
                                  </content>
                               </Tab>
-                              <Tab text="Lower graph">
+                              <Tab fx:id="lowerGraphTab" text="Lower graph">
                                  <content>
                                     <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                                        <children>
