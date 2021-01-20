@@ -80,16 +80,19 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
                         getRandomTestData();
                     } else {
                         int currentSizeData = measurement.getData().size();
-                        if (currentSizeData != sizeData) {
-                            // TODO: when do we call cancel() ?
-                            values.add(measurement.getData().getLast());
+                        if (currentSizeData > sizeData) {
+                            SingleValue newValue = measurement.getData().get(currentSizeData);
+                            if (newValue == null) {
+                                cancel();
+                            }
+                            values.add(newValue);
 
                             long now = System.currentTimeMillis();
                             if (now - lastEvent > visualDelay) {
                                 lastEvent = now;
                                 fireDatasetChanged();
                             }
-                            sizeData = currentSizeData;
+                            sizeData++;
                         }
                     }
                 });

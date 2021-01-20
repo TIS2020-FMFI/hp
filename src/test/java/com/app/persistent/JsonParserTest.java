@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedList;
+import java.util.Vector;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -205,7 +206,7 @@ class JsonParserTest {
 
         assertEquals("hello world", measurement.getComment().toString());
 
-        LinkedList<SingleValue> data = measurement.getData();
+        Vector<SingleValue> data = measurement.getData();
 
         assertEquals(data.get(0).getDisplayA(),0.1 );
         assertEquals(data.get(3).getDisplayB(),15);
