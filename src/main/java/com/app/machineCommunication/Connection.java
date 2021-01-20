@@ -216,6 +216,7 @@ public class Connection extends Thread{
         switch (environmentParameters.getActive().getDisplayYY().getA()){
             case "L":
                 write("s A7");
+                break;
             case "C":
                 write("s A8");
                 break;
