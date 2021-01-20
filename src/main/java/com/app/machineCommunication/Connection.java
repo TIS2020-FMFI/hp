@@ -136,35 +136,47 @@ public class Connection extends Thread{
        if (environmentParameters.getActive().getOther().isAutoSweep()) {
            write("s WU");
            write("c");
-           StringBuilder result = new StringBuilder();
-           LocalDateTime readingStarted = LocalDateTime.now();
-           LocalDateTime readingTimeouts = readingStarted.plus(20, ChronoUnit.SECONDS);
-           while (LocalDateTime.now().compareTo(readingTimeouts) < 0) {
-               if (!readEnd.ready())
-               {
+           new Thread(() -> {
+               StringBuilder result = new StringBuilder();
+               LocalDateTime readingStarted = LocalDateTime.now();
+               LocalDateTime readingTimeouts = readingStarted.plus(20, ChronoUnit.SECONDS);
+               while (LocalDateTime.now().compareTo(readingTimeouts) < 0) {
                    try {
-                       Thread.sleep(1);
-                   } catch (InterruptedException e) {
+                       if (!readEnd.ready())
+                       {
+                           try {
+                               Thread.sleep(1);
+                           } catch (InterruptedException e) {
+                               e.printStackTrace();
+                           }
+                           continue;
+                       }
+                   } catch (IOException e) {
                        e.printStackTrace();
                    }
-                   continue;
-               }
-               char letter = (char) readEnd.read();
-               if ((letter == '\n') && (result.length() > 1)) {
-                   if (result.charAt(1) == 'N') {
-                       write("n");
-                       break;
-                   } else {
-                       data.addSingleValue(new SingleValue(result.toString()));
-                       result = new StringBuilder();
+                   char letter = 0;
+                   try {
+                       letter = (char) readEnd.read();
+                   } catch (IOException e) {
+                       e.printStackTrace();
                    }
-               } else
-                   result.append(letter);
-           }
-           if (LocalDateTime.now().compareTo(readingTimeouts) >= 0)
-           {
-               System.out.println("c cmd timeouted");
-           }
+                   if ((letter == '\n') && (result.length() > 1)) {
+                       if (result.charAt(1) == 'N') {
+                           write("n");
+                           break;
+                       } else {
+                           data.addSingleValue(new SingleValue(result.toString()));
+                           result = new StringBuilder();
+                       }
+                   } else
+                       result.append(letter);
+               }
+               if (LocalDateTime.now().compareTo(readingTimeouts) >= 0)
+               {
+                   System.out.println("c cmd timeouted");
+               }
+           });
+
        }
        else {
            write("s SU");
@@ -181,9 +193,7 @@ public class Connection extends Thread{
             if (!cmd)
                 toggleCmdMode();
             if (cmd && !manualSweep) {
-                // TODO:function for display functions
-                write("s A7");
-                write("s B1");
+                displayFunctions();
                 highSpeed();
                 if (type == MeasuredQuantity.FREQUENCY)
                     frequencySweep();
@@ -202,6 +212,56 @@ public class Connection extends Thread{
             write("s H0");
     }
 
+    public void displayFunctions() {
+        switch (environmentParameters.getActive().getDisplayYY().getA()){
+            case "L":
+                write("s A7");
+                break;
+            case "C":
+                write("s A8");
+                break;
+            case "Z":
+                write("s A1");
+                break;
+            case "Y":
+                write("s A2");
+                break;
+            case "r":
+                write("s A3");
+                break;
+            case "rx":
+                write("s A6");
+                break;
+            case "G":
+                write("s A5");
+                break;
+            case "R":
+                write("s A4");
+                break;
+        }
+        switch (environmentParameters.getActive().getDisplayYY().getB()){
+            case "R":
+                write("s B1");
+                break;
+            case "G":
+                write("s B2");
+                break;
+            case "D":
+                write("s B3");
+                break;
+            case "Q":
+                write("s B4");
+                break;
+            /*case "0(rad)":
+                write("s B2");
+                break;
+            case "0(deg)":
+                write("s B1"); //B3,B4?
+                break;*/
+
+
+        }
+    }
     public void frequencySweep() {
         write("s TF" + environmentParameters.getActive().getFrequencySweep().getStart() + "EN");
         write("s PF" + environmentParameters.getActive().getFrequencySweep().getStop() + "EN");
@@ -219,17 +279,17 @@ public class Connection extends Thread{
     public void openCalibration() throws IOException {
         write("s A4");
         write("s CS");
-        read(); // we don't need results for now
+        //read(); // we don't need results for now
     }
     public void shortCalibration() throws IOException {
         write("s A5");
         write("s CS");
-        read(); // we don't need results for now
+        //read(); // we don't need results for now
     }
     public void loadCalibration() throws IOException {
-        write("s A5");
+        write("s A6");
         write("s CS");
-        read(); // we don't need results for now
+        //read(); // we don't need results for now
     }
 
 
