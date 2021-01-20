@@ -54,6 +54,8 @@ public class MainController implements Initializable {
     @FXML
     Button upperGraphSave;
     @FXML
+    Button upperPointNext;
+    @FXML
     ToggleGroup toggleUpperXAxis;
 
     @FXML
@@ -68,6 +70,8 @@ public class MainController implements Initializable {
     Button lowerGraphExport;
     @FXML
     Button lowerGraphSave;
+    @FXML
+    Button lowerPointNext;
     @FXML
     ToggleGroup toggleLowerXAxis;
 
@@ -207,6 +211,7 @@ public class MainController implements Initializable {
             gs.abortGraph(GraphType.UPPER);
             toggleDisabling();
             upperGraphRun.setText("Run");
+            upperToolbar.getItems().remove(upperPointNext);
         } else if (!gs.isRunningGraph()) {
             parametersTabPane.getSelectionModel().select(upperGraphTab);
             runMeasurement(GraphType.UPPER, (Button) event.getSource());
@@ -218,6 +223,7 @@ public class MainController implements Initializable {
             gs.abortGraph(GraphType.LOWER);
             toggleDisabling();
             lowerGraphRun.setText("Run");
+            lowerToolbar.getItems().remove(lowerPointNext);
         } else if (!gs.isRunningGraph()) {
             parametersTabPane.getSelectionModel().select(lowerGraphTab);
             runMeasurement(GraphType.LOWER, (Button) event.getSource());
@@ -270,9 +276,9 @@ public class MainController implements Initializable {
 
             if (gs.isRunningGraph() && (graphType.equals(GraphType.UPPER) ? otherAutoSweepUpper:otherAutoSweepLower).getValue().equals("OFF")) {
                 if (gs.getRunningGraph().getType().equals(GraphType.UPPER)) {
-                    Button button = new Button("Point");
-                    button.setId("upperPoint");
-                    button.setOnKeyPressed(e -> {
+                    upperPointNext = new Button("Next");
+                    upperPointNext.setId("upperPointNext");
+                    upperPointNext.setOnKeyPressed(e -> {
                         try {
                             point();
                         } catch (IOException ex) {
@@ -281,12 +287,12 @@ public class MainController implements Initializable {
                             ex.printStackTrace();
                         }
                     });
-                    upperToolbar.getItems().add(button);
+                    upperToolbar.getItems().add(upperPointNext);
                     //TODO: tu metoda, ktora prida measurement data, ktore v grafe uz on checkuje, je treba aj cez abort znicit ten button potom
                 } else {
-                    Button button = new Button("Point");
-                    button.setId("lowerPoint");
-                    button.setOnKeyPressed(e -> {
+                    lowerPointNext = new Button("Next");
+                    lowerPointNext.setId("lowerPointNext");
+                    lowerPointNext.setOnKeyPressed(e -> {
                         try {
                             point();
                         } catch (IOException ex) {
@@ -295,7 +301,7 @@ public class MainController implements Initializable {
                             ex.printStackTrace();
                         }
                     });
-                    lowerToolbar.getItems().add(button);
+                    lowerToolbar.getItems().add(lowerPointNext);
 
                     //TODO: tu metoda, ktora prida measurement data, ktore v grafe uz on checkuje, je treba aj cez abort znicit ten button potom
                 }
