@@ -28,14 +28,14 @@ public class JsonParser {
         ep.getByType(GraphType.LOWER).checkAll();
 
         JSONObject jo = new JSONObject();
-        jo.put("upper", getParametersMap(GraphType.UPPER, ep));
-        jo.put("lower", getParametersMap(GraphType.LOWER, ep));
+        jo.put("upper", getParametersMap(ep.getByType(GraphType.UPPER)));
+        jo.put("lower", getParametersMap(ep.getByType(GraphType.LOWER)));
         Files.write(Paths.get("persistent/" + fileName), jo.toJSONString().getBytes());
         return true;
     }
 
-    private static Map<String, Object> getParametersMap(GraphType type, EnvironmentParameters ep) {
-        Parameters params = ep.getByType(type);
+    private static Map<String, Object> getParametersMap(Parameters params) {
+//        Parameters params = ep.getByType(type);
         Map<String, Object> temp = new HashMap<>();
 
         temp.put("displayA", params.getDisplayYY().getA());
@@ -76,8 +76,12 @@ public class JsonParser {
             Object obj = new JSONParser().parse(new FileReader(fileName));
 
             JSONObject jo = (JSONObject) obj;
-            paramsUpper = readParameters(GraphType.UPPER, jo);
-            paramsLower = readParameters(GraphType.LOWER, jo);
+
+            paramsUpper = readParameters((HashMap) jo.get("upper"));
+            paramsLower = readParameters((HashMap) jo.get("lower"));
+
+//            paramsUpper = readParameters(GraphType.UPPER, jo);
+//            paramsLower = readParameters(GraphType.LOWER, jo);
             paramsUpper.checkAll();
             paramsLower.checkAll();
         } catch (IOException | ParseException e) {
@@ -120,10 +124,9 @@ public class JsonParser {
         return ep;
     }
 
-    private static Parameters readParameters(GraphType type, JSONObject obj) {
+//    private static Parameters readParameters(GraphType type, JSONObject obj) {
+    private static Parameters readParameters(Map<String, Object> graphParams) {
         Parameters params = new Parameters();
-
-        Map<String, Object> graphParams = (HashMap) obj.get(type.name().toLowerCase());
 
         DisplayYY displayYY = new DisplayYY();
         FrequencySweep frequencySweep = new FrequencySweep();
@@ -167,6 +170,9 @@ public class JsonParser {
         try {
             Object obj = new JSONParser().parse(new FileReader(autoSavingDir));
             JSONObject jo = (JSONObject) obj;
+            measurement.getParameters().checkAll();
+
+            jo.put("parameters", getParametersMap(measurement.getParameters()));
 
             if(measurement.getComment() != null){
                 jo.put("comment", measurement.getComment().toString());
@@ -241,6 +247,11 @@ public class JsonParser {
 
             Object obj = new JSONParser().parse(new FileReader(fileName));
             JSONObject jo = (JSONObject) obj;
+
+            Parameters parameters = readParameters((HashMap) jo.get("parameters"));
+            parameters.checkAll();
+            measurement.setParameters(parameters);
+
             String comment = jo.get("comment").toString();
             if(comment != null) {
                 measurement.updateComment(comment);
@@ -256,7 +267,7 @@ public class JsonParser {
                 measurement.addSingleValue(singleValue);
             }
 
-            measurement.setState(MeasurementState.SAVED);
+            measurement.setState(MeasurementState.LOADED);
 
         } catch (Exception e) {
             e.printStackTrace();
