@@ -26,7 +26,7 @@
                   <Insets left="30.0" />
                </padding>
                <children>
-                  <TextArea prefHeight="186.0" prefWidth="399.0" text="Graph functionality&#10;&#10;- press ALT and drag mouse to pan a chart&#10;- press ALT and wheel up/down mouse to zoom a chart&#10;- select with mouse some part of chart and it will zoom&#10;- zoom back with draging to up-left corner&#10;- save plot by right-clicking and select export as" />
+                  <TextArea prefHeight="186.0" prefWidth="399.0" text="This application was done as a school project to support physicist in research at the Commenius University in Slovakia.&#10;Application works with machine HP4191a.&#10;&#10;Graph functionality&#10;- press ALT and drag mouse to pan a chart&#10;- press ALT and wheel up/down mouse to zoom a chart&#10;- select with mouse some part of chart and it will zoom&#10;- zoom back with draging to up-left corner&#10;- save plot by right-clicking and select export as&#10;&#10;HP 4191a Manual&#10;https://doc.xdevs.com/doc/HP_Agilent_Keysight/HP%204191A%20Operation%20&amp;%20Service.pdf&#10;" />
                </children>
             </VBox>
             <HBox fx:id="actionContainer" alignment="CENTER" minHeight="50.0" prefHeight="70.0" prefWidth="200.0">
