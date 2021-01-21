@@ -166,6 +166,7 @@ public class Connection extends Thread{
                            data.addSingleValue(null);
                            break;
                        } else {
+                           System.out.println("reading " + result.toString());
                            data.addSingleValue(new SingleValue(result.toString()));
                            result = new StringBuilder();
                        }
@@ -176,7 +177,7 @@ public class Connection extends Thread{
                {
                    System.out.println("c cmd timeouted");
                }
-           });
+           }).start();
 
        }
 
@@ -185,6 +186,7 @@ public class Connection extends Thread{
            write("s SU");
            write("q 1");
            StringBuilder result = read();
+           System.out.println("reading " + result.toString());
            data.addSingleValue(new SingleValue(result.toString()));
            // TODO: Kedy je koniec ? manualSweep = false
        }

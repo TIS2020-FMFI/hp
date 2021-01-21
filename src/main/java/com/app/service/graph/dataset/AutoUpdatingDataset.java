@@ -26,7 +26,7 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
     public AutoUpdatingDataset(Measurement measurement, DatasetType type) {
         this.type = type;
         this.measurement = measurement;
-        this.values = measurement.getData();
+        this.values = new ArrayList<>();
         lastEvent = System.currentTimeMillis();
     }
 
@@ -81,9 +81,10 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
                     } else {
                         int currentSizeData = measurement.getData().size();
                         if (currentSizeData > sizeData) {
-                            SingleValue newValue = measurement.getData().get(currentSizeData);
+                            SingleValue newValue = measurement.getData().get(sizeData);
                             if (newValue == null) {
                                 cancel();
+                                return;
                             }
                             values.add(newValue);
 

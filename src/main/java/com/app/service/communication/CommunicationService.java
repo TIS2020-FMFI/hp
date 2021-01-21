@@ -27,7 +27,7 @@ public class CommunicationService {
     }
 
 
-    public void runMeasurement(MeasuredQuantity mq) throws IOException, InterruptedException {
+    public void runMeasurement(MeasuredQuantity mq) throws IOException {
         connection.measurement(mq);
     }
 
