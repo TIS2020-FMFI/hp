@@ -7,8 +7,6 @@ import com.app.service.graph.GraphState;
 import com.app.service.graph.GraphType;
 import com.app.service.measurement.DisplayAOption;
 import com.app.service.measurement.DisplayBOption;
-import com.app.service.measurement.Measurement;
-import com.app.service.measurement.MeasurementState;
 import com.app.service.notification.NotificationType;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -17,15 +15,12 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Stack;
 
 public class MainController implements Initializable {
 
@@ -177,7 +172,7 @@ public class MainController implements Initializable {
 
 
     public void updateComment(MouseEvent event) {
-        ep.getActive().setComment(ep.getActiveGraphType().equals(GraphType.UPPER) ? commentInputUpper.getText():commentInputLower.getText());
+        ep.getActive().setComment(ep.getActiveGraphType().equals(GraphType.UPPER) ? commentInputUpper.getText() : commentInputLower.getText());
     }
 
     private void toggleDisabling() {
@@ -235,8 +230,8 @@ public class MainController implements Initializable {
 
         try {
             DisplayYY newDisplayYY = ep.getActive().getDisplayYY();
-            RadioButton selectedDisplayA = (RadioButton) (graphType.equals(GraphType.UPPER) ? displayAUpper:displayALower).getSelectedToggle();
-            RadioButton selectedDisplayB = (RadioButton) (graphType.equals(GraphType.UPPER) ? displayBUpper:displayBLower).getSelectedToggle();
+            RadioButton selectedDisplayA = (RadioButton) (graphType.equals(GraphType.UPPER) ? displayAUpper : displayALower).getSelectedToggle();
+            RadioButton selectedDisplayB = (RadioButton) (graphType.equals(GraphType.UPPER) ? displayBUpper : displayBLower).getSelectedToggle();
 
             if (selectedDisplayA == null || selectedDisplayB == null) {
                 throw new NullPointerException("Values not properly set! Display A or B not set.. or both :)");
@@ -244,37 +239,37 @@ public class MainController implements Initializable {
             newDisplayYY.setA(selectedDisplayA.getText());
             newDisplayYY.setA(selectedDisplayB.getText());
 
-            RadioButton selectedDisplayX = (RadioButton) ((graphType.equals(GraphType.UPPER) ? toggleUpperXAxis:toggleLowerXAxis).getSelectedToggle());
-            newDisplayYY.setX( selectedDisplayX.getText().equals("Frequency") ? MeasuredQuantity.FREQUENCY:MeasuredQuantity.VOLTAGE);
+            RadioButton selectedDisplayX = (RadioButton) ((graphType.equals(GraphType.UPPER) ? toggleUpperXAxis : toggleLowerXAxis).getSelectedToggle());
+            newDisplayYY.setX(selectedDisplayX.getText().equals("Frequency") ? MeasuredQuantity.FREQUENCY : MeasuredQuantity.VOLTAGE);
 
             ep.getActive().setDisplayYY(newDisplayYY);
 
             FrequencySweep newFrequencySweep = ep.getActive().getFrequencySweep();
-            newFrequencySweep.setStart(Double.parseDouble((graphType.equals(GraphType.UPPER) ? frequencyStartUpper:frequencyStartLower).getText()));
-            newFrequencySweep.setStop(Double.parseDouble((graphType.equals(GraphType.UPPER) ? frequencyStopUpper:frequencyStopLower).getText()));
-            newFrequencySweep.setStep(Double.parseDouble((graphType.equals(GraphType.UPPER) ? frequencyStepUpper:frequencyStepLower).getText()));
-            newFrequencySweep.setSpot(Double.parseDouble((graphType.equals(GraphType.UPPER) ? frequencySpotUpper:frequencySpotLower).getText()));
+            newFrequencySweep.setStart(Double.parseDouble((graphType.equals(GraphType.UPPER) ? frequencyStartUpper : frequencyStartLower).getText()));
+            newFrequencySweep.setStop(Double.parseDouble((graphType.equals(GraphType.UPPER) ? frequencyStopUpper : frequencyStopLower).getText()));
+            newFrequencySweep.setStep(Double.parseDouble((graphType.equals(GraphType.UPPER) ? frequencyStepUpper : frequencyStepLower).getText()));
+            newFrequencySweep.setSpot(Double.parseDouble((graphType.equals(GraphType.UPPER) ? frequencySpotUpper : frequencySpotLower).getText()));
             ep.getActive().setFrequencySweep(newFrequencySweep);
 
             VoltageSweep newVoltageSweep = new VoltageSweep();
-            newVoltageSweep.setStart(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageStartUpper:voltageStartLower).getText()));
-            newVoltageSweep.setStop(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageStopUpper:voltageStartLower).getText()));
-            newVoltageSweep.setStep(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageStepUpper:voltageStepLower).getText()));
-            newVoltageSweep.setSpot(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageSpotUpper:voltageSpotUpper).getText()));
+            newVoltageSweep.setStart(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageStartUpper : voltageStartLower).getText()));
+            newVoltageSweep.setStop(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageStopUpper : voltageStartLower).getText()));
+            newVoltageSweep.setStep(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageStepUpper : voltageStepLower).getText()));
+            newVoltageSweep.setSpot(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageSpotUpper : voltageSpotUpper).getText()));
             ep.getActive().setVoltageSweep(newVoltageSweep);
 
             Other newOther = new Other();
-            newOther.setCapacitance(Double.parseDouble((graphType.equals(GraphType.UPPER) ? otherCapacitanceUpper:otherCapacitanceLower).getText()));
-            newOther.setElectricalLength(Double.parseDouble((graphType.equals(GraphType.UPPER) ? otherElectricalLengthUpper:otherElectricalLengthLower).getText()));
-            newOther.setAutoSweep((graphType.equals(GraphType.UPPER) ? otherAutoSweepUpper:otherAutoSweepLower).getValue().equals("ON"));
-            newOther.setHighSpeed((graphType.equals(GraphType.UPPER) ? otherHighSpeedUpper:otherHighSpeedLower).getValue().equals("ON"));
-            newOther.setSweepType((graphType.equals(GraphType.UPPER) ? otherSweepTypeUpper:otherSweepTypeLower).getValue().equals("LINEAR") ? SweepType.LINEAR:SweepType.LOG);
+            newOther.setCapacitance(Double.parseDouble((graphType.equals(GraphType.UPPER) ? otherCapacitanceUpper : otherCapacitanceLower).getText()));
+            newOther.setElectricalLength(Double.parseDouble((graphType.equals(GraphType.UPPER) ? otherElectricalLengthUpper : otherElectricalLengthLower).getText()));
+            newOther.setAutoSweep((graphType.equals(GraphType.UPPER) ? otherAutoSweepUpper : otherAutoSweepLower).getValue().equals("ON"));
+            newOther.setHighSpeed((graphType.equals(GraphType.UPPER) ? otherHighSpeedUpper : otherHighSpeedLower).getValue().equals("ON"));
+            newOther.setSweepType((graphType.equals(GraphType.UPPER) ? otherSweepTypeUpper : otherSweepTypeLower).getValue().equals("LINEAR") ? SweepType.LINEAR : SweepType.LOG);
 
             ep.getActive().checkAll();
 
             gs.run(graphType);
 
-            if (gs.isRunningGraph() && (graphType.equals(GraphType.UPPER) ? otherAutoSweepUpper:otherAutoSweepLower).getValue().equals("OFF")) {
+            if (gs.isRunningGraph() && (graphType.equals(GraphType.UPPER) ? otherAutoSweepUpper : otherAutoSweepLower).getValue().equals("OFF")) {
                 if (gs.getRunningGraph().getType().equals(GraphType.UPPER)) {
                     upperPointNext = new Button("Next");
                     upperPointNext.setId("upperPointNext");
@@ -326,25 +321,34 @@ public class MainController implements Initializable {
     }
 
     public void loadUpperGraph(MouseEvent event) {
-        parametersTabPane.getSelectionModel().select(upperGraphTab);
-        gs.loadGraph(GraphType.UPPER);
-        AppMain.environmentParameters.setUpperGraphParameters(gs.upperGraph.getMeasurement().getParameters());
-        ep = AppMain.environmentParameters;
-        inicialUpper();
+
+        try {
+            parametersTabPane.getSelectionModel().select(upperGraphTab);
+            gs.loadGraph(GraphType.UPPER);
+            AppMain.environmentParameters.setUpperGraphParameters(gs.upperGraph.getMeasurement().getParameters());
+            ep = AppMain.environmentParameters;
+            initializeUpper();
+        } catch (RuntimeException e) {
+            // DO NOTHING
+        }
     }
 
     public void loadLowerGraph(MouseEvent event) {
-        parametersTabPane.getSelectionModel().select(lowerGraphTab);
-        gs.loadGraph(GraphType.LOWER);
-        AppMain.environmentParameters.setUpperGraphParameters(gs.lowerGraph.getMeasurement().getParameters());
-        ep = AppMain.environmentParameters;
-        inicialLower();
+        try {
+            parametersTabPane.getSelectionModel().select(lowerGraphTab);
+            gs.loadGraph(GraphType.LOWER);
+            AppMain.environmentParameters.setLowerGraphParameters(gs.lowerGraph.getMeasurement().getParameters());
+            ep = AppMain.environmentParameters;
+            initializeLower();
+        } catch (RuntimeException e) {
+            // DO NOTHING
+        }
     }
 
     public void toggleAutoSave(MouseEvent event) {
         // TODO: change autoSaveMode in global props global props
         AppMain.fileService.setAutoSave(!AppMain.fileService.isAutoSave());
-        autoSaveMenu.setText("Auto save: " + (AppMain.fileService.isAutoSave() ? "ON":"OFF"));
+        autoSaveMenu.setText("Auto save: " + (AppMain.fileService.isAutoSave() ? "ON" : "OFF"));
     }
 
     public void resetInstrument(MouseEvent event) {
@@ -389,14 +393,14 @@ public class MainController implements Initializable {
 
         toggleDisabling();
 
-        inicialUpper();
-        inicialLower();
+        initializeUpper();
+        initializeLower();
 
         savingDirMenu.setText(AppMain.fileService.getAutoSavingDir());
         createConstraintListener();
     }
 
-    private void inicialUpper(){
+    private void initializeUpper() {
         displayAUpper.getToggles().forEach(item -> {
             ToggleButton btn = (ToggleButton) item;
             if (btn.getText().equals(ep.getByType(GraphType.UPPER).getDisplayYY().getA())) {
@@ -424,17 +428,17 @@ public class MainController implements Initializable {
         otherElectricalLengthUpper.setText("" + ep.getByType(GraphType.UPPER).getOther().getElectricalLength());
 
         otherSweepTypeUpper.getItems().addAll("LINEAR", "LOG");
-        otherSweepTypeUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0:1);
+        otherSweepTypeUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0 : 1);
 
         otherHighSpeedUpper.getItems().addAll("ON", "OFF");
-        otherHighSpeedUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isHighSpeed() ? 0:1);
+        otherHighSpeedUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isHighSpeed() ? 0 : 1);
 
         otherAutoSweepUpper.getItems().addAll("ON", "OFF");
-        otherAutoSweepUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isAutoSweep() ? 0:1);
+        otherAutoSweepUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isAutoSweep() ? 0 : 1);
 
     }
 
-    private void inicialLower(){
+    private void initializeLower() {
 
 
         displayALower.getToggles().forEach(item -> {
@@ -466,13 +470,13 @@ public class MainController implements Initializable {
         otherElectricalLengthLower.setText("" + ep.getByType(GraphType.LOWER).getOther().getElectricalLength());
         // ----- initialize all dropbox -> coz its not possible to do so in sceneBuilder yet
         otherSweepTypeLower.getItems().addAll("LINEAR", "LOG");
-        otherSweepTypeLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0:1);
+        otherSweepTypeLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0 : 1);
 
         otherHighSpeedLower.getItems().addAll("ON", "OFF");
-        otherHighSpeedLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isHighSpeed() ? 0:1);
+        otherHighSpeedLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isHighSpeed() ? 0 : 1);
 
         otherAutoSweepLower.getItems().addAll("ON", "OFF");
-        otherAutoSweepLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isAutoSweep() ? 0:1);
+        otherAutoSweepLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isAutoSweep() ? 0 : 1);
 
     }
 
@@ -558,7 +562,7 @@ public class MainController implements Initializable {
 
     public void AutoSaveDirectory(MouseEvent mouseEvent) {
         String newAutoSavingDir = AppMain.fileService.chooseSavingDirectory();
-        if(newAutoSavingDir != "") {
+        if (newAutoSavingDir != "") {
             LocalDate localDate = LocalDate.now();
             newAutoSavingDir = newAutoSavingDir + "/" +
                     localDate.getYear() + "/" + localDate.getMonthValue() + "/" +
@@ -573,11 +577,11 @@ public class MainController implements Initializable {
     }
 
     public void saveLowerGraph(MouseEvent mouseEvent) {
-        if(gs.lowerGraph != null && gs.lowerGraph.getMeasurement() != null ){
+        if (gs.lowerGraph != null && gs.lowerGraph.getMeasurement() != null) {
             String newSavingDir = AppMain.fileService.chooseSavingDirectory();
             AppMain.fileService.saveAsMeasurement(gs.lowerGraph.getMeasurement(), newSavingDir);
 
-        }else{
+        } else {
 
         }
     }
@@ -586,11 +590,11 @@ public class MainController implements Initializable {
     }
 
     public void saveUpperGraph(MouseEvent mouseEvent) {
-        if(gs.upperGraph != null && gs.upperGraph.getMeasurement() != null ){
+        if (gs.upperGraph != null && gs.upperGraph.getMeasurement() != null) {
             String newSavingDir = AppMain.fileService.chooseSavingDirectory();
             AppMain.fileService.saveAsMeasurement(gs.upperGraph.getMeasurement(), newSavingDir);
 
-        }else{
+        } else {
 
         }
     }
