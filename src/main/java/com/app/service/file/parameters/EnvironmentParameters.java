@@ -1,5 +1,6 @@
 package com.app.service.file.parameters;
 
+import com.app.service.graph.Graph;
 import com.app.service.graph.GraphType;
 
 public class EnvironmentParameters {
@@ -19,6 +20,7 @@ public class EnvironmentParameters {
     public GraphType getActiveGraphType() {
         return active;
     }
+    public void setActiveGraphType(GraphType type) { active = type; }
 
     public void setLowerGraphParameters(Parameters lowerGraphParameters) {
         this.lowerGraphParameters = lowerGraphParameters;

@@ -231,6 +231,7 @@ public class MainController implements Initializable {
     }
 
     private void runMeasurement(GraphType graphType, Button triggerButton) {
+        ep.setActiveGraphType(graphType);
         // TODO: doplnit ABS
 
         try {
@@ -269,6 +270,7 @@ public class MainController implements Initializable {
             newOther.setAutoSweep((graphType.equals(GraphType.UPPER) ? otherAutoSweepUpper:otherAutoSweepLower).getValue().equals("ON"));
             newOther.setHighSpeed((graphType.equals(GraphType.UPPER) ? otherHighSpeedUpper:otherHighSpeedLower).getValue().equals("ON"));
             newOther.setSweepType((graphType.equals(GraphType.UPPER) ? otherSweepTypeUpper:otherSweepTypeLower).getValue().equals("LINEAR") ? SweepType.LINEAR:SweepType.LOG);
+            ep.getActive().setOther(newOther);
 
             ep.getActive().checkAll();
 
@@ -278,7 +280,7 @@ public class MainController implements Initializable {
                 if (gs.getRunningGraph().getType().equals(GraphType.UPPER)) {
                     upperPointNext = new Button("Next");
                     upperPointNext.setId("upperPointNext");
-                    upperPointNext.setOnKeyPressed(e -> {
+                    upperPointNext.setOnMouseReleased(e -> {
                         try {
                             point();
                         } catch (IOException ex) {
@@ -292,7 +294,7 @@ public class MainController implements Initializable {
                 } else {
                     lowerPointNext = new Button("Next");
                     lowerPointNext.setId("lowerPointNext");
-                    lowerPointNext.setOnKeyPressed(e -> {
+                    lowerPointNext.setOnMouseReleased(e -> {
                         try {
                             point();
                         } catch (IOException ex) {
@@ -309,11 +311,12 @@ public class MainController implements Initializable {
             } else {
                 AppMain.notificationService.createNotification("Auto sweep is on", NotificationType.ANNOUNCEMENT);
             }
-
-//            AppMain.communicationService.runMeasurement(ep.getActive().getDisplayYY().getX()); // TODO: uncomment when testing with machine
+            if (!AppMain.debugMode) {
+                AppMain.communicationService.runMeasurement(ep.getActive().getDisplayYY().getX());
+            }
             toggleDisabling();
             triggerButton.setText("Abort");
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | IOException e) {
             if (graphType.equals(GraphType.UPPER)) {
                 gs.upperGraph.setState(GraphState.EMPTY);
             } else {
