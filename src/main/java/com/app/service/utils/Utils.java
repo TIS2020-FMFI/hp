@@ -1,6 +1,10 @@
 package com.app.service.utils;
 
 
+import com.app.service.AppMain;
+import com.app.service.notification.NotificationType;
+import javafx.application.Platform;
+
 public class Utils {
 
     public static String[] lineSplitAndExtractNumbers(String line, String delimiter) {
@@ -20,5 +24,18 @@ public class Utils {
             }
         }
         return stringBuilder.toString();
+    }
+
+    public static void closeApp() {
+        Platform.runLater(() -> {
+            try {
+                AppMain.communicationService.killCommunicator();
+                Thread.sleep(300);
+                Platform.exit();
+                System.exit(0);
+            } catch (InterruptedException e) {
+                AppMain.notificationService.createNotification("Could not quit -> " + e.getMessage(), NotificationType.ERROR);
+            }
+        });
     }
 }
