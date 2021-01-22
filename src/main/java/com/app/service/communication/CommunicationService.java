@@ -1,16 +1,16 @@
 package com.app.service.communication;
 
-
 import com.app.machineCommunication.Connection;
 import com.app.service.calibration.CalibrationType;
-import com.app.service.file.parameters.MeasuredQuantity;
+import com.app.service.measurement.Measurement;
 
 import java.io.IOException;
 
-public class CommunicationService {
-    Connection connection;
 
-    public CommunicationService() throws Exception {
+public class CommunicationService {
+    private final Connection connection;
+
+    public CommunicationService() {
         connection = new Connection();
     }
 
@@ -18,17 +18,23 @@ public class CommunicationService {
         return connection.isConnected();
     }
 
-    public boolean connect() throws Exception {
-        try {
-            return connection.connect();
-        } catch (NullPointerException e) {
-            return false;
+    public boolean connect() {
+        return connection.connect();
+    }
+
+    public void killCommunicator() {
+        connection.getCommunicator().destroy();
+    }
+
+    public void runMeasurement(Measurement measurement) throws IOException {
+        connection.initMeasurement(measurement.getParameters().getDisplayYY().getX());
+        if (measurement.getParameters().getOther().isAutoSweep()) {
+            connection.startAutoMeasurement(measurement);
         }
     }
 
-
-    public void runMeasurement(MeasuredQuantity mq) throws IOException {
-        connection.measurement(mq);
+    public void nextStep(Measurement measurement) throws IOException {
+        connection.stepMeasurement(measurement);
     }
 
     public boolean runCalibration(CalibrationType calibrationType) throws IOException, InterruptedException {

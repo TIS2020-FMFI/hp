@@ -8,7 +8,9 @@ import com.app.service.graph.GraphType;
 import com.app.service.measurement.DisplayAOption;
 import com.app.service.measurement.DisplayBOption;
 import com.app.service.notification.NotificationType;
+import com.app.service.utils.Utils;
 import javafx.application.Platform;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -16,7 +18,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
-import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
@@ -34,7 +35,6 @@ public class MainController implements Initializable {
     VBox mainContainer;
     @FXML
     VBox notificationContainer;
-
 
     @FXML
     AnchorPane upperPane;
@@ -193,14 +193,6 @@ public class MainController implements Initializable {
         lowerGraphExport.setDisable(isLowerRunning || isLowerEmpty);
     }
 
-    public void point() throws IOException, InterruptedException {
-        if (ep.getActive().getDisplayYY().getX() == MeasuredQuantity.VOLTAGE)
-            AppMain.communicationService.runMeasurement(MeasuredQuantity.VOLTAGE);
-        else
-            AppMain.communicationService.runMeasurement(MeasuredQuantity.FREQUENCY);
-        //TODO: Do this, call machine to step one measruement
-    }
-
     public void runUpperGraph(MouseEvent event) {
         if (gs.isRunningGraph() && gs.getGraph(GraphType.UPPER).getState().equals(GraphState.RUNNING)) {
             gs.abortGraph(GraphType.UPPER);
@@ -269,83 +261,50 @@ public class MainController implements Initializable {
 
             ep.getActive().checkAll();
 
-            gs.run(graphType);
-
-            if (gs.isRunningGraph() && (graphType.equals(GraphType.UPPER) ? otherAutoSweepUpper : otherAutoSweepLower).getValue().equals("OFF")) {
-                if (gs.getRunningGraph().getType().equals(GraphType.UPPER)) {
-                    upperPointNext = new Button("Next");
+            if ((graphType.equals(GraphType.UPPER) ? otherAutoSweepUpper : otherAutoSweepLower).getValue().equals("OFF")) {
+                AppMain.notificationService.createNotification("Auto sweep is off", NotificationType.ANNOUNCEMENT);
+                Button pointButton = new Button("Next");
+                pointButton.setOnMouseReleased(e -> gs.runNextStep());
+                if (graphType.equals(GraphType.UPPER)) {
+                    upperGraphRun = pointButton;
                     upperPointNext.setId("upperPointNext");
-                    upperPointNext.setOnMouseReleased(e -> {
-                        try {
-                            point();
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        } catch (InterruptedException ex) {
-                            ex.printStackTrace();
-                        }
-                    });
                     upperToolbar.getItems().add(upperPointNext);
-                    //TODO: tu metoda, ktora prida measurement data, ktore v grafe uz on checkuje, je treba aj cez abort znicit ten button potom
                 } else {
-                    lowerPointNext = new Button("Next");
+                    lowerPointNext = pointButton;
                     lowerPointNext.setId("lowerPointNext");
-                    lowerPointNext.setOnMouseReleased(e -> {
-                        try {
-                            point();
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        } catch (InterruptedException ex) {
-                            ex.printStackTrace();
-                        }
-                    });
                     lowerToolbar.getItems().add(lowerPointNext);
-
-                    //TODO: tu metoda, ktora prida measurement data, ktore v grafe uz on checkuje, je treba aj cez abort znicit ten button potom
                 }
-
             } else {
                 AppMain.notificationService.createNotification("Auto sweep is on", NotificationType.ANNOUNCEMENT);
             }
             if (!AppMain.debugMode) {
-                AppMain.communicationService.runMeasurement(ep.getActive().getDisplayYY().getX());
+                gs.run(graphType);
             }
             toggleDisabling();
             triggerButton.setText("Abort");
-        } catch (NullPointerException | IOException e) {
+        } catch (NullPointerException e) {
             if (graphType.equals(GraphType.UPPER)) {
                 gs.upperGraph.setState(GraphState.EMPTY);
             } else {
                 gs.lowerGraph.setState(GraphState.EMPTY);
             }
             triggerButton.setText("Run");
-            AppMain.notificationService.createNotification("Error occurred -> " + e.getMessage(), NotificationType.ERROR);
+            AppMain.notificationService.createNotification("Error occurred when starting measurement -> " + e.getMessage(), NotificationType.ERROR);
         }
-
     }
 
     public void loadUpperGraph(MouseEvent event) {
-
-        try {
-            parametersTabPane.getSelectionModel().select(upperGraphTab);
-            gs.loadGraph(GraphType.UPPER);
-            AppMain.environmentParameters.setUpperGraphParameters(gs.upperGraph.getMeasurement().getParameters());
-            ep = AppMain.environmentParameters;
-            initializeUpper();
-        } catch (RuntimeException e) {
-            // DO NOTHING
-        }
+        parametersTabPane.getSelectionModel().select(upperGraphTab);
+        gs.loadGraph(GraphType.UPPER);
+        ep.setUpperGraphParameters(gs.upperGraph.getMeasurement().getParameters());
+        initializeUpper();
     }
 
     public void loadLowerGraph(MouseEvent event) {
-        try {
-            parametersTabPane.getSelectionModel().select(lowerGraphTab);
-            gs.loadGraph(GraphType.LOWER);
-            AppMain.environmentParameters.setLowerGraphParameters(gs.lowerGraph.getMeasurement().getParameters());
-            ep = AppMain.environmentParameters;
-            initializeLower();
-        } catch (RuntimeException e) {
-            // DO NOTHING
-        }
+        parametersTabPane.getSelectionModel().select(lowerGraphTab);
+        gs.loadGraph(GraphType.LOWER);
+        ep.setLowerGraphParameters(gs.lowerGraph.getMeasurement().getParameters());
+        initializeLower();
     }
 
     public void toggleAutoSave(MouseEvent event) {
@@ -359,11 +318,7 @@ public class MainController implements Initializable {
     }
 
     public void triggerCalibration(MouseEvent event) {
-        try {
-            AppMain.calibrationService.openCalibration();
-        } catch (Exception e) {
-            AppMain.notificationService.createNotification("Calibration window could not be open! Please, restart the app.", NotificationType.ERROR);
-        }
+        AppMain.calibrationService.openCalibration();
     }
 
     public void quitApp(MouseEvent event) {
@@ -371,15 +326,7 @@ public class MainController implements Initializable {
             AppMain.notificationService.createNotification("There is a measurement in process, either wait or abort it.", NotificationType.WARNING);
         } else if (gs.measurementSaved(GraphType.UPPER) && gs.measurementSaved(GraphType.LOWER)) {
             // TODO: save global props into config
-            Platform.runLater(() -> {
-                try {
-                    Thread.sleep(300);
-                    Platform.exit();
-                    System.exit(0);
-                } catch (InterruptedException e) {
-                    AppMain.notificationService.createNotification("Could not quit -> " + e.getMessage(), NotificationType.ERROR);
-                }
-            });
+            Utils.closeApp();
         } else {
             AppMain.dataNotSavedDialog.openDialog();
         }
@@ -391,6 +338,7 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        AppMain.ps.setOnCloseRequest(request -> quitApp(null));
         gs = AppMain.graphService;
         ep = AppMain.environmentParameters;
 
@@ -438,12 +386,9 @@ public class MainController implements Initializable {
 
         otherAutoSweepUpper.getItems().addAll("ON", "OFF");
         otherAutoSweepUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isAutoSweep() ? 0 : 1);
-
     }
 
     private void initializeLower() {
-
-
         displayALower.getToggles().forEach(item -> {
             ToggleButton btn = (ToggleButton) item;
             if (btn.getText().equals(ep.getByType(GraphType.LOWER).getDisplayYY().getA())) {
@@ -457,12 +402,10 @@ public class MainController implements Initializable {
             }
         });
 
-
         frequencyStartLower.setText("" + ep.getByType(GraphType.LOWER).getFrequencySweep().getStart());
         frequencyStopLower.setText("" + ep.getByType(GraphType.LOWER).getFrequencySweep().getStop());
         frequencySpotLower.setText("" + ep.getByType(GraphType.LOWER).getFrequencySweep().getSpot());
         frequencyStepLower.setText("" + ep.getByType(GraphType.LOWER).getFrequencySweep().getStep());
-
 
         voltageStartLower.setText("" + ep.getByType(GraphType.LOWER).getVoltageSweep().getStart());
         voltageStopLower.setText("" + ep.getByType(GraphType.LOWER).getVoltageSweep().getStop());
@@ -480,7 +423,6 @@ public class MainController implements Initializable {
 
         otherAutoSweepLower.getItems().addAll("ON", "OFF");
         otherAutoSweepLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isAutoSweep() ? 0 : 1);
-
     }
 
     private void createConstraintListener() {
@@ -554,49 +496,30 @@ public class MainController implements Initializable {
         });
     }
 
-    public void runConnection(MouseEvent mouseEvent) throws Exception {
-        if (AppMain.communicationService.connect()) {
-            gpibMenu.setText("GPIB connection: ACTIVE");
-        } else {
-            gpibMenu.setText("GPIB connection: INACTIVE");
-        }
+    public void runConnection(MouseEvent mouseEvent) {
+        gpibMenu.setText("GPIB connection: " + (AppMain.communicationService.connect() ? "ACTIVE" : "INACTIVE"));
         toggleDisabling();
     }
 
-    public void AutoSaveDirectory(MouseEvent mouseEvent) {
-        String newAutoSavingDir = AppMain.fileService.chooseSavingDirectory();
-        if (!newAutoSavingDir.isEmpty()) {
-            LocalDate localDate = LocalDate.now();
-            newAutoSavingDir = newAutoSavingDir + "/" +
-                    localDate.getYear() + "/" + localDate.getMonthValue() + "/" +
-                    localDate.getDayOfMonth() + "/";
-            AppMain.fileService.setAutoSavingDir(newAutoSavingDir);
-            savingDirMenu.setText(AppMain.fileService.getAutoSavingDir());
-        }
-//            System.out.println(dir.getAbsolutePath());
-    }
-
-    public void exportLowerGraph(MouseEvent mouseEvent) {
-    }
-
-    public void saveLowerGraph(MouseEvent mouseEvent) {
-        if (gs.lowerGraph != null && gs.lowerGraph.getMeasurement() != null) {
-            String newSavingDir = AppMain.fileService.chooseSavingDirectory();
-            AppMain.fileService.saveAsMeasurement(gs.lowerGraph.getMeasurement(), newSavingDir);
-
-        } else {
-
-        }
+    public void setAutoSaveDirectory(MouseEvent mouseEvent) {
+        savingDirMenu.setText(AppMain.fileService.setNewAutoSaveDirectory());
     }
 
     public void exportUpperGraph(MouseEvent mouseEvent) {
     }
+    public void exportLowerGraph(MouseEvent mouseEvent) {
+    }
 
     public void saveUpperGraph(MouseEvent mouseEvent) {
         if (gs.upperGraph != null && gs.upperGraph.getMeasurement() != null) {
-            String newSavingDir = AppMain.fileService.chooseSavingDirectory();
-            AppMain.fileService.saveAsMeasurement(gs.upperGraph.getMeasurement(), newSavingDir);
+            AppMain.fileService.saveAsMeasurement(gs.upperGraph.getMeasurement());
+        } else {
 
+        }
+    }
+    public void saveLowerGraph(MouseEvent mouseEvent) {
+        if (gs.lowerGraph != null && gs.lowerGraph.getMeasurement() != null) {
+            AppMain.fileService.saveAsMeasurement(gs.lowerGraph.getMeasurement());
         } else {
 
         }

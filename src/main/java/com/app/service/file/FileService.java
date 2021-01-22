@@ -11,8 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Timer;
-import java.util.TimerTask;
+
 
 public class FileService {
     private final String configPath;
@@ -27,7 +26,6 @@ public class FileService {
         String dir = System.getProperty("user.dir");
         dir = dir.replaceAll("\\\\", "/");
         autoSavingDir = dir + "/" + localDate.getYear() + "/" + localDate.getMonthValue() + "/" + localDate.getDayOfMonth() + "/";
-
     }
 
     public String getAutoSavingDir() {
@@ -36,10 +34,6 @@ public class FileService {
 
     public boolean isAutoSave() {
         return autoSave;
-    }
-
-    public void setAutoSavingDir(String autoSavingDir) {
-        this.autoSavingDir = autoSavingDir.replaceAll("\\\\", "/");
     }
 
     public void setAutoSave(boolean autoSave) {
@@ -54,7 +48,8 @@ public class FileService {
         return JsonParser.readEnvironmentParameters(configPath);
     }
 
-    public boolean saveAsMeasurement(Measurement measurement, String path){
+    public boolean saveAsMeasurement(Measurement measurement){
+        String path = chooseSavingDirectory();
         if(measurement != null) {
             if (measurement.getState().equals(MeasurementState.LOADED) || measurement.getState().equals(MeasurementState.FINISHED) ||
                     measurement.getState().equals(MeasurementState.SAVED)) {
@@ -69,13 +64,23 @@ public class FileService {
         return false;
     }
 
-
-
     public Measurement loadMeasurement(String path){
         return JsonParser.readMeasurement(path);
     }
 
-    public String chooseSavingDirectory() {
+    public String setNewAutoSaveDirectory() {
+        String newAutoSavingDir = chooseSavingDirectory();
+        if (!newAutoSavingDir.isEmpty()) {
+            LocalDate localDate = LocalDate.now();
+            newAutoSavingDir = newAutoSavingDir + "/" +
+                    localDate.getYear() + "/" + localDate.getMonthValue() + "/" +
+                    localDate.getDayOfMonth() + "/";
+            autoSavingDir = newAutoSavingDir.replaceAll("\\\\", "/");
+        }
+        return newAutoSavingDir;
+    }
+
+    private String chooseSavingDirectory() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         File dir = directoryChooser.showDialog(AppMain.ps);
         String newSavingDir = "";

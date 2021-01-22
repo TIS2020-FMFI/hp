@@ -2,6 +2,7 @@ package com.app.service.file;
 
 import com.app.service.AppMain;
 import com.app.service.notification.NotificationType;
+import com.app.service.utils.Utils;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -37,24 +38,12 @@ public class DataNotSavedDialog {
 
     public void saveAndCloseDialog() {
         //TODO: if autosave off prompt user to choose a folder, otherwise save automatically
-        closeApp();
+        Utils.closeApp();
     }
 
     public void closeWithoutSaving() {
         stage.close();
-        closeApp();
-    }
-
-    private void closeApp() {
-        Platform.runLater(() -> {
-            try {
-                Thread.sleep(300);
-                Platform.exit();
-                System.exit(0);
-            } catch (InterruptedException e) {
-                AppMain.notificationService.createNotification("Could not quit -> " + e.getMessage(), NotificationType.ERROR);
-            }
-        });
+        Utils.closeApp();
     }
 
 }

@@ -6,6 +6,7 @@ import com.app.service.notification.NotificationType;
 import javafx.scene.Parent;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 
 public class GraphService {
@@ -44,8 +45,17 @@ public class GraphService {
     public void run(GraphType type) {
         try {
             getGraph(type).run();
+            AppMain.communicationService.runMeasurement(getRunningGraph().getMeasurement());
         } catch (Exception e) {
             AppMain.notificationService.createNotification("Error occurred while running measurement -> " + e.getMessage(), NotificationType.ERROR);
+        }
+    }
+
+    public void runNextStep() {
+        try {
+            AppMain.communicationService.nextStep(getRunningGraph().getMeasurement());
+        } catch (IOException e) {
+            AppMain.notificationService.createNotification("Error occurred while running next step -> " + e.getMessage(), NotificationType.ERROR);
         }
     }
 
