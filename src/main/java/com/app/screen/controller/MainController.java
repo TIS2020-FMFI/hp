@@ -318,7 +318,11 @@ public class MainController implements Initializable {
     }
 
     public void triggerCalibration(MouseEvent event) {
-        AppMain.calibrationService.openCalibration();
+        if (AppMain.communicationService.isConnected()) {
+            AppMain.calibrationService.openCalibration();
+        } else {
+            AppMain.notificationService.createNotification("Machine not connected!", NotificationType.ANNOUNCEMENT);
+        }
     }
 
     public void quitApp(MouseEvent event) {
