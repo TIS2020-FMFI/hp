@@ -42,9 +42,7 @@ public class Connection extends Thread {
     }
 
     public boolean connect() {
-        if (AppMain.debugMode) {
-            connected = true;
-        } else {
+        if (!AppMain.debugMode) {
             if (connected) {
                 if (cmd) {
                     write(".");
@@ -58,8 +56,8 @@ public class Connection extends Thread {
                 AppMain.notificationService.createNotification("hpctrl.exe could not be lunched, read help for more info", NotificationType.ERROR);
                 return false;
             }
-            connected = !connected;
         }
+        connected = !connected;
         return connected;
     }
 
