@@ -306,8 +306,10 @@ public class MainController implements Initializable {
     public void loadLowerGraph(MouseEvent event) {
         parametersTabPane.getSelectionModel().select(lowerGraphTab);
         gs.loadGraph(GraphType.LOWER);
-        ep.setLowerGraphParameters(gs.lowerGraph.getMeasurement().getParameters());
-        initializeLower();
+        if (gs.lowerGraph.getState().equals(GraphState.LOADED)) {
+            ep.setLowerGraphParameters(gs.lowerGraph.getMeasurement().getParameters());
+            initializeLower();
+        }
     }
 
     public void toggleAutoSave(MouseEvent event) {
