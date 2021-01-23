@@ -868,7 +868,7 @@
                                                       </Button>
                                                       <Button defaultButton="true" minWidth="150.0" mnemonicParsing="false" mouseTransparent="true" styleClass="static-label-btn" text="Display B" StackPane.alignment="TOP_LEFT">
                                                          <StackPane.margin>
-                                                            <Insets left="280.0" />
+                                                            <Insets left="245.0" />
                                                          </StackPane.margin>
                                                       </Button>
                                                    </children>

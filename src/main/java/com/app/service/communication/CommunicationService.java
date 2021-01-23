@@ -23,7 +23,10 @@ public class CommunicationService {
     }
 
     public void killCommunicator() {
-        connection.getCommunicator().destroy();
+        Process temp = connection.getCommunicator();
+        if (temp != null) {
+            temp.destroy();
+        }
     }
 
     public void runMeasurement(Measurement measurement) throws IOException {
