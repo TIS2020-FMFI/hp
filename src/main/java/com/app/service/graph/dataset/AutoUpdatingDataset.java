@@ -14,14 +14,12 @@ import java.util.TimerTask;
 
 
 public class AutoUpdatingDataset extends AbstractXYDataset {
-
     private int sizeData = 0;
     private String name;
     private DatasetType type;
     private final long delay = 100;
-    private final long visualDelay = 100;
+    private final long visualDelay = 200;
     private List<SingleValue> values;
-    private int cursor = -1;
     private long lastEvent;
     private Measurement measurement;
     private boolean stopMeasurement = false;
@@ -46,17 +44,13 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
     }
 
     public int getItemCount(int series) {
-        return cursor;
-    }
-
-    public void addValue(double x, double y) {
-        cursor ++;
-        fireDatasetChanged();
+        return sizeData;
     }
 
     public double getYValue(int series, int item) {
-        return type.equals(DatasetType.LEFT) ? values.get(item).getDisplayA():values.get(item).getDisplayB();
+        return type.equals(DatasetType.LEFT) ? values.get(item).getDisplayA() : values.get(item).getDisplayB();
     }
+
     public double getXValue(int series, int item) {
         return values.get(item).getDisplayX();
     }
@@ -64,6 +58,7 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
     public Double getY(int series, int item) {
         return getYValue(series, item);
     }
+
     public Double getX(int series, int item) {
         return getXValue(series, item);
     }
@@ -78,6 +73,7 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
                 Platform.runLater(() -> {
                     if (stopMeasurement) {
                         cancel();
+                        return;
                     }
                     if (measurement.getData().size() > sizeData) {
                         SingleValue newValue = measurement.getData().get(sizeData);
