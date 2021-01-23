@@ -1,13 +1,16 @@
 package com.app.service.graph.dataset;
 
-import com.app.service.AppMain;
 import com.app.service.measurement.Measurement;
+import com.app.service.measurement.MeasurementState;
 import com.app.service.measurement.SingleValue;
 import javafx.application.Platform;
 import org.jfree.data.DomainOrder;
 import org.jfree.data.xy.AbstractXYDataset;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class AutoUpdatingDataset extends AbstractXYDataset {
@@ -76,38 +79,26 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
                     if (stopMeasurement) {
                         cancel();
                     }
-                    if (AppMain.debugMode) {
-                        getRandomTestData();
-                    } else {
-                        int currentSizeData = measurement.getData().size();
-                        if (currentSizeData > sizeData) {
-                            SingleValue newValue = measurement.getData().get(sizeData);
-                            if (newValue == null) {
-                                cancel();
-                                return;
-                            }
-                            values.add(newValue);
-
-                            long now = System.currentTimeMillis();
-                            if (now - lastEvent > visualDelay) {
-                                lastEvent = now;
-                                fireDatasetChanged();
-                            }
-                            sizeData++;
+                    if (measurement.getData().size() > sizeData) {
+                        SingleValue newValue = measurement.getData().get(sizeData);
+                        System.out.println("read " + type + ": " + newValue);
+                        if (newValue == null) {
+                            cancel();
+                            measurement.setState(MeasurementState.FINISHED);
+                            return;
                         }
+                        values.add(newValue);
+
+                        long now = System.currentTimeMillis();
+                        if (now - lastEvent > visualDelay) {
+                            lastEvent = now;
+                            fireDatasetChanged();
+                        }
+                        sizeData++;
                     }
                 });
             }
         }, delay, delay);
-    }
-
-    private void getRandomTestData() {
-        values.add(new SingleValue(Math.random() * 20 + 80, Math.random() * 20 + 80, ++cursor));
-        long now = System.currentTimeMillis();
-        if (now - lastEvent > visualDelay) {
-            lastEvent = now;
-            fireDatasetChanged();
-        }
     }
 }
 

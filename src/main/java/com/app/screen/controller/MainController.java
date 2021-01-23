@@ -275,10 +275,6 @@ public class MainController implements Initializable {
                 AppMain.notificationService.createNotification("Auto sweep is on", NotificationType.ANNOUNCEMENT);
             }
             gs.run(graphType);
-//            if (!AppMain.debugMode) {
-//            } else {
-//                gs.getGraphByType(graphType).setState(GraphState.RUNNING);
-//            }
             toggleDisabling();
             triggerButton.setText("Abort");
         } catch (NullPointerException e) {

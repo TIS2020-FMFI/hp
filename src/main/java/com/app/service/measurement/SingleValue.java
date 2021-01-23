@@ -47,4 +47,9 @@ public class SingleValue {
     public double getDisplayX() {
         return displayX;
     }
+
+    @Override
+    public String toString() {
+        return "SingleValue {A=" + displayA + ", B=" + displayB + ", X=" + displayX + '}';
+    }
 }

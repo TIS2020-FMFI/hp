@@ -18,7 +18,6 @@ public class Connection extends Thread {
     private boolean connected = false;
     boolean cmd = false;
     boolean calibrationMode = false;
-    boolean manualSweep = false;
     private Process process;
     private BufferedReader readEnd;
     private BufferedWriter writeEnd;
@@ -53,10 +52,13 @@ public class Connection extends Thread {
                 write("connect 19");
                 write("cmd");
                 writer();
+                cmd = true;
             } else {
                 AppMain.notificationService.createNotification("hpctrl.exe could not be lunched, read help for more info", NotificationType.ERROR);
                 return false;
             }
+        } else {
+            cmd = true;
         }
         connected = !connected;
         return connected;
@@ -80,7 +82,7 @@ public class Connection extends Thread {
         }
     }
 
-    private StringBuilder read() throws IOException {
+    private StringBuilder read() throws IOException, NullPointerException {
         StringBuilder result = new StringBuilder();
         while (readEnd.ready()) {
             result.append((char) readEnd.read());
@@ -115,43 +117,63 @@ public class Connection extends Thread {
     }
 
     public void startAutoMeasurement(Measurement measurement) {
-        write("s WU");
-        write("c");
-        new Thread(() -> {
-            StringBuilder result = new StringBuilder();
-            LocalDateTime readingStarted = LocalDateTime.now();
-            LocalDateTime readingTimeouts = readingStarted.plus(20, ChronoUnit.SECONDS);
-            while (LocalDateTime.now().compareTo(readingTimeouts) < 0) {
-                try {
-                    if (!readEnd.ready()) {
-                        sleep(1);
-                        continue;
+        if (AppMain.debugMode) {
+            System.out.println("-- Running auto sweep measurement --");
+            new Thread(() -> {
+                SingleValue value = generateRandomSingeValue(measurement.getData().size() + 2);
+                measurement.addSingleValue(value);
+                while (value != null) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        System.out.println("Thread sleep interrupted!");
                     }
-                    char letter = (char) readEnd.read();
-                    if ((letter == '\n') && (result.length() > 1)) {
-                        if (result.charAt(1) == 'N') {
-                            write("n");
-                            measurement.addSingleValue(null);
-                            break;
-                        } else {
-                            System.out.println("reading " + result.toString());
-                            measurement.addSingleValue(new SingleValue(result.toString()));
-                            result = new StringBuilder();
-                        }
-                    } else
-                        result.append(letter);
-                } catch (IOException | InterruptedException e) {
-                    AppMain.notificationService.createNotification("Problem at autoRunMeasurement -> " + e.getMessage(), NotificationType.ERROR);
+                    value = generateRandomSingeValue(measurement.getData().size() + 2);
+                    measurement.addSingleValue(value);
                 }
-            }
-            if (LocalDateTime.now().compareTo(readingTimeouts) >= 0) {
-                System.out.println("c cmd timeout");
-            }
-        }).start();
+            }).start();
+        } else {
+            write("s WU");
+            write("c");
+            new Thread(() -> {
+                StringBuilder result = new StringBuilder();
+                LocalDateTime readingStarted = LocalDateTime.now();
+                LocalDateTime readingTimeouts = readingStarted.plus(20, ChronoUnit.SECONDS);
+                while (LocalDateTime.now().compareTo(readingTimeouts) < 0) {
+                    try {
+                        if (!readEnd.ready()) {
+                            sleep(1);
+                            continue;
+                        }
+                        char letter = (char) readEnd.read();
+                        if ((letter == '\n') && (result.length() > 1)) {
+                            if (result.charAt(1) == 'N') {
+                                write("n");
+                                measurement.addSingleValue(null);
+                                Thread.currentThread().interrupt();
+                                return;
+                            } else {
+                                System.out.println("reading " + result.toString());
+                                measurement.addSingleValue(new SingleValue(result.toString()));
+                                result = new StringBuilder();
+                            }
+                        } else
+                            result.append(letter);
+                    } catch (IOException | InterruptedException e) {
+                        AppMain.notificationService.createNotification("Problem at autoRunMeasurement -> " + e.getMessage(), NotificationType.ERROR);
+                    }
+                }
+                if (LocalDateTime.now().compareTo(readingTimeouts) >= 0) {
+                    System.out.println("c cmd timeout");
+                }
+            }).start();
+        }
     }
 
     public void stepMeasurement(Measurement measurement) throws IOException {
-        if (!AppMain.debugMode) {
+        if (AppMain.debugMode) {
+            measurement.addSingleValue(generateRandomSingeValue(measurement.getData().size() + 2));
+        } else {
             write("s SU");
             write("q 1");
             StringBuilder result = read();
@@ -161,14 +183,6 @@ public class Connection extends Thread {
             if (Double.compare(next.getDisplayX(), (measurement.getParameters().getDisplayYY().getX().equals(MeasuredQuantity.FREQUENCY) ? measurement.getParameters().getFrequencySweep().getStop() : measurement.getParameters().getVoltageSweep().getStop())) >= 0) {
                 measurement.addSingleValue(null);
             }
-        } else {
-            SingleValue next;
-            if (new Random().nextInt(30) < 25) {
-                 next = new SingleValue(Math.random() * 20 + 80, Math.random() * 20 + 80, measurement.getData().size() + 2);
-            } else {
-                next = null;
-            }
-            measurement.addSingleValue(next);
         }
     }
 
@@ -177,18 +191,12 @@ public class Connection extends Thread {
             if (!cmd) {
                 toggleCmdMode();
             }
-            if (cmd && !manualSweep) {
-                displayFunctions();
-                highSpeed();
-                if (type == MeasuredQuantity.FREQUENCY) {
-                    frequencySweep();
-                } else {
-                    voltageSweep();
-                }
-                if (!environmentParameters.getActive().getOther().isAutoSweep()) {
-                    manualSweep = true;
-                }
-                startAutoMeasurement(AppMain.graphService.getRunningGraph().getMeasurement());
+            displayFunctions();
+            highSpeed();
+            if (type == MeasuredQuantity.FREQUENCY) {
+                frequencySweep();
+            } else {
+                voltageSweep();
             }
         }
     }
@@ -311,6 +319,13 @@ public class Connection extends Thread {
             AppMain.notificationService.createNotification("Machine not connected!", NotificationType.ERROR);
         }
         return true;
+    }
+
+    private SingleValue generateRandomSingeValue(double X) {
+        if (new Random().nextInt(100) > 95) {
+            return null;
+        }
+        return new SingleValue(Math.random() * 20 + 80, Math.random() * 20 + 80, X);
     }
 }
 
