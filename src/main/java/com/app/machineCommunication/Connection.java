@@ -51,6 +51,7 @@ public class Connection extends Thread {
                 write("exit");
             } else if (process != null) {
                 write("connect 19");
+                write("cmd");
                 writer();
             } else {
                 AppMain.notificationService.createNotification("hpctrl.exe could not be lunched, read help for more info", NotificationType.ERROR);
@@ -75,7 +76,7 @@ public class Connection extends Thread {
                 AppMain.notificationService.createNotification("CMD connection failed, try to press any button on machine", NotificationType.ERROR);
             }
         } else {
-            AppMain.notificationService.createNotification("Connection error", NotificationType.ERROR);
+            AppMain.notificationService.createNotification("Can not toggle cmd mode, machine not connected", NotificationType.ERROR);
         }
     }
 
@@ -150,14 +151,24 @@ public class Connection extends Thread {
     }
 
     public void stepMeasurement(Measurement measurement) throws IOException {
-        write("s SU");
-        write("q 1");
-        StringBuilder result = read();
-        System.out.println("reading " + result.toString());
-        SingleValue next = new SingleValue(result.toString());
-        measurement.addSingleValue(next);
-        if (Double.compare(next.getDisplayX(), (measurement.getParameters().getDisplayYY().getX().equals(MeasuredQuantity.FREQUENCY) ? measurement.getParameters().getFrequencySweep().getStop() : measurement.getParameters().getVoltageSweep().getStop())) >= 0) {
-            measurement.addSingleValue(null);
+        if (!AppMain.debugMode) {
+            write("s SU");
+            write("q 1");
+            StringBuilder result = read();
+            System.out.println("reading " + result.toString());
+            SingleValue next = new SingleValue(result.toString());
+            measurement.addSingleValue(next);
+            if (Double.compare(next.getDisplayX(), (measurement.getParameters().getDisplayYY().getX().equals(MeasuredQuantity.FREQUENCY) ? measurement.getParameters().getFrequencySweep().getStop() : measurement.getParameters().getVoltageSweep().getStop())) >= 0) {
+                measurement.addSingleValue(null);
+            }
+        } else {
+            SingleValue next;
+            if (new Random().nextInt(30) < 25) {
+                 next = new SingleValue(Math.random() * 20 + 80, Math.random() * 20 + 80, measurement.getData().size() + 2);
+            } else {
+                next = null;
+            }
+            measurement.addSingleValue(next);
         }
     }
 

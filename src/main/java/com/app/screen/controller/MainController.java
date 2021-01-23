@@ -9,8 +9,6 @@ import com.app.service.measurement.DisplayAOption;
 import com.app.service.measurement.DisplayBOption;
 import com.app.service.notification.NotificationType;
 import com.app.service.utils.Utils;
-import javafx.application.Platform;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -18,9 +16,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
-import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -178,8 +174,8 @@ public class MainController implements Initializable {
 
     private void toggleDisabling() {
         boolean isConnected = AppMain.communicationService != null && AppMain.communicationService.isConnected();
-        boolean isUpperEmpty = gs.getGraph(GraphType.UPPER) == null || gs.getGraph(GraphType.UPPER).getState().equals(GraphState.EMPTY);
-        boolean isLowerEmpty = gs.getGraph(GraphType.LOWER) == null || gs.getGraph(GraphType.LOWER).getState().equals(GraphState.EMPTY);
+        boolean isUpperEmpty = gs.getGraphByType(GraphType.UPPER) == null || gs.getGraphByType(GraphType.UPPER).getState().equals(GraphState.EMPTY);
+        boolean isLowerEmpty = gs.getGraphByType(GraphType.LOWER) == null || gs.getGraphByType(GraphType.LOWER).getState().equals(GraphState.EMPTY);
         boolean isUpperRunning = gs.getRunningGraph() != null && gs.getRunningGraph().getType().equals(GraphType.UPPER);
         boolean isLowerRunning = gs.getRunningGraph() != null && gs.getRunningGraph().getType().equals(GraphType.LOWER);
 
@@ -195,7 +191,7 @@ public class MainController implements Initializable {
     }
 
     public void runUpperGraph(MouseEvent event) {
-        if (gs.isRunningGraph() && gs.getGraph(GraphType.UPPER).getState().equals(GraphState.RUNNING)) {
+        if (gs.isRunningGraph() && gs.getGraphByType(GraphType.UPPER).getState().equals(GraphState.RUNNING)) {
             gs.abortGraph(GraphType.UPPER);
             toggleDisabling();
             upperGraphRun.setText("Run");
@@ -207,7 +203,7 @@ public class MainController implements Initializable {
     }
 
     public void runLowerGraph(MouseEvent event) {
-        if (gs.isRunningGraph() && gs.getGraph(GraphType.LOWER).getState().equals(GraphState.RUNNING)) {
+        if (gs.isRunningGraph() && gs.getGraphByType(GraphType.LOWER).getState().equals(GraphState.RUNNING)) {
             gs.abortGraph(GraphType.LOWER);
             toggleDisabling();
             lowerGraphRun.setText("Run");
@@ -278,9 +274,11 @@ public class MainController implements Initializable {
             } else {
                 AppMain.notificationService.createNotification("Auto sweep is on", NotificationType.ANNOUNCEMENT);
             }
-            if (!AppMain.debugMode) {
-                gs.run(graphType);
-            }
+            gs.run(graphType);
+//            if (!AppMain.debugMode) {
+//            } else {
+//                gs.getGraphByType(graphType).setState(GraphState.RUNNING);
+//            }
             toggleDisabling();
             triggerButton.setText("Abort");
         } catch (NullPointerException e) {

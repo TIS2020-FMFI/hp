@@ -15,7 +15,7 @@ public class GraphService {
 
     public GraphService() {}
 
-    public Graph getGraph(GraphType type) {
+    public Graph getGraphByType(GraphType type) {
         return type.equals(GraphType.UPPER) ? upperGraph:lowerGraph;
     }
 
@@ -44,7 +44,7 @@ public class GraphService {
 
     public void run(GraphType type) {
         try {
-            getGraph(type).run();
+            getGraphByType(type).run();
             AppMain.communicationService.runMeasurement(getRunningGraph().getMeasurement());
         } catch (Exception e) {
             AppMain.notificationService.createNotification("Error occurred while running measurement -> " + e.getMessage(), NotificationType.ERROR);
@@ -61,7 +61,7 @@ public class GraphService {
 
     public void loadGraph(GraphType type) {
         try {
-            getGraph(type).load();
+            getGraphByType(type).load();
         } catch (FileNotFoundException e) {
             AppMain.notificationService.createNotification("File you are trying to load does not exist", NotificationType.ERROR);
         } catch (NumberFormatException e) {
@@ -73,14 +73,14 @@ public class GraphService {
 
     public void abortGraph(GraphType type) {
         try {
-            getGraph(type).abort();
+            getGraphByType(type).abort();
         } catch (Exception e) {
             AppMain.notificationService.createNotification("Error occurred while aborting measurement -> " + e.getMessage(), NotificationType.ERROR);
         }
     }
 
     public boolean measurementSaved(GraphType type) {
-        Graph temp = getGraph(type);
+        Graph temp = getGraphByType(type);
         if (temp.getState().equals(GraphState.EMPTY) || temp.getState().equals(GraphState.RUNNING)) {
             return true;
         }

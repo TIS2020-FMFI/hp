@@ -30,7 +30,7 @@ public class AppMain extends Application {
     public static GraphService graphService;
     public static CommunicationService communicationService;
     public static EnvironmentParameters environmentParameters;
-    public static boolean debugMode = false;
+    public static boolean debugMode = true;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
