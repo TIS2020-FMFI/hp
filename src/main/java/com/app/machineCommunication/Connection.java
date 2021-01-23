@@ -16,9 +16,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class Connection extends Thread {
-    private boolean connected = false;
     boolean cmd = false;
     boolean calibrationMode = false;
+    private boolean connected = false;
     private Process process;
     private BufferedReader readEnd;
     private BufferedWriter writeEnd;
@@ -115,6 +115,11 @@ public class Connection extends Thread {
                 }
             }
         }, 0, 200);
+    }
+
+    public void abortMeasurement() {
+        write("s AB");
+        System.out.println("aborting measurement");
     }
 
     public void startAutoMeasurement(Measurement measurement) {

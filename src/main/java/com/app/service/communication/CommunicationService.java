@@ -1,8 +1,10 @@
 package com.app.service.communication;
 
 import com.app.machineCommunication.Connection;
+import com.app.service.AppMain;
 import com.app.service.calibration.CalibrationType;
 import com.app.service.measurement.Measurement;
+import com.app.service.notification.NotificationType;
 
 import java.io.IOException;
 
@@ -42,5 +44,10 @@ public class CommunicationService {
 
     public boolean runCalibration(CalibrationType calibrationType) throws IOException, InterruptedException {
         return connection.calibrationHandler(calibrationType);
+    }
+
+    public void abortMeasurement() {
+        connection.abortMeasurement();
+        AppMain.notificationService.createNotification("Measurement aborted", NotificationType.ANNOUNCEMENT);
     }
 }
