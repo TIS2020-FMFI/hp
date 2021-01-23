@@ -18,6 +18,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
@@ -266,7 +267,7 @@ public class MainController implements Initializable {
                 Button pointButton = new Button("Next");
                 pointButton.setOnMouseReleased(e -> gs.runNextStep());
                 if (graphType.equals(GraphType.UPPER)) {
-                    upperGraphRun = pointButton;
+                    upperPointNext = pointButton;
                     upperPointNext.setId("upperPointNext");
                     upperToolbar.getItems().add(upperPointNext);
                 } else {
