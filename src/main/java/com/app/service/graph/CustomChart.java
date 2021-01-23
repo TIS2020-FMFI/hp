@@ -1,13 +1,9 @@
 package com.app.service.graph;
 
-import com.app.service.AppMain;
-import com.app.service.file.parameters.EnvironmentParameters;
-import com.app.service.file.parameters.Parameters;
 import com.app.service.graph.dataset.AutoUpdatingDataset;
 import com.app.service.graph.dataset.DatasetType;
 import com.app.service.graph.dataset.StaticDataset;
 import com.app.service.measurement.Measurement;
-import com.app.service.measurement.MeasurementState;
 import com.app.service.measurement.SingleValue;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -43,7 +39,6 @@ public class CustomChart extends ChartPanel {
     private static JFreeChart loadChart(Measurement measurement) {
         series1 = new StaticDataset(measurement, DatasetType.LEFT);
         series2 = new StaticDataset(measurement, DatasetType.RIGHT);
-
         createChart(measurement.getParameters().getDisplayYY().getX().name(), measurement.getParameters().getDisplayYY().getA(), measurement.getParameters().getDisplayYY().getB());
         return chart;
     }

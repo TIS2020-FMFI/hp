@@ -6,6 +6,7 @@ import com.app.service.calibration.CalibrationType;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.file.parameters.MeasuredQuantity;
 import com.app.service.measurement.Measurement;
+import com.app.service.measurement.MeasurementState;
 import com.app.service.measurement.SingleValue;
 import com.app.service.notification.NotificationType;
 
@@ -122,7 +123,7 @@ public class Connection extends Thread {
             new Thread(() -> {
                 SingleValue value = generateRandomSingeValue(measurement.getData().size() + 2);
                 measurement.addSingleValue(value);
-                while (value != null) {
+                while (value != null && !measurement.getState().equals(MeasurementState.ABORTED)) {
                     try {
                         Thread.sleep(200);
                     } catch (InterruptedException e) {
@@ -139,7 +140,7 @@ public class Connection extends Thread {
                 StringBuilder result = new StringBuilder();
                 LocalDateTime readingStarted = LocalDateTime.now();
                 LocalDateTime readingTimeouts = readingStarted.plus(20, ChronoUnit.SECONDS);
-                while (LocalDateTime.now().compareTo(readingTimeouts) < 0) {
+                while (LocalDateTime.now().compareTo(readingTimeouts) < 0 && !measurement.getState().equals(MeasurementState.ABORTED)) {
                     try {
                         if (!readEnd.ready()) {
                             sleep(1);
