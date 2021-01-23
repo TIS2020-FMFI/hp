@@ -30,7 +30,7 @@ public class AppMain extends Application {
     public static GraphService graphService;
     public static CommunicationService communicationService;
     public static EnvironmentParameters environmentParameters;
-    public static boolean debugMode = true;
+    public static boolean debugMode = false;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -53,7 +53,6 @@ public class AppMain extends Application {
             throw new Exception("Notification container not found in this window!");
         }
         notificationService = new NotificationService(notificationContainer);
-        notificationService.createNotification("First try", NotificationType.SUCCESS);
 
         communicationService = new CommunicationService();
 

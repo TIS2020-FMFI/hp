@@ -31,7 +31,7 @@ public class Connection extends Thread {
             readEnd = new BufferedReader(new InputStreamReader(process.getInputStream()));
             writeEnd = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
         } catch (IOException e) {
-            AppMain.notificationService.createNotification("hpctrl script missing, read help for more info", NotificationType.ERROR);
+            AppMain.notificationService.createNotification("hpctrl.exe missing, read help for more info", NotificationType.ERROR);
         }
         environmentParameters = AppMain.environmentParameters;
         commands = new Vector<>();
@@ -46,15 +46,18 @@ public class Connection extends Thread {
             connected = true;
         } else {
             if (connected) {
-                if (cmd)
+                if (cmd) {
                     write(".");
+                    cmd = false;
+                }
                 write("exit");
-            } else {
+            } else if (process != null) {
                 write("connect 19");
                 writer();
+            } else {
+                AppMain.notificationService.createNotification("hpctrl.exe could not be lunched, read help for more info", NotificationType.ERROR);
+                return false;
             }
-            //TODO: what happens if it doesn't connect?
-            cmd = false;
             connected = !connected;
         }
         return connected;
@@ -279,7 +282,7 @@ public class Connection extends Thread {
                     write("s EL" + environmentParameters.getActive().getOther().getElectricalLength() + "EN");
                     highSpeed();
                     calibrationMode = !calibrationMode;
-                } else  {
+                } else {
                     switch (calibrationType) {
                         case OPEN:
                             openCalibration();
