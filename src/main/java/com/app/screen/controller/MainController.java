@@ -297,8 +297,10 @@ public class MainController implements Initializable {
     public void loadUpperGraph(MouseEvent event) {
         parametersTabPane.getSelectionModel().select(upperGraphTab);
         gs.loadGraph(GraphType.UPPER);
-        ep.setUpperGraphParameters(gs.upperGraph.getMeasurement().getParameters());
-        initializeUpper();
+        if (gs.upperGraph.getState().equals(GraphState.LOADED)) {
+            ep.setUpperGraphParameters(gs.upperGraph.getMeasurement().getParameters());
+            initializeUpper();
+        }
     }
 
     public void loadLowerGraph(MouseEvent event) {

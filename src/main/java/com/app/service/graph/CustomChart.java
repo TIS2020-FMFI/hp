@@ -29,21 +29,18 @@ public class CustomChart extends ChartPanel {
     private static AbstractXYDataset series2;
     private static JFreeChart chart;
 
+    public CustomChart(Measurement measurement, boolean isLoad) {
+        super(loadChart(measurement));
+    }
     public CustomChart(Measurement measurement) {
         super(createChart(measurement));
-    }
-    public CustomChart(Measurement measurement, File file) throws FileNotFoundException {
-        super(createChart(measurement, file));
     }
 
     public JFreeChart getChart() {
         return chart;
     }
 
-    private static JFreeChart createChart(Measurement measurement, File file) throws FileNotFoundException {
-        measurement = AppMain.fileService.loadMeasurement(file.getPath());
-//        measurement.getData().addAll(parseMeasurement(file));
-
+    private static JFreeChart loadChart(Measurement measurement) {
         series1 = new StaticDataset(measurement, DatasetType.LEFT);
         series2 = new StaticDataset(measurement, DatasetType.RIGHT);
 

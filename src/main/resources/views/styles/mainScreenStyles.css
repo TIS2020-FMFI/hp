@@ -24,21 +24,27 @@
 .item-header {
     -fx-background-color: white;
     -fx-background-radius: 15px;
-    -fx-pref-width: 135px;
-    -fx-max-width: 135px;
+    -fx-pref-width: 140px;
+    -fx-min-width: 140px;
     -fx-padding: 0.1em 1em;
 }
 .item-input {
     -fx-border-radius: 5px;
     -fx-pref-height: 25px;
+    -fx-pref-width: 100px;
+    -fx-min-width: 100px;
+}
+.item-input-dropdown {
+    -fx-border-radius: 5px;
+    -fx-pref-height: 25px;
     -fx-pref-width: 120px;
-    -fx-max-width: 120px;
+    -fx-min-width: 120px;
 }
 .item-desc {
     -fx-pref-width: 155px;
     -fx-fill-width: true;
     -fx-start-margin: 10px;
-    -fx-padding: 0 10px;
+    -fx-padding: 0 5px;
     -fx-end-margin: 10px;
 }
 
