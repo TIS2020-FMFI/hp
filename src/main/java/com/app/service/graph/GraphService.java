@@ -73,6 +73,7 @@ public class GraphService {
 
     public void abortGraph(GraphType type) {
         try {
+            AppMain.communicationService.abortMeasurement();
             getGraphByType(type).abort();
         } catch (Exception e) {
             AppMain.notificationService.createNotification("Error occurred while aborting measurement -> " + e.getMessage(), NotificationType.ERROR);
