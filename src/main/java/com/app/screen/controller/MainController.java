@@ -79,6 +79,9 @@ public class MainController implements Initializable {
     ToggleGroup displayAUpper;
 
     @FXML
+    CheckBox displayAUpperABS;
+
+    @FXML
     ToggleGroup displayBUpper;
 
     @FXML
@@ -119,6 +122,9 @@ public class MainController implements Initializable {
 
     @FXML
     ToggleGroup displayBLower;
+
+    @FXML
+    CheckBox displayALowerABS;
 
     @FXML
     TextField frequencyStartLower;
@@ -216,7 +222,6 @@ public class MainController implements Initializable {
 
     private void runMeasurement(GraphType graphType, Button triggerButton) {
         ep.setActiveGraphType(graphType);
-        // TODO: doplnit ABS
 
         try {
             DisplayYY newDisplayYY = ep.getActive().getDisplayYY();
@@ -226,8 +231,19 @@ public class MainController implements Initializable {
             if (selectedDisplayA == null || selectedDisplayB == null) {
                 throw new NullPointerException("Values not properly set! Display A or B not set.. or both :)");
             }
-            newDisplayYY.setA(selectedDisplayA.getText());
-            newDisplayYY.setA(selectedDisplayB.getText());
+
+            String displayA = selectedDisplayA.getText();
+            if (graphType.equals(GraphType.LOWER) && displayALowerABS.isSelected() &&
+                    (displayA.equals("Z") || displayA.equals("Y") || displayA.equals("r"))){
+                displayA = "|" + displayA + "|";
+            }
+            else if (graphType.equals(GraphType.UPPER) && displayAUpperABS.isSelected() &&
+                    (displayA.equals("Z") || displayA.equals("Y") || displayA.equals("r"))){
+                displayA = "|" + displayA + "|";
+            }
+
+            newDisplayYY.setA(displayA);
+            newDisplayYY.setB(selectedDisplayB.getText());
 
             RadioButton selectedDisplayX = (RadioButton) ((graphType.equals(GraphType.UPPER) ? toggleUpperXAxis : toggleLowerXAxis).getSelectedToggle());
             newDisplayYY.setX(selectedDisplayX.getText().equals("Frequency") ? MeasuredQuantity.FREQUENCY : MeasuredQuantity.VOLTAGE);
@@ -243,7 +259,7 @@ public class MainController implements Initializable {
 
             VoltageSweep newVoltageSweep = new VoltageSweep();
             newVoltageSweep.setStart(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageStartUpper : voltageStartLower).getText()));
-            newVoltageSweep.setStop(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageStopUpper : voltageStartLower).getText()));
+            newVoltageSweep.setStop(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageStopUpper : voltageStopLower).getText()));
             newVoltageSweep.setStep(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageStepUpper : voltageStepLower).getText()));
             newVoltageSweep.setSpot(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageSpotUpper : voltageSpotUpper).getText()));
             ep.getActive().setVoltageSweep(newVoltageSweep);
@@ -355,9 +371,18 @@ public class MainController implements Initializable {
     }
 
     private void initializeUpper() {
+
+        String displayA = ep.getByType(GraphType.UPPER).getDisplayYY().getA();
+
+        if(displayA.equals("|Y|") || displayA.equals("|Z|") || displayA.equals("|r|")){
+            displayAUpperABS.setSelected(true);
+            displayA = displayA.replaceAll("|", "");
+        }
+
+        String finalDisplayA = displayA;
         displayAUpper.getToggles().forEach(item -> {
             ToggleButton btn = (ToggleButton) item;
-            if (btn.getText().equals(ep.getByType(GraphType.UPPER).getDisplayYY().getA())) {
+            if (btn.getText().equals(finalDisplayA)) {
                 item.setSelected(true);
             }
         });
@@ -392,9 +417,19 @@ public class MainController implements Initializable {
     }
 
     private void initializeLower() {
+
+        String displayA = ep.getByType(GraphType.LOWER).getDisplayYY().getA();
+
+        if(displayA.equals("|Y|") || displayA.equals("|Z|") || displayA.equals("|r|")){
+            displayALowerABS.setSelected(true);
+            displayA = displayA.replaceAll("|", "");
+        }
+
+        String finalDisplayA = displayA;
+
         displayALower.getToggles().forEach(item -> {
             ToggleButton btn = (ToggleButton) item;
-            if (btn.getText().equals(ep.getByType(GraphType.LOWER).getDisplayYY().getA())) {
+            if (btn.getText().equals(finalDisplayA)) {
                 item.setSelected(true);
             }
         });
