@@ -5,6 +5,7 @@ import com.app.service.AppMain;
 import com.app.service.calibration.CalibrationType;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.file.parameters.MeasuredQuantity;
+import com.app.service.file.parameters.SweepType;
 import com.app.service.measurement.Measurement;
 import com.app.service.measurement.MeasurementState;
 import com.app.service.measurement.SingleValue;
@@ -198,6 +199,7 @@ public class Connection extends Thread {
                 toggleCmdMode();
             }
             displayFunctions();
+            sweepType();
             highSpeed();
             if (type == MeasuredQuantity.FREQUENCY) {
                 frequencySweep();
@@ -213,6 +215,13 @@ public class Connection extends Thread {
         else {
             write("s H0");
         }
+    }
+
+    public void sweepType() {
+        if (environmentParameters.getActive().getOther().getSweepType() == SweepType.LINEAR)
+            write("s G0");
+        else
+            write("s G1");
     }
 
     public void displayFunctions() {
@@ -255,14 +264,18 @@ public class Connection extends Thread {
             case "Q":
                 write("s B4");
                 break;
-            /*case "0(rad)":
+            case "0(rad)":
                 write("s B2");
                 break;
             case "0(deg)":
-                write("s B1"); //B3,B4?
-                break;*/
+                if (environmentParameters.getActive().getDisplayYY().getA().equals("abs"))  //TODO: if abs
+                    write("B3"); //B4 ?
+                else
+                    write("s B1");
+                break;
         }
     }
+
 
     public void frequencySweep() {
         write("s TF" + environmentParameters.getActive().getFrequencySweep().getStart() + "EN");
