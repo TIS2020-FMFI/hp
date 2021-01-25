@@ -30,7 +30,7 @@ public class AppMain extends Application {
     public static GraphService graphService;
     public static CommunicationService communicationService;
     public static EnvironmentParameters environmentParameters;
-    public static boolean debugMode = true;
+    public static boolean debugMode = false;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -63,6 +63,8 @@ public class AppMain extends Application {
 
         // if all runs successfully then show
         primaryStage.show();
+
+        communicationService.autoConnect();
     }
 
     public static void main(String[] args) {
