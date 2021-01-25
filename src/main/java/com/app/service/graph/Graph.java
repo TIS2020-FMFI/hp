@@ -52,23 +52,28 @@ public class Graph {
     public void setState(GraphState state) { this.state = state; }
 
     public void run() {
+        state = GraphState.RUNNING;
         measurement = new Measurement(AppMain.environmentParameters.getActive());
         scene.getChildren().clear();
         scene.getChildren().add(chartViewer);
         chart = new CustomChart(measurement);
         chartViewer.setChart(chart.getChart());
-        state = GraphState.RUNNING;
     }
 
     public void load() throws FileNotFoundException {
-        measurement = new Measurement(null);
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File("src/main/resources"));
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json");
         fileChooser.getExtensionFilters().add(extFilter);
         File selectedFile = fileChooser.showOpenDialog(new Stage());
-        CustomChart rtcp = new CustomChart(measurement, selectedFile);
-        chartViewer.setChart(rtcp.getChart());
+        if (selectedFile != null) {
+            state = GraphState.LOADED;
+            measurement = AppMain.fileService.loadMeasurement(selectedFile.getPath());
+            scene.getChildren().clear();
+            scene.getChildren().add(chartViewer);
+            chart = new CustomChart(measurement, true);
+            chartViewer.setChart(chart.getChart());
+        }
     }
 
     public void abort() {

@@ -9,12 +9,15 @@ import com.app.service.graph.GraphService;
 import com.app.service.help.HelpService;
 import com.app.service.notification.NotificationService;
 import com.app.service.notification.NotificationType;
+import com.app.service.utils.Utils;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class AppMain extends Application {
 
@@ -50,7 +53,6 @@ public class AppMain extends Application {
             throw new Exception("Notification container not found in this window!");
         }
         notificationService = new NotificationService(notificationContainer);
-        notificationService.createNotification("First try", NotificationType.SUCCESS);
 
         communicationService = new CommunicationService();
 
@@ -61,6 +63,9 @@ public class AppMain extends Application {
 
         // if all runs successfully then show
         primaryStage.show();
+
+        communicationService.autoConnect();
+        //ps.getScene().getRoot().lookup("#")
     }
 
     public static void main(String[] args) {

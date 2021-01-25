@@ -1,211 +1,232 @@
 package com.app.machineCommunication;
 
 
-
 import com.app.service.AppMain;
 import com.app.service.calibration.CalibrationType;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.file.parameters.MeasuredQuantity;
+import com.app.service.file.parameters.SweepType;
 import com.app.service.measurement.Measurement;
+import com.app.service.measurement.MeasurementState;
 import com.app.service.measurement.SingleValue;
-import com.app.service.notification.NotificationService;
 import com.app.service.notification.NotificationType;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.layout.VBox;
 
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-public class Connection extends Thread{
-
-
-    private boolean connected = false;
+public class Connection extends Thread {
     boolean cmd = false;
     boolean calibrationMode = false;
-    boolean manualSweep = false;
-    private NotificationService notificationService;
-    Process p;
-    BufferedReader readEnd;
-    BufferedWriter writeEnd;
-    EnvironmentParameters environmentParameters;
-    ArrayList<String> commands;
+    private boolean connected = false;
+    private Process process;
+    private BufferedReader readEnd;
+    private BufferedWriter writeEnd;
+    private EnvironmentParameters environmentParameters;
+    private Vector<String> commands;
+    private Timer timer;
 
-    public Connection() throws Exception {
+    public Connection() {
         try {
-            p = Runtime.getRuntime().exec("C:/s/hp/hpctrl.exe -i"); // TODO: set to default within project
-            readEnd = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            writeEnd = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
+            process = Runtime.getRuntime().exec("C:/s/hp/hpctrl.exe -i"); // TODO: set to default within project
+            readEnd = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            writeEnd = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
         } catch (IOException e) {
-            AppMain.notificationService.createNotification("hpctrl script missing, read help for more info", NotificationType.ERROR);
+            AppMain.notificationService.createNotification("hpctrl.exe missing, read help for more info", NotificationType.ERROR);
         }
         environmentParameters = AppMain.environmentParameters;
-        commands = new ArrayList<>();
-        Parent root = FXMLLoader.load(getClass().getResource("/views/mainScreen.fxml"));
-
-
-        VBox notificationContainer = (VBox) root.lookup("#notificationContainer");
-        if (notificationContainer == null) {
-            throw new Exception("Notification container not found in this window!");
-        }
-        notificationService = new NotificationService(notificationContainer);
-
+        commands = new Vector<>();
     }
 
     public boolean isConnected() {
         return connected;
     }
 
-
-
-    public boolean connect() {
-        if (AppMain.debugMode) {
-            connected = true;
-        } else {
-            if (connected){
-                if(cmd)
+    public boolean connect() throws RuntimeException {
+        if (!AppMain.debugMode) {
+            if (connected) {
+                if (cmd) {
                     write(".");
+                    cmd = false;
+                }
                 write("exit");
-            }
-            else{
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    System.out.println(" sleeping interrupted");
+                }
+                timer.cancel();
+                timer = null;
+
+            } else if (process != null) {
                 write("connect 19");
-                writer();
+                if(timer == null) {
+                    writer();
+                }
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    System.out.println(" sleeping interrupted");
+                }
+                write("cmd");
+
+                cmd = true;
+            } else {
+                throw new RuntimeException("hpctrl.exe could not be lunched, read help for more info");
             }
-            //TODO: what happens if it doesn't connect?
-            cmd = false;
-            connected = !connected;
+        } else {
+            cmd = true;
         }
+        connected = !connected;
         return connected;
+    }
+
+    public Process getCommunicator() {
+        return process;
     }
 
     public void toggleCmdMode() throws IOException {
         if (connected) {
             write("cmd");
             StringBuilder result = read();
-
             if (!result.toString().equals("!not ready, try again later (cmd)")) {
                 cmd = !cmd;
-
-            } else {notificationService.createNotification("CMD connection failed, try to press any button on machine", NotificationType.ERROR);}
-
-        } else { notificationService.createNotification("Connection error", NotificationType.ERROR);}
+            } else {
+                AppMain.notificationService.createNotification("CMD connection failed, try to press any button on machine", NotificationType.ERROR);
+            }
+        } else {
+            AppMain.notificationService.createNotification("Can not toggle cmd mode, machine not connected", NotificationType.ERROR);
+        }
     }
 
-    public StringBuilder read() throws IOException {
+    private StringBuilder read() throws IOException, NullPointerException {
         StringBuilder result = new StringBuilder();
         while (readEnd.ready()) {
             result.append((char) readEnd.read());
         }
+        System.out.println("reading '" + result.toString() + "'");
         return result;
-
     }
 
-
-    private void write(String text){
+    private void write(String text) {
         commands.add(text);
     }
 
     public void writer() {
-
-        new Timer().schedule(new TimerTask() {
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                if (!commands.isEmpty()){
+                if (!commands.isEmpty()) {
                     try {
-                        System.out.println("sending '" + commands.get(0) + "'");
-                        if (commands.size() > 0) {
-                            writeEnd.write(commands.get(0));
-                            commands.remove(0);
+
+                            String temp = commands.remove(0);
+                            System.out.println("sending '" + temp + "'");
+                            writeEnd.write(temp);
                             writeEnd.newLine();
                             writeEnd.flush();
+                        try {
+                            Thread.sleep(600);
+                        } catch (InterruptedException e) {
+                            System.out.println(" sleeping interrupted");
                         }
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        AppMain.notificationService.createNotification("Problem with writer -> " + e.getMessage(), NotificationType.ERROR);
                     }
-
                 }
             }
         }, 0, 200);
     }
 
-
-
-    public void startMeasurement(Measurement data) throws IOException {
-       if (environmentParameters.getActive().getOther().isAutoSweep()) {
-           write("s WU");
-           write("c");
-           new Thread(() -> {
-               StringBuilder result = new StringBuilder();
-               LocalDateTime readingStarted = LocalDateTime.now();
-               LocalDateTime readingTimeouts = readingStarted.plus(20, ChronoUnit.SECONDS);
-               while (LocalDateTime.now().compareTo(readingTimeouts) < 0) {
-                   try {
-                       if (!readEnd.ready())
-                       {
-                           try {
-                               Thread.sleep(1);
-                           } catch (InterruptedException e) {
-                               e.printStackTrace();
-                           }
-                           continue;
-                       }
-                   } catch (IOException e) {
-                       e.printStackTrace();
-                   }
-                   char letter = 0;
-                   try {
-                       letter = (char) readEnd.read();
-                   } catch (IOException e) {
-                       e.printStackTrace();
-                   }
-                   if ((letter == '\n') && (result.length() > 1)) {
-                       if (result.charAt(1) == 'N') {
-                           write("n");
-                           data.addSingleValue(null);
-                           break;
-                       } else {
-                           System.out.println("reading " + result.toString());
-                           data.addSingleValue(new SingleValue(result.toString()));
-                           result = new StringBuilder();
-                       }
-                   } else
-                       result.append(letter);
-               }
-               if (LocalDateTime.now().compareTo(readingTimeouts) >= 0)
-               {
-                   System.out.println("c cmd timeouted");
-               }
-           }).start();
-
-       }
-
-
-       else {
-           write("s SU");
-           write("q 1");
-           StringBuilder result = read();
-           System.out.println("reading " + result.toString());
-           data.addSingleValue(new SingleValue(result.toString()));
-           // TODO: Kedy je koniec ? manualSweep = false
-       }
-
+    public void abortMeasurement() {
+        write("s AB");
+        System.out.println("aborting measurement");
     }
 
-    public void measurement(MeasuredQuantity type) throws IOException {
+    public void startAutoMeasurement(Measurement measurement) {
+        if (AppMain.debugMode) {
+            System.out.println("-- Running auto sweep measurement --");
+            new Thread(() -> {
+                SingleValue value = generateRandomSingeValue(measurement.getData().size() + 2);
+                measurement.addSingleValue(value);
+                while (value != null && !measurement.getState().equals(MeasurementState.ABORTED)) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        System.out.println("Thread sleep interrupted!");
+                    }
+                    value = generateRandomSingeValue(measurement.getData().size() + 2);
+                    measurement.addSingleValue(value);
+                }
+            }).start();
+        } else {
+            write("s WU");
+            write("c");
+            new Thread(() -> {
+                StringBuilder result = new StringBuilder();
+                LocalDateTime readingStarted = LocalDateTime.now();
+                LocalDateTime readingTimeouts = readingStarted.plus(20, ChronoUnit.SECONDS);
+                //LocalDateTime.now().compareTo(readingTimeouts) < 0 &&
+                while (!measurement.getState().equals(MeasurementState.ABORTED)) {
+                    try {
+                        if (!readEnd.ready()) {
+                            sleep(1);
+                            continue;
+                        }
+                        char letter = (char) readEnd.read();
+                        if ((letter == '\n') && (result.length() > 1)) {
+                            if (result.charAt(1) == 'N') {
+                                write("n");
+                                measurement.addSingleValue(null);
+                                Thread.currentThread().interrupt();
+                                return;
+                            } else {
+                                System.out.println("reading " + result.toString());
+                                measurement.addSingleValue(new SingleValue(result.toString()));
+                                result = new StringBuilder();
+                            }
+                        } else
+                            result.append(letter);
+                    } catch (IOException | InterruptedException e) {
+                        AppMain.notificationService.createNotification("Problem at autoRunMeasurement -> " + e.getMessage(), NotificationType.ERROR);
+                    }
+                }
+                if (LocalDateTime.now().compareTo(readingTimeouts) >= 0) {
+                    System.out.println("c cmd timeout");
+                }
+            }).start();
+        }
+    }
+
+    public void stepMeasurement(Measurement measurement) throws IOException {
+        if (AppMain.debugMode) {
+            measurement.addSingleValue(generateRandomSingeValue(measurement.getData().size() + 2));
+        } else {
+            write("s SU");
+            write("q 1");
+            StringBuilder result = read();
+            System.out.println("reading " + result.toString());
+            SingleValue next = new SingleValue(result.toString());
+            measurement.addSingleValue(next);
+            if (Double.compare(next.getDisplayX(), (measurement.getParameters().getDisplayYY().getX().equals(MeasuredQuantity.FREQUENCY) ? measurement.getParameters().getFrequencySweep().getStop() : measurement.getParameters().getVoltageSweep().getStop())) >= 0) {
+                measurement.addSingleValue(null);
+            }
+        }
+    }
+
+    public void initMeasurement(MeasuredQuantity type) throws IOException {
         if (connected) {
-            if (!cmd)
+            if (!cmd) {
                 toggleCmdMode();
-            if (cmd && !manualSweep) {
-                displayFunctions();
-                highSpeed();
-                if (type == MeasuredQuantity.FREQUENCY)
-                    frequencySweep();
-                if (type == MeasuredQuantity.VOLTAGE)
-                    voltageSweep();
-                if (!environmentParameters.getActive().getOther().isAutoSweep()) manualSweep=true;
-                startMeasurement(AppMain.graphService.getRunningGraph().getMeasurement());
+            }
+            displayFunctions();
+            sweepType();
+            highSpeed();
+            if (type == MeasuredQuantity.FREQUENCY) {
+                frequencySweep();
+            } else {
+                voltageSweep();
             }
         }
     }
@@ -213,12 +234,20 @@ public class Connection extends Thread{
     public void highSpeed() {
         if (environmentParameters.getActive().getOther().isHighSpeed())
             write("s H1");
-        else
+        else {
             write("s H0");
+        }
+    }
+
+    public void sweepType() {
+        if (environmentParameters.getActive().getOther().getSweepType() == SweepType.LINEAR)
+            write("s G0");
+        else
+            write("s G1");
     }
 
     public void displayFunctions() {
-        switch (environmentParameters.getActive().getDisplayYY().getA()){
+        switch (environmentParameters.getActive().getDisplayYY().getA()) {
             case "L":
                 write("s A7");
                 break;
@@ -244,7 +273,7 @@ public class Connection extends Thread{
                 write("s A4");
                 break;
         }
-        switch (environmentParameters.getActive().getDisplayYY().getB()){
+        switch (environmentParameters.getActive().getDisplayYY().getB()) {
             case "R":
                 write("s B1");
                 break;
@@ -257,16 +286,19 @@ public class Connection extends Thread{
             case "Q":
                 write("s B4");
                 break;
-            /*case "0(rad)":
+            case "0(rad)":
                 write("s B2");
                 break;
             case "0(deg)":
-                write("s B1"); //B3,B4?
-                break;*/
-
-
+                if (environmentParameters.getActive().getDisplayYY().getA().contains("|"))
+                    write("B3"); //B4 ?
+                else
+                    write("s B1");
+                break;
         }
     }
+
+
     public void frequencySweep() {
         write("s TF" + environmentParameters.getActive().getFrequencySweep().getStart() + "EN");
         write("s PF" + environmentParameters.getActive().getFrequencySweep().getStop() + "EN");
@@ -274,42 +306,41 @@ public class Connection extends Thread{
         write("s FR" + environmentParameters.getActive().getFrequencySweep().getSpot() + "EN");
     }
 
-    public void voltageSweep()  {
+    public void voltageSweep() {
         write("s TB" + environmentParameters.getActive().getVoltageSweep().getStart() + "EN");
         write("s PB" + environmentParameters.getActive().getVoltageSweep().getStop() + "EN");
         write("s SB" + environmentParameters.getActive().getVoltageSweep().getStep() + "EN");
         write("s BI" + environmentParameters.getActive().getVoltageSweep().getSpot() + "EN");
     }
-//TODO: calibration parameters
+
     public void openCalibration() throws IOException {
         write("s A4");
         write("s CS");
-        //read(); // we don't need results for now
+        read();
     }
+
     public void shortCalibration() throws IOException {
         write("s A5");
         write("s CS");
-        //read(); // we don't need results for now
+        read();
     }
+
     public void loadCalibration() throws IOException {
         write("s A6");
         write("s CS");
-        //read(); // we don't need results for now
+        read();
     }
 
-
-    public boolean calibrationHandler(CalibrationType calibrationType) throws IOException, InterruptedException {
+    public boolean calibrationHandler(CalibrationType calibrationType) throws IOException {
         if (connected) {
             if (!cmd) toggleCmdMode();
-            if (cmd){
-                if (!calibrationMode){
+            if (cmd) {
+                if (!calibrationMode) {
                     write("s C1");
                     write("s EL" + environmentParameters.getActive().getOther().getElectricalLength() + "EN");
                     highSpeed();
                     calibrationMode = !calibrationMode;
-                    }
-                if (calibrationMode){
-
+                } else {
                     switch (calibrationType) {
                         case OPEN:
                             openCalibration();
@@ -320,14 +351,22 @@ public class Connection extends Thread{
                         case LOAD:
                             loadCalibration();
                             write("s C0");
-                            calibrationMode = !calibrationMode;
+                            calibrationMode = !calibrationMode; // TODO: not in this order -> create state for cal
                             break;
                     }
                 }
             }
-        } else {notificationService.createNotification("Connection error", NotificationType.ERROR);}
-
+        } else {
+            AppMain.notificationService.createNotification("Machine not connected!", NotificationType.ERROR);
+        }
         return true;
+    }
+
+    private SingleValue generateRandomSingeValue(double X) {
+        if (new Random().nextInt(100) > 95) {
+            return null;
+        }
+        return new SingleValue(Math.random() * 20 + 80, Math.random() * 20 + 80, X);
     }
 }
 

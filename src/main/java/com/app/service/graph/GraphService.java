@@ -6,6 +6,7 @@ import com.app.service.notification.NotificationType;
 import javafx.scene.Parent;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 
 public class GraphService {
@@ -14,7 +15,7 @@ public class GraphService {
 
     public GraphService() {}
 
-    public Graph getGraph(GraphType type) {
+    public Graph getGraphByType(GraphType type) {
         return type.equals(GraphType.UPPER) ? upperGraph:lowerGraph;
     }
 
@@ -43,15 +44,24 @@ public class GraphService {
 
     public void run(GraphType type) {
         try {
-            getGraph(type).run();
+            getGraphByType(type).run();
+            AppMain.communicationService.runMeasurement(getRunningGraph().getMeasurement());
         } catch (Exception e) {
             AppMain.notificationService.createNotification("Error occurred while running measurement -> " + e.getMessage(), NotificationType.ERROR);
         }
     }
 
+    public void runNextStep() {
+        try {
+            AppMain.communicationService.nextStep(getRunningGraph().getMeasurement());
+        } catch (IOException e) {
+            AppMain.notificationService.createNotification("Error occurred while running next step -> " + e.getMessage(), NotificationType.ERROR);
+        }
+    }
+
     public void loadGraph(GraphType type) {
         try {
-            getGraph(type).load();
+            getGraphByType(type).load();
         } catch (FileNotFoundException e) {
             AppMain.notificationService.createNotification("File you are trying to load does not exist", NotificationType.ERROR);
         } catch (NumberFormatException e) {
@@ -63,14 +73,15 @@ public class GraphService {
 
     public void abortGraph(GraphType type) {
         try {
-            getGraph(type).abort();
+            AppMain.communicationService.abortMeasurement();
+            getGraphByType(type).abort();
         } catch (Exception e) {
             AppMain.notificationService.createNotification("Error occurred while aborting measurement -> " + e.getMessage(), NotificationType.ERROR);
         }
     }
 
     public boolean measurementSaved(GraphType type) {
-        Graph temp = getGraph(type);
+        Graph temp = getGraphByType(type);
         if (temp.getState().equals(GraphState.EMPTY) || temp.getState().equals(GraphState.RUNNING)) {
             return true;
         }
