@@ -39,7 +39,9 @@ class JsonParserTest {
 
         ep.setUpperGraphParameters(paramsUpper);
         ep.setLowerGraphParameters(paramsLower);
-        JsonParser.saveEnvironmentParameters(getClass().getResource("persistent/config.json").getPath(), ep);
+//        JsonParser.saveEnvironmentParameters(getClass().getResource("persistent/config2.json").getPath(), ep);
+
+        JsonParser.saveEnvironmentParameters("config1.json", ep);
     }
 
     @Test
@@ -77,12 +79,12 @@ class JsonParserTest {
 
         ep.setUpperGraphParameters(paramsUpper);
         ep.setLowerGraphParameters(paramsUpper);
-        JsonParser.saveEnvironmentParameters(getClass().getResource("persistent/config.json").getPath(), ep);
+        JsonParser.saveEnvironmentParameters("config2.json", ep);
     }
 
     @Test
     void readTestException() {
-        JsonParser.readEnvironmentParameters("empty");
+        JsonParser.readEnvironmentParameters("empty.json");
     }
 
     @Test
@@ -93,11 +95,11 @@ class JsonParserTest {
         assertEquals("L", ep.getByType(GraphType.UPPER).getDisplayYY().getA());
         assertEquals("R", ep.getByType(GraphType.UPPER).getDisplayYY().getB());
 
-        assertEquals(SweepType.LOG, ep.getByType(GraphType.UPPER).getOther().getSweepType());
+        assertEquals(SweepType.LINEAR, ep.getByType(GraphType.UPPER).getOther().getSweepType());
         assertFalse(ep.getByType(GraphType.UPPER).getOther().isHighSpeed());
-        assertTrue(ep.getByType(GraphType.UPPER).getOther().isAutoSweep());
+        assertFalse(ep.getByType(GraphType.UPPER).getOther().isAutoSweep());
         assertEquals(0.0, ep.getByType(GraphType.UPPER).getOther().getCapacitance());
-        assertEquals(1.0, ep.getByType(GraphType.UPPER).getOther().getElectricalLength());
+        assertEquals(3.0, ep.getByType(GraphType.UPPER).getOther().getElectricalLength());
 
         assertEquals(100., ep.getByType(GraphType.UPPER).getFrequencySweep().getStart());
         assertEquals(600., ep.getByType(GraphType.UPPER).getFrequencySweep().getStop());
@@ -149,7 +151,7 @@ class JsonParserTest {
         measurement.addSingleValue(new SingleValue(1,0.5,111111.8));
 
         System.out.println(measurement.getIndexOfTheValueToSave());
-        JsonParser.writeNewMeasurement("measurementData", measurement);
+        JsonParser.writeNewMeasurement("measurementData.json", measurement);
         System.out.println(measurement.getIndexOfTheValueToSave());
     }
 
@@ -188,21 +190,21 @@ class JsonParserTest {
         Measurement measurement = new Measurement(parameters);
         measurement.updateComment("hello world");
 
-        measurement.addSingleValue(new SingleValue(0.1,30.5,8.06666));
-        measurement.addSingleValue(new SingleValue(1,0.5,111111.8));
+        measurement.addSingleValue(new SingleValue(0.1,30.5,8.66));
+        measurement.addSingleValue(new SingleValue(1,0.5,18.8));
 
-        JsonParser.writeNewMeasurement("measurementNewData", measurement);
+        JsonParser.writeNewMeasurement("measurementNewData.json", measurement);
 
         measurement.setIndexOfTheValueToSave(2);
-        measurement.addSingleValue(new SingleValue(5.0,5.0,866));
-        measurement.addSingleValue(new SingleValue(155,15,11.778));
+        measurement.addSingleValue(new SingleValue(5.0,5.0,28));
+        measurement.addSingleValue(new SingleValue(155,15,38));
 
-        JsonParser.writeNewValues("testMeasurement", measurement);
+        JsonParser.writeNewValues("measurementNewData.json", measurement);
     }
 
     @Test
     void readData() {
-        Measurement measurement = JsonParser.readMeasurement("testMeasurement");
+        Measurement measurement = JsonParser.readMeasurement("measurementNewData.json");
 
         assertEquals("hello world", measurement.getComment().toString());
 
