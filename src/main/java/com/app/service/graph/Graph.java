@@ -67,10 +67,12 @@ public class Graph {
         fileChooser.getExtensionFilters().add(extFilter);
         File selectedFile = fileChooser.showOpenDialog(new Stage());
         if (selectedFile != null) {
-            measurement = AppMain.fileService.loadMeasurement(selectedFile.getPath());;
-            CustomChart rtcp = new CustomChart(measurement, true);
-            chartViewer.setChart(rtcp.getChart());
             state = GraphState.LOADED;
+            measurement = AppMain.fileService.loadMeasurement(selectedFile.getPath());
+            scene.getChildren().clear();
+            scene.getChildren().add(chartViewer);
+            chart = new CustomChart(measurement, true);
+            chartViewer.setChart(chart.getChart());
         }
     }
 
