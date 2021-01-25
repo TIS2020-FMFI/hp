@@ -30,7 +30,13 @@ public class JsonParser {
         JSONObject jo = new JSONObject();
         jo.put("upper", getParametersMap(ep.getByType(GraphType.UPPER)));
         jo.put("lower", getParametersMap(ep.getByType(GraphType.LOWER)));
-        Files.write(Paths.get("persistent/" + fileName), jo.toJSONString().getBytes());
+//        Files.write(Paths.get("persistent/" + fileName), jo.toJSONString().getBytes());
+        PrintWriter pw = new PrintWriter(fileName);
+        pw.write(jo.toJSONString());
+
+        pw.flush();
+        pw.close();
+
         return true;
     }
 
@@ -168,11 +174,12 @@ public class JsonParser {
 
     public static boolean writeNewMeasurement(String autoSavingDir, Measurement measurement) {
         try {
-            Object obj = new JSONParser().parse(new FileReader(autoSavingDir));
-            JSONObject jo = (JSONObject) obj;
-            measurement.getParameters().checkAll();
 
-            jo.put("parameters", getParametersMap(measurement.getParameters()));
+            JSONObject jo = new JSONObject();
+            Parameters parameters = measurement.getParameters();
+            parameters.checkAll();
+
+            jo.put("parameters", getParametersMap(parameters));
 
             if(measurement.getComment() != null){
                 jo.put("comment", measurement.getComment().toString());
@@ -200,7 +207,7 @@ public class JsonParser {
             pw.close();
 
             return true;
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
