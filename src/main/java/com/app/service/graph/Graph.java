@@ -52,12 +52,12 @@ public class Graph {
     public void setState(GraphState state) { this.state = state; }
 
     public void run() {
+        state = GraphState.RUNNING;
         measurement = new Measurement(AppMain.environmentParameters.getActive());
         scene.getChildren().clear();
         scene.getChildren().add(chartViewer);
         chart = new CustomChart(measurement);
         chartViewer.setChart(chart.getChart());
-        state = GraphState.RUNNING;
     }
 
     public void load() throws FileNotFoundException {

@@ -173,7 +173,7 @@ public class MainController implements Initializable {
     }
 
     private void toggleDisabling() {
-        boolean isConnected = AppMain.communicationService != null && AppMain.communicationService.isConnected();
+        boolean isConnected = gpibMenu.getText().contains("ACTIVE");//AppMain.communicationService != null && AppMain.communicationService.isConnected();
         boolean isUpperEmpty = gs.getGraphByType(GraphType.UPPER) == null || gs.getGraphByType(GraphType.UPPER).getState().equals(GraphState.EMPTY);
         boolean isLowerEmpty = gs.getGraphByType(GraphType.LOWER) == null || gs.getGraphByType(GraphType.LOWER).getState().equals(GraphState.EMPTY);
         boolean isUpperRunning = gs.getRunningGraph() != null && gs.getRunningGraph().getType().equals(GraphType.UPPER);
@@ -352,6 +352,7 @@ public class MainController implements Initializable {
 
         savingDirMenu.setText(AppMain.fileService.getAutoSavingDir());
         createConstraintListener();
+        gpibMenu.setText("Connection: ACTIVE");
     }
 
     private void initializeUpper() {
@@ -526,5 +527,10 @@ public class MainController implements Initializable {
         } else {
 
         }
+    }
+
+    public void updateGpibMenu(String status) {
+        gpibMenu.setText("GPIB connection: " + status);
+       // gpibMenu.on
     }
 }

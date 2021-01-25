@@ -25,6 +25,7 @@ public class Connection extends Thread {
     private BufferedWriter writeEnd;
     private EnvironmentParameters environmentParameters;
     private Vector<String> commands;
+    private Timer timer;
 
     public Connection() {
         try {
@@ -50,10 +51,26 @@ public class Connection extends Thread {
                     cmd = false;
                 }
                 write("exit");
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    System.out.println(" sleeping interrupted");
+                }
+                timer.cancel();
+                timer = null;
+
             } else if (process != null) {
                 write("connect 19");
+                if(timer == null) {
+                    writer();
+                }
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    System.out.println(" sleeping interrupted");
+                }
                 write("cmd");
-                writer();
+
                 cmd = true;
             } else {
                 throw new RuntimeException("hpctrl.exe could not be lunched, read help for more info");
@@ -97,17 +114,22 @@ public class Connection extends Thread {
     }
 
     public void writer() {
-        new Timer().schedule(new TimerTask() {
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 if (!commands.isEmpty()) {
                     try {
-                        if (!commands.isEmpty()) {
+
                             String temp = commands.remove(0);
                             System.out.println("sending '" + temp + "'");
                             writeEnd.write(temp);
                             writeEnd.newLine();
                             writeEnd.flush();
+                        try {
+                            Thread.sleep(600);
+                        } catch (InterruptedException e) {
+                            System.out.println(" sleeping interrupted");
                         }
                     } catch (IOException e) {
                         AppMain.notificationService.createNotification("Problem with writer -> " + e.getMessage(), NotificationType.ERROR);
@@ -145,7 +167,8 @@ public class Connection extends Thread {
                 StringBuilder result = new StringBuilder();
                 LocalDateTime readingStarted = LocalDateTime.now();
                 LocalDateTime readingTimeouts = readingStarted.plus(20, ChronoUnit.SECONDS);
-                while (LocalDateTime.now().compareTo(readingTimeouts) < 0 && !measurement.getState().equals(MeasurementState.ABORTED)) {
+                //LocalDateTime.now().compareTo(readingTimeouts) < 0 &&
+                while (!measurement.getState().equals(MeasurementState.ABORTED)) {
                     try {
                         if (!readEnd.ready()) {
                             sleep(1);

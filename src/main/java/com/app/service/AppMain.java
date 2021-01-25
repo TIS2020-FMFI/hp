@@ -65,6 +65,7 @@ public class AppMain extends Application {
         primaryStage.show();
 
         communicationService.autoConnect();
+        //ps.getScene().getRoot().lookup("#")
     }
 
     public static void main(String[] args) {

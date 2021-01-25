@@ -50,7 +50,8 @@ public class NotificationService {
         }, 8000);
         moveInQueue();
         notification = newNotification.show();
-        notificationContainer.getChildren().add(notification);
+        Platform.runLater(() -> notificationContainer.getChildren().add(notification));
+        // TODO: control
     }
 
     private void removeNotification(Notification notification) {
