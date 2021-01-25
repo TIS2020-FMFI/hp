@@ -8,18 +8,19 @@ import javafx.scene.layout.VBox;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Vector;
 
 public class NotificationService {
     private final Image removeImg = new Image("assets/remove.png");
     private VBox notificationContainer;
-    private Notification notification;
+    private Vector<Notification> notificationQueue;
+
 
     public NotificationService(VBox container) {
         notificationContainer = container;
     }
 
-    public Notification getNotification() { return notification; }
-    public boolean isNotificationContainerEmpty() { return notification == null; }
+    public boolean isNotificationContainerEmpty() { return notificationQueue.isEmpty(); }
 
     public void createNotification(String message, NotificationType type) {
         ImageView removeIcon = new ImageView(removeImg);
@@ -51,7 +52,6 @@ public class NotificationService {
         moveInQueue();
         notification = newNotification.show();
         Platform.runLater(() -> notificationContainer.getChildren().add(notification));
-        // TODO: control
     }
 
     private void removeNotification(Notification notification) {
