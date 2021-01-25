@@ -120,23 +120,17 @@ public class Connection extends Thread {
             public void run() {
                 if (!commands.isEmpty()) {
                     try {
-
-                            String temp = commands.remove(0);
-                            System.out.println("sending '" + temp + "'");
-                            writeEnd.write(temp);
-                            writeEnd.newLine();
-                            writeEnd.flush();
-                        try {
-                            Thread.sleep(600);
-                        } catch (InterruptedException e) {
-                            System.out.println(" sleeping interrupted");
-                        }
+                        String temp = commands.remove(0);
+                        System.out.println("sending '" + temp + "'");
+                        writeEnd.write(temp);
+                        writeEnd.newLine();
+                        writeEnd.flush();
                     } catch (IOException e) {
                         AppMain.notificationService.createNotification("Problem with writer -> " + e.getMessage(), NotificationType.ERROR);
                     }
                 }
             }
-        }, 0, 200);
+        }, 100, 200);
     }
 
     public void abortMeasurement() {
@@ -165,10 +159,7 @@ public class Connection extends Thread {
             write("c");
             new Thread(() -> {
                 StringBuilder result = new StringBuilder();
-                LocalDateTime readingStarted = LocalDateTime.now();
-                LocalDateTime readingTimeouts = readingStarted.plus(20, ChronoUnit.SECONDS);
-                //LocalDateTime.now().compareTo(readingTimeouts) < 0 &&
-                while (!measurement.getState().equals(MeasurementState.ABORTED)) {
+                while (!List.of(MeasurementState.ABORTED, MeasurementState.FINISHED).contains(measurement.getState())) {
                     try {
                         if (!readEnd.ready()) {
                             sleep(1);
@@ -191,9 +182,6 @@ public class Connection extends Thread {
                     } catch (IOException | InterruptedException e) {
                         AppMain.notificationService.createNotification("Problem at autoRunMeasurement -> " + e.getMessage(), NotificationType.ERROR);
                     }
-                }
-                if (LocalDateTime.now().compareTo(readingTimeouts) >= 0) {
-                    System.out.println("c cmd timeout");
                 }
             }).start();
         }

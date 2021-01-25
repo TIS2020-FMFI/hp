@@ -9,6 +9,7 @@ import com.app.service.measurement.DisplayAOption;
 import com.app.service.measurement.DisplayBOption;
 import com.app.service.notification.NotificationType;
 import com.app.service.utils.Utils;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -19,11 +20,19 @@ import javafx.scene.layout.VBox;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainController implements Initializable {
 
     GraphService gs;
     EnvironmentParameters ep;
+
+    Timer graphWatcher;
+    GraphState oldGraphState;
+
+    Timer connectionWatcher = new Timer();
+    Boolean oldConnectionState;
 
     @FXML
     VBox VBox1;
@@ -179,7 +188,7 @@ public class MainController implements Initializable {
     }
 
     private void toggleDisabling() {
-        boolean isConnected = gpibMenu.getText().contains("ACTIVE");//AppMain.communicationService != null && AppMain.communicationService.isConnected();
+        boolean isConnected = AppMain.communicationService != null && AppMain.communicationService.isConnected();
         boolean isUpperEmpty = gs.getGraphByType(GraphType.UPPER) == null || gs.getGraphByType(GraphType.UPPER).getState().equals(GraphState.EMPTY);
         boolean isLowerEmpty = gs.getGraphByType(GraphType.LOWER) == null || gs.getGraphByType(GraphType.LOWER).getState().equals(GraphState.EMPTY);
         boolean isUpperRunning = gs.getRunningGraph() != null && gs.getRunningGraph().getType().equals(GraphType.UPPER);
@@ -203,6 +212,10 @@ public class MainController implements Initializable {
             upperGraphRun.setText("Run");
             upperToolbar.getItems().remove(upperPointNext);
         } else if (!gs.isRunningGraph()) {
+            if (!GraphState.canBeLoaded(gs.getGraphByType(GraphType.UPPER).getState())) {
+                AppMain.notificationService.createNotification("Measurement in upper graph has not been saved, save it before starting new one", NotificationType.ANNOUNCEMENT);
+                return;
+            }
             parametersTabPane.getSelectionModel().select(upperGraphTab);
             runMeasurement(GraphType.UPPER, (Button) event.getSource());
         }
@@ -215,6 +228,10 @@ public class MainController implements Initializable {
             lowerGraphRun.setText("Run");
             lowerToolbar.getItems().remove(lowerPointNext);
         } else if (!gs.isRunningGraph()) {
+            if (!GraphState.canBeLoaded(gs.getGraphByType(GraphType.LOWER).getState())) {
+                AppMain.notificationService.createNotification("Measurement in lower graph has not been saved, save it before starting new one", NotificationType.ANNOUNCEMENT);
+                return;
+            }
             parametersTabPane.getSelectionModel().select(lowerGraphTab);
             runMeasurement(GraphType.LOWER, (Button) event.getSource());
         }
@@ -222,6 +239,7 @@ public class MainController implements Initializable {
 
     private void runMeasurement(GraphType graphType, Button triggerButton) {
         ep.setActiveGraphType(graphType);
+        createGraphWatcher(graphType);
 
         try {
             DisplayYY newDisplayYY = ep.getActive().getDisplayYY();
@@ -233,13 +251,9 @@ public class MainController implements Initializable {
             }
 
             String displayA = selectedDisplayA.getText();
-            if (graphType.equals(GraphType.LOWER) && displayALowerABS.isSelected() &&
-                    (displayA.equals("Z") || displayA.equals("Y") || displayA.equals("r"))){
-                displayA = "|" + displayA + "|";
-            }
-            else if (graphType.equals(GraphType.UPPER) && displayAUpperABS.isSelected() &&
-                    (displayA.equals("Z") || displayA.equals("Y") || displayA.equals("r"))){
-                displayA = "|" + displayA + "|";
+            if ((graphType.equals(GraphType.LOWER) && displayALowerABS.isSelected() && DisplayAOption.isAbsOption(DisplayAOption.valueOf(displayA))) ||
+            (graphType.equals(GraphType.UPPER) && displayAUpperABS.isSelected() && DisplayAOption.isAbsOption(DisplayAOption.valueOf(displayA)))) {
+                displayA = DisplayAOption.getAbsOption(DisplayAOption.valueOf(displayA));
             }
 
             newDisplayYY.setA(displayA);
@@ -306,6 +320,10 @@ public class MainController implements Initializable {
 
     public void loadUpperGraph(MouseEvent event) {
         parametersTabPane.getSelectionModel().select(upperGraphTab);
+        if (!GraphState.canBeLoaded(gs.getGraphByType(GraphType.UPPER).getState())) {
+            AppMain.notificationService.createNotification("Measurement in upper graph has not been saved, save it before loading new one", NotificationType.ANNOUNCEMENT);
+            return;
+        }
         gs.loadGraph(GraphType.UPPER);
         if (gs.upperGraph.getState().equals(GraphState.LOADED)) {
             ep.setUpperGraphParameters(gs.upperGraph.getMeasurement().getParameters());
@@ -315,6 +333,10 @@ public class MainController implements Initializable {
 
     public void loadLowerGraph(MouseEvent event) {
         parametersTabPane.getSelectionModel().select(lowerGraphTab);
+        if (!GraphState.canBeLoaded(gs.getGraphByType(GraphType.LOWER).getState())) {
+            AppMain.notificationService.createNotification("Measurement in lower graph has not been saved, save it before loading new one", NotificationType.ANNOUNCEMENT);
+            return;
+        }
         gs.loadGraph(GraphType.LOWER);
         if (gs.lowerGraph.getState().equals(GraphState.LOADED)) {
             ep.setLowerGraphParameters(gs.lowerGraph.getMeasurement().getParameters());
@@ -358,6 +380,8 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         AppMain.ps.setOnCloseRequest(request -> quitApp(null));
+
+
         gs = AppMain.graphService;
         ep = AppMain.environmentParameters;
 
@@ -368,16 +392,43 @@ public class MainController implements Initializable {
 
         savingDirMenu.setText(AppMain.fileService.getAutoSavingDir());
         createConstraintListener();
-        gpibMenu.setText("Connection: ACTIVE");
+
+        connectionWatcher.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (oldConnectionState != null && oldConnectionState != AppMain.communicationService.isConnected()) {
+                    updateGpibMenu(AppMain.communicationService.isConnected());
+                }
+            }
+        }, 100, 100);
+    }
+
+    private void createGraphWatcher(GraphType type) {
+        graphWatcher = new Timer();
+        graphWatcher.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (oldGraphState != gs.getStateByType(type)) {
+                    toggleDisabling();
+                    oldGraphState = gs.getStateByType(type);
+                    if (GraphState.isStatic(gs.getStateByType(type))) {
+                        Platform.runLater(() -> {
+                            (type.equals(GraphType.UPPER) ? upperGraphRun:lowerGraphRun).setText("Run");
+                            upperToolbar.getItems().remove(type.equals(GraphType.UPPER) ? upperPointNext:lowerPointNext);
+                        });
+                        cancel();
+                    }
+                }
+            }
+        }, 100, 100);
     }
 
     private void initializeUpper() {
-
         String displayA = ep.getByType(GraphType.UPPER).getDisplayYY().getA();
 
-        if(displayA.equals("|Y|") || displayA.equals("|Z|") || displayA.equals("|r|")){
+        if(DisplayAOption.isAbsOption(displayA)){
             displayAUpperABS.setSelected(true);
-            displayA = displayA.replaceAll("|", "");
+            displayA = DisplayAOption.getOptionFromAbs(displayA).toString();
         }
 
         String finalDisplayA = displayA;
@@ -418,16 +469,14 @@ public class MainController implements Initializable {
     }
 
     private void initializeLower() {
-
         String displayA = ep.getByType(GraphType.LOWER).getDisplayYY().getA();
 
-        if(displayA.equals("|Y|") || displayA.equals("|Z|") || displayA.equals("|r|")){
+        if(DisplayAOption.isAbsOption(displayA)){
             displayALowerABS.setSelected(true);
-            displayA = displayA.replaceAll("|", "");
+            displayA = DisplayAOption.getOptionFromAbs(displayA).toString();
         }
 
         String finalDisplayA = displayA;
-
         displayALower.getToggles().forEach(item -> {
             ToggleButton btn = (ToggleButton) item;
             if (btn.getText().equals(finalDisplayA)) {
@@ -564,8 +613,8 @@ public class MainController implements Initializable {
         }
     }
 
-    public void updateGpibMenu(String status) {
-        gpibMenu.setText("GPIB connection: " + status);
-       // gpibMenu.on
+    public void updateGpibMenu(boolean status) {
+        gpibMenu.setText("GPIB connection: " + (status ? "ACTIVE":"INACTIVE"));
     }
+
 }
