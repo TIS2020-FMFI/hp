@@ -267,7 +267,7 @@ public class Connection extends Thread {
                 write("s B2");
                 break;
             case "0(deg)":
-                if (environmentParameters.getActive().getDisplayYY().getA().equals("abs"))  //TODO: if abs
+                if (environmentParameters.getActive().getDisplayYY().getA().contains("|"))
                     write("B3"); //B4 ?
                 else
                     write("s B1");
