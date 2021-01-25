@@ -21,13 +21,27 @@ public class CommunicationService {
     }
 
     public boolean connect() {
-        return connection.connect();
+        boolean success = false;
+        try {
+            success = connection.connect();
+        } catch (RuntimeException e) {
+            AppMain.notificationService.createNotification(e.getMessage(), NotificationType.ERROR);
+        }
+        return success;
     }
 
     public void killCommunicator() {
         Process temp = connection.getCommunicator();
         if (temp != null) {
             temp.destroy();
+        }
+    }
+
+    public void autoConnect() {
+        if (connect()) {
+            AppMain.notificationService.createNotification("Connected successfully", NotificationType.SUCCESS);
+        } else {
+            AppMain.notificationService.createNotification("Failed to connect automatically", NotificationType.ANNOUNCEMENT);
         }
     }
 
