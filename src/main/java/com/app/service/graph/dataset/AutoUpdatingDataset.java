@@ -1,5 +1,7 @@
 package com.app.service.graph.dataset;
 
+import com.app.service.AppMain;
+import com.app.service.graph.GraphState;
 import com.app.service.measurement.Measurement;
 import com.app.service.measurement.MeasurementState;
 import com.app.service.measurement.SingleValue;
@@ -81,6 +83,9 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
                         if (newValue == null) {
                             fireDatasetChanged();
                             cancel();
+                            if (AppMain.graphService.getRunningGraph() != null) {
+                                AppMain.graphService.getRunningGraph().setState(GraphState.DONE);
+                            }
                             measurement.setState(MeasurementState.FINISHED);
                             return;
                         }

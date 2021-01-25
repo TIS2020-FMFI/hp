@@ -1,12 +1,16 @@
 package com.app.service.graph;
 
 import com.app.service.AppMain;
+import com.app.service.measurement.Measurement;
 import com.app.service.measurement.MeasurementState;
 import com.app.service.notification.NotificationType;
 import javafx.scene.Parent;
 
+import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class GraphService {
@@ -17,6 +21,10 @@ public class GraphService {
 
     public Graph getGraphByType(GraphType type) {
         return type.equals(GraphType.UPPER) ? upperGraph:lowerGraph;
+    }
+
+    public GraphState getStateByType(GraphType type) {
+        return type.equals(GraphType.UPPER) ? upperGraph.getState():lowerGraph.getState();
     }
 
     public boolean isRunningGraph() {
@@ -82,10 +90,10 @@ public class GraphService {
 
     public boolean measurementSaved(GraphType type) {
         Graph temp = getGraphByType(type);
-        if (temp.getState().equals(GraphState.EMPTY) || temp.getState().equals(GraphState.RUNNING)) {
+        if (temp.getState().equals(GraphState.EMPTY) || temp.getState().equals(GraphState.LOADED) || temp.getState().equals(GraphState.SAVED)) {
             return true;
         }
-        return !temp.getMeasurement().getState().equals(MeasurementState.WAITING) && !temp.getMeasurement().getState().equals(MeasurementState.STARTED);
+        return !List.of(MeasurementState.WAITING, MeasurementState.STARTED, MeasurementState.FINISHED).contains(temp.getMeasurement().getState());
     }
 
 }
