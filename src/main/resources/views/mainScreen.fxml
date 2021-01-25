@@ -202,7 +202,7 @@
                                                                         <Insets left="5.0" right="5.0" />
                                                                      </padding>
                                                                   </RadioButton>
-                                                                  <CheckBox mnemonicParsing="false" prefHeight="27.0" text="abs">
+                                                                  <CheckBox fx:id="displayAUpperABS" mnemonicParsing="false" prefHeight="27.0" text="abs">
                                                                      <HBox.margin>
                                                                         <Insets />
                                                                      </HBox.margin>
@@ -783,7 +783,7 @@
                                                                         <Insets left="5.0" right="5.0" />
                                                                      </padding>
                                                                   </RadioButton>
-                                                                  <CheckBox mnemonicParsing="false" prefHeight="27.0" text="abs">
+                                                                  <CheckBox fx:id="displayALowerABS" mnemonicParsing="false" prefHeight="27.0" text="abs">
                                                                      <HBox.margin>
                                                                         <Insets />
                                                                      </HBox.margin>
