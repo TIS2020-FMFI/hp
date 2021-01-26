@@ -365,7 +365,7 @@ public class MainController implements Initializable {
     public void quitApp(MouseEvent event) {
         if (gs.isRunningGraph()) {
             AppMain.notificationService.createNotification("There is a measurement in process, either wait or abort it.", NotificationType.WARNING);
-        } else if (gs.measurementSaved(GraphType.UPPER) && gs.measurementSaved(GraphType.LOWER)) {
+        } else if (gs.isMeasurementSaved(GraphType.UPPER) && gs.isMeasurementSaved(GraphType.LOWER)) {
             // TODO: save global props into config
             Utils.closeApp();
         } else {

@@ -20,22 +20,43 @@ import java.util.List;
 import java.util.Scanner;
 
 
+
 public class CustomChart extends ChartPanel {
     private static AbstractXYDataset series1;
     private static AbstractXYDataset series2;
     private static JFreeChart chart;
 
+    /**
+     * Constructor for loading chart, calls loadChart(Measurement measurement) with its parameter
+     * @param measurement
+     * @param isLoad
+     */
     public CustomChart(Measurement measurement, boolean isLoad) {
         super(loadChart(measurement));
     }
+
+    /**
+     * Constructor for running chart, calls createChart(Measurement measurement) with its parameter
+     * @param measurement
+     */
     public CustomChart(Measurement measurement) {
         super(createChart(measurement));
     }
 
+    /**
+     * @return JFreeChart
+     */
     public JFreeChart getChart() {
         return chart;
     }
 
+    /**
+     * creates datasets for chart, calls createChart(String Xname, String Y1name, String Y2name)
+     * with measurement parameters (from already loaded file into measurement)
+     *
+     * @param measurement
+     * @return JFreeChart
+     */
     private static JFreeChart loadChart(Measurement measurement) {
         series1 = new StaticDataset(measurement, DatasetType.LEFT);
         series2 = new StaticDataset(measurement, DatasetType.RIGHT);
@@ -43,6 +64,13 @@ public class CustomChart extends ChartPanel {
         return chart;
     }
 
+    /**
+     *  creates datasets for chart, calls createChart(String Xname, String Y1name, String Y2name)
+     *  with measurement parameters, starts timer inside datasets
+     *
+     * @param measurement
+     * @return JFreeChart
+     */
     private static JFreeChart createChart(Measurement measurement) {
         series1 = new AutoUpdatingDataset(measurement, DatasetType.LEFT);
         series2 = new AutoUpdatingDataset(measurement, DatasetType.RIGHT);
@@ -55,6 +83,13 @@ public class CustomChart extends ChartPanel {
         return chart;
     }
 
+    /**
+     *  Creates pannable plot with automatic ranging with 2 y axis and 1 x axis and adds it to chart variable
+     *
+     * @param Xname
+     * @param Y1name
+     * @param Y2name
+     */
     private static void createChart(String Xname, String Y1name, String Y2name) {
         //construct the plot
         XYPlot plot = new XYPlot();
@@ -84,8 +119,10 @@ public class CustomChart extends ChartPanel {
         plot.getRangeAxis(0).setAutoRange(true);
         plot.getRangeAxis(1).setAutoRange(true);
         plot.getDomainAxis().setFixedAutoRange(30);
-        plot.getRangeAxis(0).setUpperMargin(0.1);
-        plot.getRangeAxis(1).setUpperMargin(1.5);
+//        plot.getRangeAxis(0).setUpperMargin(0.1);
+//        plot.getRangeAxis(1).setUpperMargin(1.5);
+        plot.getRangeAxis(0).setFixedAutoRange(5);
+        plot.getRangeAxis(1).setFixedAutoRange(5);
         plot.getRangeAxis(0).setLabelPaint(Color.BLUE);
         plot.getRangeAxis(1).setLabelPaint(Color.RED);
         plot.setOutlinePaint(null);
@@ -94,20 +131,9 @@ public class CustomChart extends ChartPanel {
         chart.removeLegend();
     }
 
-        private static List<SingleValue> parseMeasurement(File file) throws FileNotFoundException, NumberFormatException {
-        Scanner scanner = new Scanner(file);
-        List<SingleValue> data = new ArrayList<>();
-        while (scanner.hasNext()) {
-            String line = scanner.nextLine();
-            try {
-                data.add(new SingleValue(line));
-            } catch (NumberFormatException e) {
-                throw new NumberFormatException("Could not create Single value from input: " + line);
-            }
-        }
-        return data;
-    }
-
+    /**
+     * Aborts measurement by canceling DatasetTimer in AutoUpdatingDataset
+     */
     public void abortMeasurement() {
         AutoUpdatingDataset as1 = (AutoUpdatingDataset) series1;
         AutoUpdatingDataset as2 = (AutoUpdatingDataset) series2;

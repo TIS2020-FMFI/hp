@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
 public class AutoUpdatingDataset extends AbstractXYDataset {
     private int sizeData = 0;
     private String name;
@@ -26,6 +25,13 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
     private Measurement measurement;
     private boolean stopMeasurement = false;
 
+    /**
+     * Constructs dataset configured for real time plotting. Has a timer, that can be started and then it watches over
+     * measurement. If there are new data in measurement, it notifies listeners. (e.g. plot to repaint)
+     *
+     * @param measurement
+     * @param type serves to clarify which y axis is used in this instantiation
+     */
     public AutoUpdatingDataset(Measurement measurement, DatasetType type) {
         this.type = type;
         this.measurement = measurement;
