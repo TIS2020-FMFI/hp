@@ -55,6 +55,14 @@ public class CalibrationService {
         }
     }
 
+    public boolean isCalibrationInProgress() {
+        return isCalibrating;
+    }
+
+    public void setIsCalibrationInProgress(boolean status) {
+        isCalibrating = status;
+    }
+
     public void closeCalibration() {
         stage.close();
     }
@@ -112,10 +120,6 @@ public class CalibrationService {
             }
         }
         return CalibrationType.SHORT;
-    }
-
-    public void setIsCalibrating(boolean status) {
-        isCalibrating = status;
     }
 
     public void runCalibration(String calibrationType) {
