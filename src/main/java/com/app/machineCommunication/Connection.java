@@ -304,20 +304,49 @@ public class Connection extends Thread {
     public void openCalibration() throws IOException {
         write("s A4");
         write("s CS");
-        read();
+        calibrationReader();
     }
 
     public void shortCalibration() throws IOException {
         write("s A5");
         write("s CS");
-        read();
+        calibrationReader();
     }
 
     public void loadCalibration() throws IOException {
         write("s A6");
         write("s CS");
-        read();
+        calibrationReader();
     }
+     public void calibrationReader() {
+        AppMain.calibrationService.setIsCalibrationInProgress(true);
+         new Thread(() -> {
+             StringBuilder result = new StringBuilder();
+             while (true) {
+                 write("a");
+                 try {
+                     if (!readEnd.ready()) {
+                         sleep(1);
+                         continue;
+                     }
+                     char letter = (char) readEnd.read();
+                     if ((letter == '\n') && (result.length() > 1)) {
+                         if (result.charAt(1) != 'F') {
+                             AppMain.calibrationService.setIsCalibrationInProgress(false);
+                             Thread.currentThread().interrupt();
+                             break;
+                         } else {
+                             System.out.println("reading cal" + result.toString());
+                             result = new StringBuilder();
+                         }
+                     } else
+                         result.append(letter);
+                 } catch (IOException | InterruptedException e) {
+                     AppMain.notificationService.createNotification("Problem at calibration -> " + e.getMessage(), NotificationType.ERROR);
+                 }
+             }
+         }).start();
+     }
 
     public boolean calibrationHandler(CalibrationType calibrationType) throws IOException {
         if (connected) {
