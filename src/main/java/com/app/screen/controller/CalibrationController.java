@@ -1,6 +1,8 @@
 package com.app.screen.controller;
 
 import com.app.service.AppMain;
+import com.app.service.calibration.CalibrationService;
+import com.app.service.calibration.CalibrationType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -13,11 +15,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class CalibrationController implements Initializable {
+
+    CalibrationService cs;
 
     @FXML
     VBox calibrationContainer;
@@ -65,14 +67,20 @@ public class CalibrationController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        AppMain.calibrationService.addRadioButtons(new LinkedList<>(Arrays.asList(shortType, openType, loadType)));
+        cs.addRadioButtons(new HashMap<>() {
+            {
+                put(CalibrationType.SHORT, shortType);
+                put(CalibrationType.OPEN, openType);
+                put(CalibrationType.LOAD, loadType);
+            }
+        });
 
-        if (AppMain.calibrationService.isCalibrated()) {
+        if (cs.isCalibrated()) {
             runCalibrationBtn.setText("Close");
         }
         calibrationInput.setText(AppMain.environmentParameters.getActive().getOther().getCapacitance() + "");
         electricalLengthInput.setText(AppMain.environmentParameters.getActive().getOther().getElectricalLength() + "");
-        if (AppMain.calibrationService.isCalibrationInProcess()) {
+        if (cs.isCalibrationInProcess()) {
             calibrationInput.setDisable(true);
             electricalLengthInput.setDisable(true);
         }

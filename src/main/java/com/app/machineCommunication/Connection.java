@@ -339,7 +339,7 @@ public class Connection extends Thread {
                         case LOAD:
                             loadCalibration();
                             write("s C0");
-                            calibrationMode = !calibrationMode; // TODO: not in this order -> create state for cal
+                            calibrationMode = !calibrationMode;
                             break;
                     }
                 }
