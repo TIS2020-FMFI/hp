@@ -17,6 +17,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -366,7 +367,11 @@ public class MainController implements Initializable {
         if (gs.isRunningGraph()) {
             AppMain.notificationService.createNotification("There is a measurement in process, either wait or abort it.", NotificationType.WARNING);
         } else if (gs.isMeasurementSaved(GraphType.UPPER) && gs.isMeasurementSaved(GraphType.LOWER)) {
-            // TODO: save global props into config
+            try {
+                AppMain.fileService.saveConfig();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             Utils.closeApp();
         } else {
             AppMain.dataNotSavedDialog.openDialog();
@@ -600,16 +605,24 @@ public class MainController implements Initializable {
 
     public void saveUpperGraph(MouseEvent mouseEvent) {
         if (gs.upperGraph != null && gs.upperGraph.getMeasurement() != null) {
-            AppMain.fileService.saveAsMeasurement(gs.upperGraph.getMeasurement());
+            if(AppMain.fileService.saveAsMeasurement(gs.upperGraph.getMeasurement())) {
+                AppMain.notificationService.createNotification("The measurement in the upper graph is saved.", NotificationType.SUCCESS);
+            }else{
+                AppMain.notificationService.createNotification("The measurement in the upper graph is not saved.", NotificationType.ERROR);
+            }
         } else {
-
+            AppMain.notificationService.createNotification("Measurement not found in the upper graph", NotificationType.ERROR);
         }
     }
     public void saveLowerGraph(MouseEvent mouseEvent) {
         if (gs.lowerGraph != null && gs.lowerGraph.getMeasurement() != null) {
-            AppMain.fileService.saveAsMeasurement(gs.lowerGraph.getMeasurement());
+            if(AppMain.fileService.saveAsMeasurement(gs.lowerGraph.getMeasurement())){
+                AppMain.notificationService.createNotification("The measurement in the lower graph is saved.", NotificationType.SUCCESS);
+            }else{
+                AppMain.notificationService.createNotification("The measurement in the lower graph is not saved.", NotificationType.ERROR);
+            }
         } else {
-
+            AppMain.notificationService.createNotification("Measurement not found in the lower graph", NotificationType.ERROR);
         }
     }
 
