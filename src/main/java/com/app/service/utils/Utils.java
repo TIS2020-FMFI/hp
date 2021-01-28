@@ -25,8 +25,8 @@ public class Utils {
             } else if (sign == ' ' || sign == '-') {
                 spacerFound = true;
                 stringBuilder.append(sign);
-            }
 
+            }
 //            if (sign == '.'|| Character.isDigit(sign)) {
 //                stringBuilder.append(sign);
 //            }
@@ -37,6 +37,7 @@ public class Utils {
     public static void closeApp() {
         Platform.runLater(() -> {
             try {
+                AppMain.communicationService.connect();
                 AppMain.communicationService.killCommunicator();
                 Thread.sleep(300);
                 Platform.exit();

@@ -93,8 +93,10 @@ public class CustomChart extends ChartPanel {
         NumberAxis yaxis1 = new NumberAxis(Y1name);
         NumberAxis yaxis2 = new NumberAxis(Y2name);
         yaxis1.setAutoRangeIncludesZero(false);
-        yaxis2.setAutoRangeIncludesZero(false);
+        yaxis1.setAutoRangeMinimumSize(Double.MIN_NORMAL);
         plot.setRangeAxis(0, yaxis1);
+        yaxis2.setAutoRangeIncludesZero(false);
+        yaxis2.setAutoRangeMinimumSize(Double.MIN_NORMAL);
         plot.setRangeAxis(1, yaxis2);
 
         NumberAxis xaxis = new NumberAxis(Xname);
@@ -105,6 +107,8 @@ public class CustomChart extends ChartPanel {
         plot.mapDatasetToRangeAxis(0, 0);
         plot.mapDatasetToRangeAxis(1, 1);
 
+        //((NumberAxis)plot.getRangeAxis(1)).setAutoRangeIncludesZero(false); // add
+
         //configure the chart
         plot.getRangeAxis(0).setLabelPaint(Color.BLUE);
         plot.getRangeAxis(1).setLabelPaint(Color.RED);
@@ -114,6 +118,7 @@ public class CustomChart extends ChartPanel {
         plot.getDomainAxis().setAutoRange(true);
         plot.getRangeAxis(0).setAutoRange(true);
         plot.getRangeAxis(1).setAutoRange(true);
+
 
         //generate the chart
         chart = new JFreeChart(plot);

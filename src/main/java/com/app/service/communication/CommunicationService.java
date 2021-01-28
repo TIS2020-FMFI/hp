@@ -37,6 +37,10 @@ public class CommunicationService {
         }
     }
 
+    public void leaveCalibration() {
+        connection.leaveCalbration();
+    }
+
     public void autoConnect() {
         if (connect()) {
             AppMain.notificationService.createNotification("Connected successfully", NotificationType.SUCCESS);

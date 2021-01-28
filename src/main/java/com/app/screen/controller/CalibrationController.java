@@ -114,7 +114,7 @@ public class CalibrationController implements Initializable {
                         cs.showNotification("Calibrating processed successfully. " + (cs.getState().equals(CalibrationState.DONE) ? "Check with machine, please!":"Change standard, please!"), NotificationType.SUCCESS);
                     }
                 }
-            }, 100);
+            }, 100,10);
         }
     }
 

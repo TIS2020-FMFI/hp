@@ -18,8 +18,8 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
     private int sizeData = 0;
     private String name;
     private DatasetType type;
-    private final long delay = 100;
-    private final long visualDelay = 200;
+    private final long delay = 20;
+    private final long visualDelay = 100;
     private List<SingleValue> values;
     private long lastEvent;
     private Measurement measurement;
@@ -96,13 +96,15 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
                             return;
                         }
                         values.add(newValue);
-
-                        long now = System.currentTimeMillis();
-                        if (now - lastEvent > visualDelay) {
-                            lastEvent = now;
-                            fireDatasetChanged();
-                        }
                         sizeData++;
+
+//
+//                        long now = System.currentTimeMillis();
+//                        if (now - lastEvent > visualDelay) {
+//                            lastEvent = now;
+                          fireDatasetChanged();
+
+//                        }
                     }
                 });
             }

@@ -70,6 +70,7 @@ public class CalibrationService {
     public void setCalibrationState(CalibrationState state) {
         if (state.equals(CalibrationState.READY) && calibrationStates.get(CalibrationType.LOAD)) {
             this.state = CalibrationState.DONE;
+            AppMain.communicationService.leaveCalibration();
             return;
         }
         this.state = state;
