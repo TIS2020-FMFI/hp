@@ -118,11 +118,11 @@ public class CustomChart extends ChartPanel {
         plot.getDomainAxis().setAutoRange(true);
         plot.getRangeAxis(0).setAutoRange(true);
         plot.getRangeAxis(1).setAutoRange(true);
-        plot.getDomainAxis().setFixedAutoRange(30);
+//        plot.getDomainAxis().setFixedAutoRange(30);
 //        plot.getRangeAxis(0).setUpperMargin(0.1);
 //        plot.getRangeAxis(1).setUpperMargin(1.5);
-        plot.getRangeAxis(0).setFixedAutoRange(5);
-        plot.getRangeAxis(1).setFixedAutoRange(5);
+//        plot.getRangeAxis(0).setFixedAutoRange(5);
+//        plot.getRangeAxis(1).setFixedAutoRange(5);
         plot.getRangeAxis(0).setLabelPaint(Color.BLUE);
         plot.getRangeAxis(1).setLabelPaint(Color.RED);
         plot.setOutlinePaint(null);

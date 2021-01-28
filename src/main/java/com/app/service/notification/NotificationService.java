@@ -41,7 +41,7 @@ public class NotificationService {
         }, 8000);
         removeIcon.setOnMouseReleased(event -> removeNotification(notification));
         notificationQueue.add(notification);
-        notificationContainer.getChildren().add(notification.show());
+        Platform.runLater(() -> notificationContainer.getChildren().add(notification.show()));
     }
 
     private void removeNotification(Notification notification) {

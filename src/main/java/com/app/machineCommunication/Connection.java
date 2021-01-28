@@ -60,17 +60,13 @@ public class Connection extends Thread {
 
             } else if (process != null) {
                 write("connect 19");
+                write("cmd");
                 if (timer == null) {
                     writer();
                 }
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    System.out.println(" sleeping interrupted");
-                }
-                toggleCmdMode();
                 if (!checkConnection())
                     throw new RuntimeException("Auto-Connection failed, try it manually");
+                cmd = true;
             } else {
                 throw new RuntimeException("hpctrl.exe could not be lunched, read help for more info");
             }
@@ -84,9 +80,7 @@ public class Connection extends Thread {
     public boolean checkConnection() throws IOException, InterruptedException {
         write("a");
         StringBuilder result = read();
-        if (result.charAt(0) == 'N')
-            return true;
-        return false;
+        return result.length() > 0;
     }
 
     public Process getCommunicator() {
@@ -114,15 +108,15 @@ public class Connection extends Thread {
     private StringBuilder read() throws IOException, InterruptedException {
         StringBuilder result = new StringBuilder();
         int count = 0;
-        while (true) {
+        while (result.length() == 0 || result.toString().charAt(result.length()-1) != '\n') {
             if (!readEnd.ready()) {
-                Thread.sleep(200);
+                System.out.println("readEnd not ready");
+                Thread.sleep(500);
                 count++;
-                continue;
+                if (count > 4) break;
+            } else {
+                result.append((char) readEnd.read());
             }
-            if (count > 3)
-                break;
-            result.append((char) readEnd.read());
         }
         System.out.println("reading '" + result.toString() + "'");
         return result;
@@ -149,7 +143,7 @@ public class Connection extends Thread {
                     }
                 }
             }
-        }, 100, 200);
+        }, 0, 10);
     }
 
     public void abortMeasurement() {

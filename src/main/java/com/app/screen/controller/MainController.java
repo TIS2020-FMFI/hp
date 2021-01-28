@@ -402,8 +402,10 @@ public class MainController implements Initializable {
         connectionWatcher.schedule(new TimerTask() {
             @Override
             public void run() {
-                if (oldConnectionState != null && oldConnectionState != AppMain.communicationService.isConnected()) {
+                if (AppMain.communicationService != null && (oldConnectionState == null || oldConnectionState != AppMain.communicationService.isConnected())) {
+                    oldConnectionState = AppMain.communicationService.isConnected();
                     updateGpibMenu(AppMain.communicationService.isConnected());
+                    toggleDisabling();
                 }
             }
         }, 100, 100);
@@ -630,7 +632,7 @@ public class MainController implements Initializable {
     }
 
     public void updateGpibMenu(boolean status) {
-        gpibMenu.setText("GPIB connection: " + (status ? "ACTIVE":"INACTIVE"));
+        Platform.runLater(() -> gpibMenu.setText("GPIB connection: " + (status ? "ACTIVE":"INACTIVE")));
     }
 
 }
