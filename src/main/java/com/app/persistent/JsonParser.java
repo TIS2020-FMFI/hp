@@ -190,10 +190,11 @@ public class JsonParser {
             for(int i=0; i < measurement.getData().size() -1; i++){
                 JSONObject singleValue = new JSONObject();
                 SingleValue singleV = measurement.getData().get(i);
-                singleValue.put("valueDisplayA", singleV.getDisplayA());
-                singleValue.put("valueDisplayB", singleV.getDisplayB());
-                singleValue.put("valueDisplayX", singleV.getDisplayX());
-
+                if(singleV != null) {
+                    singleValue.put("valueDisplayA", singleV.getDisplayA());
+                    singleValue.put("valueDisplayB", singleV.getDisplayB());
+                    singleValue.put("valueDisplayX", singleV.getDisplayX());
+                }
                 jsonArray.add(singleValue);
             }
             measurement.setIndexOfTheValueToSave(jsonArray.size());
@@ -224,10 +225,11 @@ public class JsonParser {
             for(int i = index; i < measurement.getData().size(); i++){
                 JSONObject singleValue = new JSONObject();
                 SingleValue singleV = measurement.getData().get(i);
-                singleValue.put("valueDisplayA", singleV.getDisplayA());
-                singleValue.put("valueDisplayB", singleV.getDisplayB());
-                singleValue.put("valueDisplayX", singleV.getDisplayX());
-
+                if(singleV != null) {
+                    singleValue.put("valueDisplayA", singleV.getDisplayA());
+                    singleValue.put("valueDisplayB", singleV.getDisplayB());
+                    singleValue.put("valueDisplayX", singleV.getDisplayX());
+                }
                 jsonArray.add(singleValue);
             }
             measurement.setIndexOfTheValueToSave(jsonArray.size());

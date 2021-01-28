@@ -1,5 +1,6 @@
 package com.app.service.measurement;
 
+import com.app.service.AppMain;
 import com.app.service.file.parameters.Parameters;
 import java.util.Vector;
 
@@ -21,6 +22,10 @@ public class Measurement {
     public void addSingleValue(SingleValue singleValue){
         data.add(singleValue);
         System.out.println("new value added: " + singleValue);
+        if(singleValue == null){
+            state = MeasurementState.FINISHED;
+            //doplnit volanie autosave
+        }
     }
 
     public void setParameters(Parameters parameters) {
