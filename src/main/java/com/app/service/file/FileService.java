@@ -41,8 +41,13 @@ public class FileService {
         this.autoSave = autoSave;
     }
 
-    public boolean saveConfig() throws IOException {
-        return JsonParser.saveEnvironmentParameters(configPath, AppMain.environmentParameters);
+    public boolean saveConfig() {
+        try {
+            return JsonParser.saveEnvironmentParameters(configPath, AppMain.environmentParameters);
+        } catch (IOException e) {
+            AppMain.notificationService.createNotification("Failed to save config -> " + e.getMessage(), NotificationType.ERROR);
+        }
+        return false;
     }
 
     public EnvironmentParameters loadConfig() {

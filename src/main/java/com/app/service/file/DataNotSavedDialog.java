@@ -39,7 +39,7 @@ public class DataNotSavedDialog {
     }
 
     public void saveAndCloseDialog() {
-        if(AppMain.graphService.upperGraph != null && GraphState.DONE.equals(AppMain.graphService.upperGraph.getState())) {
+        if(AppMain.graphService.upperGraph != null && !AppMain.graphService.upperGraph.getState().equals(GraphState.RUNNING)) {
             boolean success;
             if (AppMain.fileService.isAutoSave()) {
                 success = AppMain.fileService.autosaveMeasurement(AppMain.graphService.upperGraph.getMeasurement());
@@ -53,7 +53,7 @@ public class DataNotSavedDialog {
                 AppMain.notificationService.createNotification("The measurement in the upper graph was not saved.", NotificationType.ERROR);
             }
         }
-        if(AppMain.graphService.lowerGraph != null && GraphState.DONE.equals(AppMain.graphService.lowerGraph.getState())) {
+        if(AppMain.graphService.lowerGraph != null && !AppMain.graphService.lowerGraph.getState().equals(GraphState.RUNNING)) {
             boolean success;
             if (AppMain.fileService.isAutoSave()) {
                 success = AppMain.fileService.autosaveMeasurement(AppMain.graphService.lowerGraph.getMeasurement());

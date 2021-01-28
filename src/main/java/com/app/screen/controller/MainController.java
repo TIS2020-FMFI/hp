@@ -2,6 +2,7 @@ package com.app.screen.controller;
 
 import com.app.service.AppMain;
 import com.app.service.file.parameters.*;
+import com.app.service.graph.Graph;
 import com.app.service.graph.GraphService;
 import com.app.service.graph.GraphState;
 import com.app.service.graph.GraphType;
@@ -208,34 +209,36 @@ public class MainController implements Initializable {
     }
 
     public void runUpperGraph(MouseEvent event) {
-        if (gs.isRunningGraph() && gs.getGraphByType(GraphType.UPPER).getState().equals(GraphState.RUNNING)) {
-            gs.abortGraph(GraphType.UPPER);
+        GraphType type = GraphType.UPPER;
+        if (gs.isRunningGraph() && gs.getGraphByType(type).getState().equals(GraphState.RUNNING)) {
+            gs.abortGraph(type);
             toggleDisabling();
             upperGraphRun.setText("Run");
             upperToolbar.getItems().remove(upperPointNext);
         } else if (!gs.isRunningGraph()) {
-            if (!GraphState.canBeLoaded(gs.getGraphByType(GraphType.UPPER).getState())) {
-                AppMain.notificationService.createNotification("Measurement in upper graph has not been saved, save it before starting new one", NotificationType.ANNOUNCEMENT);
-                return;
+            if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
+                AppMain.abortDataDialog.openDialog(type);
+            } else {
+                parametersTabPane.getSelectionModel().select(upperGraphTab);
+                runMeasurement(GraphType.UPPER, (Button) event.getSource());
             }
-            parametersTabPane.getSelectionModel().select(upperGraphTab);
-            runMeasurement(GraphType.UPPER, (Button) event.getSource());
         }
     }
 
     public void runLowerGraph(MouseEvent event) {
-        if (gs.isRunningGraph() && gs.getGraphByType(GraphType.LOWER).getState().equals(GraphState.RUNNING)) {
-            gs.abortGraph(GraphType.LOWER);
+        GraphType type = GraphType.LOWER;
+        if (gs.isRunningGraph() && gs.getGraphByType(type).getState().equals(GraphState.RUNNING)) {
+            gs.abortGraph(type);
             toggleDisabling();
             lowerGraphRun.setText("Run");
             lowerToolbar.getItems().remove(lowerPointNext);
         } else if (!gs.isRunningGraph()) {
-            if (!GraphState.canBeLoaded(gs.getGraphByType(GraphType.LOWER).getState())) {
-                AppMain.notificationService.createNotification("Measurement in lower graph has not been saved, save it before starting new one", NotificationType.ANNOUNCEMENT);
-                return;
+            if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
+                AppMain.abortDataDialog.openDialog(type);
+            } else {
+                parametersTabPane.getSelectionModel().select(lowerGraphTab);
+                runMeasurement(GraphType.LOWER, (Button) event.getSource());
             }
-            parametersTabPane.getSelectionModel().select(lowerGraphTab);
-            runMeasurement(GraphType.LOWER, (Button) event.getSource());
         }
     }
 
@@ -254,7 +257,7 @@ public class MainController implements Initializable {
 
             String displayA = selectedDisplayA.getText();
             if ((graphType.equals(GraphType.LOWER) && displayALowerABS.isSelected() && DisplayAOption.isAbsOption(DisplayAOption.valueOf(displayA))) ||
-            (graphType.equals(GraphType.UPPER) && displayAUpperABS.isSelected() && DisplayAOption.isAbsOption(DisplayAOption.valueOf(displayA)))) {
+                    (graphType.equals(GraphType.UPPER) && displayAUpperABS.isSelected() && DisplayAOption.isAbsOption(DisplayAOption.valueOf(displayA)))) {
                 displayA = DisplayAOption.getAbsOption(DisplayAOption.valueOf(displayA));
             }
 
@@ -281,11 +284,11 @@ public class MainController implements Initializable {
             ep.getActive().setVoltageSweep(newVoltageSweep);
 
             Other newOther = new Other();
-            newOther.setCapacitance(Double.parseDouble((graphType.equals(GraphType.UPPER) ? otherCapacitanceUpper:otherCapacitanceLower).getText()));
-            newOther.setElectricalLength(Double.parseDouble((graphType.equals(GraphType.UPPER) ? otherElectricalLengthUpper:otherElectricalLengthLower).getText()));
-            newOther.setAutoSweep((graphType.equals(GraphType.UPPER) ? otherAutoSweepUpper:otherAutoSweepLower).getValue().equals("ON"));
-            newOther.setHighSpeed((graphType.equals(GraphType.UPPER) ? otherHighSpeedUpper:otherHighSpeedLower).getValue().equals("ON"));
-            newOther.setSweepType((graphType.equals(GraphType.UPPER) ? otherSweepTypeUpper:otherSweepTypeLower).getValue().equals("LINEAR") ? SweepType.LINEAR:SweepType.LOG);
+            newOther.setCapacitance(Double.parseDouble((graphType.equals(GraphType.UPPER) ? otherCapacitanceUpper : otherCapacitanceLower).getText()));
+            newOther.setElectricalLength(Double.parseDouble((graphType.equals(GraphType.UPPER) ? otherElectricalLengthUpper : otherElectricalLengthLower).getText()));
+            newOther.setAutoSweep((graphType.equals(GraphType.UPPER) ? otherAutoSweepUpper : otherAutoSweepLower).getValue().equals("ON"));
+            newOther.setHighSpeed((graphType.equals(GraphType.UPPER) ? otherHighSpeedUpper : otherHighSpeedLower).getValue().equals("ON"));
+            newOther.setSweepType((graphType.equals(GraphType.UPPER) ? otherSweepTypeUpper : otherSweepTypeLower).getValue().equals("LINEAR") ? SweepType.LINEAR : SweepType.LOG);
             ep.getActive().setOther(newOther);
 
             ep.getActive().checkAll();
@@ -321,12 +324,13 @@ public class MainController implements Initializable {
     }
 
     public void loadUpperGraph(MouseEvent event) {
+        GraphType type = GraphType.UPPER;
         parametersTabPane.getSelectionModel().select(upperGraphTab);
-        if (!GraphState.canBeLoaded(gs.getGraphByType(GraphType.UPPER).getState())) {
-            AppMain.notificationService.createNotification("Measurement in upper graph has not been saved, save it before loading new one", NotificationType.ANNOUNCEMENT);
+        if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
+            AppMain.abortDataDialog.openDialog(type);
             return;
         }
-        gs.loadGraph(GraphType.UPPER);
+        gs.loadGraph(type);
         if (gs.upperGraph.getState().equals(GraphState.LOADED)) {
             ep.setUpperGraphParameters(gs.upperGraph.getMeasurement().getParameters());
             initializeUpper();
@@ -334,12 +338,13 @@ public class MainController implements Initializable {
     }
 
     public void loadLowerGraph(MouseEvent event) {
+        GraphType type = GraphType.LOWER;
         parametersTabPane.getSelectionModel().select(lowerGraphTab);
-        if (!GraphState.canBeLoaded(gs.getGraphByType(GraphType.LOWER).getState())) {
-            AppMain.notificationService.createNotification("Measurement in lower graph has not been saved, save it before loading new one", NotificationType.ANNOUNCEMENT);
+        if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
+            AppMain.abortDataDialog.openDialog(type);
             return;
         }
-        gs.loadGraph(GraphType.LOWER);
+        gs.loadGraph(type);
         if (gs.lowerGraph.getState().equals(GraphState.LOADED)) {
             ep.setLowerGraphParameters(gs.lowerGraph.getMeasurement().getParameters());
             initializeLower();
@@ -347,13 +352,12 @@ public class MainController implements Initializable {
     }
 
     public void toggleAutoSave(MouseEvent event) {
-        // TODO: change autoSaveMode in global props global props
         AppMain.fileService.setAutoSave(!AppMain.fileService.isAutoSave());
         autoSaveMenu.setText("Auto save: " + (AppMain.fileService.isAutoSave() ? "ON" : "OFF"));
     }
 
     public void resetInstrument(MouseEvent event) {
-        // TODO: send command to reset instrument ???
+        // TODO: are we still doing it ???
     }
 
     public void triggerCalibration(MouseEvent event) {
@@ -367,13 +371,13 @@ public class MainController implements Initializable {
     public void quitApp(MouseEvent event) {
         if (gs.isRunningGraph()) {
             AppMain.notificationService.createNotification("There is a measurement in process, either wait or abort it.", NotificationType.WARNING);
-        } else if (gs.isMeasurementSaved(GraphType.UPPER) && gs.isMeasurementSaved(GraphType.LOWER)) {
-            try {
-                AppMain.fileService.saveConfig();
-            } catch (IOException e) {
-                e.printStackTrace();
+        } else if (AppMain.fileService.isAutoSave()) {
+            if (AppMain.fileService.saveConfig()) {
+                Utils.closeApp();
             }
-            Utils.closeApp();
+        } else if (gs.getGraphByType(GraphType.UPPER).getMeasurement() != null && !gs.getGraphByType(GraphType.UPPER).getMeasurement().canLooseData()
+                && gs.getGraphByType(GraphType.LOWER).getMeasurement() != null && !gs.getGraphByType(GraphType.LOWER).getMeasurement().canLooseData()) {
+                Utils.closeApp();
         } else {
             AppMain.dataNotSavedDialog.openDialog();
         }
@@ -421,9 +425,11 @@ public class MainController implements Initializable {
                     oldGraphState = gs.getStateByType(type);
                     if (GraphState.isStatic(gs.getStateByType(type))) {
                         Platform.runLater(() -> {
-                            (type.equals(GraphType.UPPER) ? upperGraphRun:lowerGraphRun).setText("Run");
-                            upperToolbar.getItems().remove(type.equals(GraphType.UPPER) ? upperPointNext:lowerPointNext);
+                            (type.equals(GraphType.UPPER) ? upperGraphRun : lowerGraphRun).setText("Run");
+                            upperToolbar.getItems().remove(type.equals(GraphType.UPPER) ? upperPointNext : lowerPointNext);
                         });
+                    }
+                    if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().getState().equals(MeasurementState.ABORTED)) {
                         cancel();
                     }
                 }
@@ -434,7 +440,7 @@ public class MainController implements Initializable {
     private void initializeUpper() {
         String displayA = ep.getByType(GraphType.UPPER).getDisplayYY().getA();
 
-        if(DisplayAOption.isAbsOption(displayA)){
+        if (DisplayAOption.isAbsOption(displayA)) {
             displayAUpperABS.setSelected(true);
             displayA = DisplayAOption.getOptionFromAbs(displayA).toString();
         }
@@ -479,7 +485,7 @@ public class MainController implements Initializable {
     private void initializeLower() {
         String displayA = ep.getByType(GraphType.LOWER).getDisplayYY().getA();
 
-        if(DisplayAOption.isAbsOption(displayA)){
+        if (DisplayAOption.isAbsOption(displayA)) {
             displayALowerABS.setSelected(true);
             displayA = DisplayAOption.getOptionFromAbs(displayA).toString();
         }
@@ -603,28 +609,30 @@ public class MainController implements Initializable {
 
     public void exportUpperGraph(MouseEvent mouseEvent) {
     }
+
     public void exportLowerGraph(MouseEvent mouseEvent) {
     }
 
     public void saveUpperGraph(MouseEvent mouseEvent) {
-        if (gs.upperGraph != null && gs.upperGraph.getMeasurement() != null) {
-            if(AppMain.fileService.saveAsMeasurement(gs.upperGraph.getMeasurement())) {
+        if (gs.upperGraph.getMeasurement() != null) {
+            if (AppMain.fileService.saveAsMeasurement(gs.upperGraph.getMeasurement())) {
                 gs.upperGraph.getMeasurement().setState(MeasurementState.SAVED);
-                AppMain.notificationService.createNotification("The measurement in the upper graph is saved.", NotificationType.SUCCESS);
-            }else{
-                AppMain.notificationService.createNotification("The measurement in the upper graph was not saved.", NotificationType.ERROR);
+                AppMain.notificationService.createNotification("The measurement in the upper graph was saved.", NotificationType.SUCCESS);
+            } else {
+                AppMain.notificationService.createNotification("The measurement in the upper graph failed to save.", NotificationType.ERROR);
             }
         } else {
             AppMain.notificationService.createNotification("Measurement not found in the upper graph", NotificationType.ERROR);
         }
     }
+
     public void saveLowerGraph(MouseEvent mouseEvent) {
-        if (gs.lowerGraph != null && gs.lowerGraph.getMeasurement() != null) {
-            if(AppMain.fileService.saveAsMeasurement(gs.lowerGraph.getMeasurement())){
+        if (gs.lowerGraph.getMeasurement() != null) {
+            if (AppMain.fileService.saveAsMeasurement(gs.lowerGraph.getMeasurement())) {
                 gs.lowerGraph.getMeasurement().setState(MeasurementState.SAVED);
-                AppMain.notificationService.createNotification("The measurement in the lower graph is saved.", NotificationType.SUCCESS);
-            }else{
-                AppMain.notificationService.createNotification("The measurement in the lower graph was not saved.", NotificationType.ERROR);
+                AppMain.notificationService.createNotification("The measurement in the lower graph was saved.", NotificationType.SUCCESS);
+            } else {
+                AppMain.notificationService.createNotification("The measurement in the lower graph failed to save.", NotificationType.ERROR);
             }
         } else {
             AppMain.notificationService.createNotification("Measurement not found in the lower graph", NotificationType.ERROR);
@@ -632,7 +640,7 @@ public class MainController implements Initializable {
     }
 
     public void updateGpibMenu(boolean status) {
-        Platform.runLater(() -> gpibMenu.setText("GPIB connection: " + (status ? "ACTIVE":"INACTIVE")));
+        Platform.runLater(() -> gpibMenu.setText("GPIB connection: " + (status ? "ACTIVE" : "INACTIVE")));
     }
 
 }

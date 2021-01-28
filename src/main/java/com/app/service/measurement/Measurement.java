@@ -4,6 +4,7 @@ import com.app.service.AppMain;
 import com.app.service.file.parameters.Parameters;
 import com.app.service.notification.NotificationType;
 
+import java.util.List;
 import java.util.Vector;
 
 
@@ -73,5 +74,9 @@ public class Measurement {
 
     public StringBuilder getComment() {
         return comment;
+    }
+
+    public boolean canLooseData() {
+        return List.of(MeasurementState.STARTED, MeasurementState.WAITING, MeasurementState.FINISHED).contains(state);
     }
 }

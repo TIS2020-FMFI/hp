@@ -12,6 +12,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -283,7 +284,7 @@ public class JsonParser {
 
             measurement.setState(MeasurementState.LOADED);
 
-        } catch (Exception e) {
+        } catch (IOException | ParseException e) {
             AppMain.notificationService.createNotification("Failed to load measurement correctly.", NotificationType.ERROR);
         }
         return measurement;
