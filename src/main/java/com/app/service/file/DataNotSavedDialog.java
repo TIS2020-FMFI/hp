@@ -1,6 +1,7 @@
 package com.app.service.file;
 
 import com.app.service.AppMain;
+import com.app.service.graph.GraphState;
 import com.app.service.notification.NotificationType;
 import com.app.service.utils.Utils;
 import javafx.application.Platform;
@@ -10,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 
 
@@ -37,7 +39,34 @@ public class DataNotSavedDialog {
     }
 
     public void saveAndCloseDialog() {
-        //TODO: if autosave off prompt user to choose a folder, otherwise save automatically
+        if(AppMain.graphService.upperGraph != null && GraphState.DONE.equals(AppMain.graphService.upperGraph.getState())) {
+            boolean success;
+            if (AppMain.fileService.isAutoSave()) {
+                success = AppMain.fileService.autosaveMeasurement(AppMain.graphService.upperGraph.getMeasurement());
+            } else {
+                AppMain.notificationService.createNotification("Select a folder to save the measurement from the upper graph.", NotificationType.ANNOUNCEMENT);
+                success = AppMain.fileService.saveAsMeasurement(AppMain.graphService.upperGraph.getMeasurement());
+            }
+            if(success){
+                AppMain.notificationService.createNotification("The measurement in the upper graph is saved.", NotificationType.SUCCESS);
+            }else{
+                AppMain.notificationService.createNotification("The measurement in the upper graph was not saved.", NotificationType.ERROR);
+            }
+        }
+        if(AppMain.graphService.lowerGraph != null && GraphState.DONE.equals(AppMain.graphService.lowerGraph.getState())) {
+            boolean success;
+            if (AppMain.fileService.isAutoSave()) {
+                success = AppMain.fileService.autosaveMeasurement(AppMain.graphService.lowerGraph.getMeasurement());
+            } else {
+                AppMain.notificationService.createNotification("Select a folder to save the measurement from the lower graph.", NotificationType.ANNOUNCEMENT);
+                success = AppMain.fileService.saveAsMeasurement(AppMain.graphService.lowerGraph.getMeasurement());
+            }
+            if(success){
+                AppMain.notificationService.createNotification("The measurement in the lower graph is saved.", NotificationType.SUCCESS);
+            }else{
+                AppMain.notificationService.createNotification("The measurement in the lower graph was not saved.", NotificationType.ERROR);
+            }
+        }
         Utils.closeApp();
     }
 

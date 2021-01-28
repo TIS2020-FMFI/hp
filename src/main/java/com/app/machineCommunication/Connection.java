@@ -42,7 +42,7 @@ public class Connection extends Thread {
         return connected;
     }
 
-    public boolean connect() throws RuntimeException {
+    public boolean connect() throws RuntimeException, IOException, InterruptedException {
         if (!AppMain.debugMode) {
             if (connected) {
                 if (cmd) {
@@ -68,9 +68,9 @@ public class Connection extends Thread {
                 } catch (InterruptedException e) {
                     System.out.println(" sleeping interrupted");
                 }
-                write("cmd");
-
-                cmd = true;
+                toggleCmdMode();
+                if (!checkConnection())
+                    throw new RuntimeException("Auto-Connection failed, try it manually");
             } else {
                 throw new RuntimeException("hpctrl.exe could not be lunched, read help for more info");
             }
@@ -79,6 +79,14 @@ public class Connection extends Thread {
         }
         connected = !connected;
         return connected;
+    }
+
+    public boolean checkConnection() throws IOException, InterruptedException {
+        write("a");
+        StringBuilder result = read();
+        if (result.charAt(0) == 'N')
+            return true;
+        return false;
     }
 
     public Process getCommunicator() {
@@ -103,9 +111,17 @@ public class Connection extends Thread {
         }
     }
 
-    private StringBuilder read() throws IOException, NullPointerException {
+    private StringBuilder read() throws IOException, NullPointerException, InterruptedException {
         StringBuilder result = new StringBuilder();
-        while (readEnd.ready()) {
+        Integer count = 0;
+        while (true) {
+            if (!readEnd.ready()) {
+                Thread.sleep(200);
+                count++;
+                continue;
+            }
+            if (count > 3)
+                break;
             result.append((char) readEnd.read());
         }
         System.out.println("reading '" + result.toString() + "'");
@@ -190,7 +206,7 @@ public class Connection extends Thread {
         }
     }
 
-    public void stepMeasurement(Measurement measurement) throws IOException {
+    public void stepMeasurement(Measurement measurement) throws IOException, InterruptedException {
         if (AppMain.debugMode) {
             measurement.addSingleValue(generateRandomSingeValue(measurement.getData().size() + 2));
         } else {
@@ -206,7 +222,7 @@ public class Connection extends Thread {
         }
     }
 
-    public void initMeasurement(MeasuredQuantity type) throws IOException {
+    public void initMeasurement(MeasuredQuantity type) throws IOException, InterruptedException {
         if (connected) {
             if (!cmd) {
                 toggleCmdMode();

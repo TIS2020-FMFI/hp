@@ -103,7 +103,7 @@ public class GraphService {
     public void runNextStep() {
         try {
             AppMain.communicationService.nextStep(getRunningGraph().getMeasurement());
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             AppMain.notificationService.createNotification("Error occurred while running next step -> " + e.getMessage(), NotificationType.ERROR);
         }
     }
