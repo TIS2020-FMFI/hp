@@ -608,7 +608,7 @@ public class MainController implements Initializable {
             if(AppMain.fileService.saveAsMeasurement(gs.upperGraph.getMeasurement())) {
                 AppMain.notificationService.createNotification("The measurement in the upper graph is saved.", NotificationType.SUCCESS);
             }else{
-                AppMain.notificationService.createNotification("The measurement in the upper graph is not saved.", NotificationType.ERROR);
+                AppMain.notificationService.createNotification("The measurement in the upper graph was not saved.", NotificationType.ERROR);
             }
         } else {
             AppMain.notificationService.createNotification("Measurement not found in the upper graph", NotificationType.ERROR);
@@ -619,7 +619,7 @@ public class MainController implements Initializable {
             if(AppMain.fileService.saveAsMeasurement(gs.lowerGraph.getMeasurement())){
                 AppMain.notificationService.createNotification("The measurement in the lower graph is saved.", NotificationType.SUCCESS);
             }else{
-                AppMain.notificationService.createNotification("The measurement in the lower graph is not saved.", NotificationType.ERROR);
+                AppMain.notificationService.createNotification("The measurement in the lower graph was not saved.", NotificationType.ERROR);
             }
         } else {
             AppMain.notificationService.createNotification("Measurement not found in the lower graph", NotificationType.ERROR);
