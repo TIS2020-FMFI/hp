@@ -1,6 +1,9 @@
 package com.app.service.measurement;
 
+import com.app.service.AppMain;
 import com.app.service.file.parameters.Parameters;
+import com.app.service.notification.NotificationType;
+
 import java.util.Vector;
 
 
@@ -21,6 +24,18 @@ public class Measurement {
     public void addSingleValue(SingleValue singleValue){
         data.add(singleValue);
         System.out.println("new value added: " + singleValue);
+        if(singleValue == null){
+            state = MeasurementState.FINISHED;
+            if(AppMain.fileService.isAutoSave()){
+                boolean success = AppMain.fileService.autosaveMeasurement(this);
+                if(success){
+                    state = MeasurementState.SAVED;
+                    AppMain.notificationService.createNotification("The measurement is saved.", NotificationType.SUCCESS);
+                }else{
+                    AppMain.notificationService.createNotification("The measurement was not saved.", NotificationType.WARNING);
+                }
+            }
+        }
     }
 
     public void setParameters(Parameters parameters) {

@@ -2,6 +2,8 @@ package com.app.machineCommunication;
 
 
 import com.app.service.AppMain;
+import com.app.service.calibration.CalibrationService;
+import com.app.service.calibration.CalibrationState;
 import com.app.service.calibration.CalibrationType;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.file.parameters.MeasuredQuantity;
@@ -10,10 +12,9 @@ import com.app.service.measurement.Measurement;
 import com.app.service.measurement.MeasurementState;
 import com.app.service.measurement.SingleValue;
 import com.app.service.notification.NotificationType;
+import com.app.service.utils.Utils;
 
 import java.io.*;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class Connection extends Thread {
@@ -43,7 +44,7 @@ public class Connection extends Thread {
         return connected;
     }
 
-    public boolean connect() throws RuntimeException {
+    public boolean connect() throws RuntimeException, IOException, InterruptedException {
         if (!AppMain.debugMode) {
             if (connected) {
                 if (cmd) {
@@ -61,16 +62,12 @@ public class Connection extends Thread {
 
             } else if (process != null) {
                 write("connect 19");
-                if(timer == null) {
+                write("cmd");
+                if (timer == null) {
                     writer();
                 }
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    System.out.println(" sleeping interrupted");
-                }
-                write("cmd");
-
+                if (!checkConnection())
+                    throw new RuntimeException("Auto-Connection failed, try it manually");
                 cmd = true;
             } else {
                 throw new RuntimeException("hpctrl.exe could not be lunched, read help for more info");
@@ -82,28 +79,49 @@ public class Connection extends Thread {
         return connected;
     }
 
+    public boolean checkConnection() throws IOException, InterruptedException {
+        write("a");
+        StringBuilder result = read(false);
+        return result.length() > 0;
+    }
+
     public Process getCommunicator() {
         return process;
     }
 
-    public void toggleCmdMode() throws IOException {
-        if (connected) {
-            write("cmd");
-            StringBuilder result = read();
-            if (!result.toString().equals("!not ready, try again later (cmd)")) {
-                cmd = !cmd;
+    public void toggleCmdMode() {
+        try {
+            if (connected) {
+                write("cmd");
+                StringBuilder result = read(false);
+                if (!result.toString().equals("!not ready, try again later (cmd)")) {
+                    cmd = !cmd;
+                } else {
+                    AppMain.notificationService.createNotification("CMD connection failed, try to press any button on machine", NotificationType.ERROR);
+                }
             } else {
-                AppMain.notificationService.createNotification("CMD connection failed, try to press any button on machine", NotificationType.ERROR);
+                AppMain.notificationService.createNotification("Can not toggle cmd mode, machine not connected", NotificationType.ERROR);
             }
-        } else {
-            AppMain.notificationService.createNotification("Can not toggle cmd mode, machine not connected", NotificationType.ERROR);
+        } catch (IOException | InterruptedException e) {
+            AppMain.notificationService.createNotification("Attempted to toggle cmd mode, but failed!", NotificationType.ERROR);
         }
     }
 
-    private StringBuilder read() throws IOException, NullPointerException {
+    private StringBuilder read(boolean isStepMeasurement) throws IOException, InterruptedException {
         StringBuilder result = new StringBuilder();
-        while (readEnd.ready()) {
-            result.append((char) readEnd.read());
+        int count = 0;
+        while (result.length() == 0 || result.toString().charAt(result.length()-1) != '\n') {
+            if (!readEnd.ready() && !isStepMeasurement) {
+                System.out.println("readEnd not ready");
+                Thread.sleep(500);
+                count++;
+                if (count > 12) break;
+            } else {
+                result.append((char) readEnd.read());
+            }
+        }
+        if (result.length() > 1 && result.charAt(1) == 'U') {
+            AppMain.calibrationService.setCalibrationState(CalibrationState.REQUIRED);
         }
         System.out.println("reading '" + result.toString() + "'");
         return result;
@@ -120,23 +138,17 @@ public class Connection extends Thread {
             public void run() {
                 if (!commands.isEmpty()) {
                     try {
-
-                            String temp = commands.remove(0);
-                            System.out.println("sending '" + temp + "'");
-                            writeEnd.write(temp);
-                            writeEnd.newLine();
-                            writeEnd.flush();
-                        try {
-                            Thread.sleep(600);
-                        } catch (InterruptedException e) {
-                            System.out.println(" sleeping interrupted");
-                        }
+                        String temp = commands.remove(0);
+                        System.out.println("sending '" + temp + "'");
+                        writeEnd.write(temp);
+                        writeEnd.newLine();
+                        writeEnd.flush();
                     } catch (IOException e) {
                         AppMain.notificationService.createNotification("Problem with writer -> " + e.getMessage(), NotificationType.ERROR);
                     }
                 }
             }
-        }, 0, 200);
+        }, 0, 10);
     }
 
     public void abortMeasurement() {
@@ -165,10 +177,7 @@ public class Connection extends Thread {
             write("c");
             new Thread(() -> {
                 StringBuilder result = new StringBuilder();
-                LocalDateTime readingStarted = LocalDateTime.now();
-                LocalDateTime readingTimeouts = readingStarted.plus(20, ChronoUnit.SECONDS);
-                //LocalDateTime.now().compareTo(readingTimeouts) < 0 &&
-                while (!measurement.getState().equals(MeasurementState.ABORTED)) {
+                while (!List.of(MeasurementState.ABORTED, MeasurementState.FINISHED).contains(measurement.getState())) {
                     try {
                         if (!readEnd.ready()) {
                             sleep(1);
@@ -192,22 +201,18 @@ public class Connection extends Thread {
                         AppMain.notificationService.createNotification("Problem at autoRunMeasurement -> " + e.getMessage(), NotificationType.ERROR);
                     }
                 }
-                if (LocalDateTime.now().compareTo(readingTimeouts) >= 0) {
-                    System.out.println("c cmd timeout");
-                }
             }).start();
         }
     }
 
-    public void stepMeasurement(Measurement measurement) throws IOException {
+    public void stepMeasurement(Measurement measurement) throws IOException, InterruptedException {
         if (AppMain.debugMode) {
             measurement.addSingleValue(generateRandomSingeValue(measurement.getData().size() + 2));
         } else {
-            write("s SU");
-            write("q 1");
-            StringBuilder result = read();
+            write("q SU");
+            StringBuilder result = read(true);
             System.out.println("reading " + result.toString());
-            SingleValue next = new SingleValue(result.toString());
+            SingleValue next = new SingleValue(result.toString(),measurement);
             measurement.addSingleValue(next);
             if (Double.compare(next.getDisplayX(), (measurement.getParameters().getDisplayYY().getX().equals(MeasuredQuantity.FREQUENCY) ? measurement.getParameters().getFrequencySweep().getStop() : measurement.getParameters().getVoltageSweep().getStop())) >= 0) {
                 measurement.addSingleValue(null);
@@ -215,7 +220,7 @@ public class Connection extends Thread {
         }
     }
 
-    public void initMeasurement(MeasuredQuantity type) throws IOException {
+    public void initMeasurement(MeasuredQuantity type) throws IOException, InterruptedException {
         if (connected) {
             if (!cmd) {
                 toggleCmdMode();
@@ -303,35 +308,79 @@ public class Connection extends Thread {
         write("s TF" + environmentParameters.getActive().getFrequencySweep().getStart() + "EN");
         write("s PF" + environmentParameters.getActive().getFrequencySweep().getStop() + "EN");
         write("s SF" + environmentParameters.getActive().getFrequencySweep().getStep() + "EN");
-        write("s FR" + environmentParameters.getActive().getFrequencySweep().getSpot() + "EN");
+        write("s FR" + environmentParameters.getActive().getFrequencySweep().getStart() + "EN");
     }
 
     public void voltageSweep() {
         write("s TB" + environmentParameters.getActive().getVoltageSweep().getStart() + "EN");
         write("s PB" + environmentParameters.getActive().getVoltageSweep().getStop() + "EN");
         write("s SB" + environmentParameters.getActive().getVoltageSweep().getStep() + "EN");
-        write("s BI" + environmentParameters.getActive().getVoltageSweep().getSpot() + "EN");
+        write("s BI" + environmentParameters.getActive().getVoltageSweep().getStart() + "EN");
     }
 
-    public void openCalibration() throws IOException {
+    public void openCalibration() {
         write("s A4");
         write("s CS");
-        read();
+        calibrationReader();
     }
 
-    public void shortCalibration() throws IOException {
+    public void shortCalibration() {
         write("s A5");
         write("s CS");
-        read();
+        calibrationReader();
     }
 
-    public void loadCalibration() throws IOException {
+    public void loadCalibration() {
         write("s A6");
         write("s CS");
-        read();
+        calibrationReader();
     }
 
-    public boolean calibrationHandler(CalibrationType calibrationType) throws IOException {
+    public void calibrationReader() {
+        AppMain.calibrationService.setCalibrationState(CalibrationState.RUNNING);
+        new Thread(() -> {
+            StringBuilder result = new StringBuilder();
+            write("a");
+            while (true) {
+                try {
+                    if (!readEnd.ready()) {
+                        sleep(1);
+                        continue;
+                    }
+                    char letter = (char) readEnd.read();
+                    if ((letter == '\n') && (result.length() > 1)) {
+                        try {
+                            if (Double.parseDouble(Utils.lineSplitAndExtractNumbers(result.toString(),",")[0]) == 600) {
+                                AppMain.calibrationService.setCalibrationState(CalibrationState.READY);
+                                Thread.currentThread().interrupt();
+                                return;
+                            }
+                        } catch (NumberFormatException ignore) {
+                        }
+                        System.out.println("reading cal" + result.toString());
+                        result = new StringBuilder();
+                        write("a");
+                    } else {
+                        result.append(letter);
+                        // toto nie je velmi rozumne to parsovat za kazdym znakom
+                        // nemozeme to parsovat az na konci riadku vzdy?
+
+                    }
+                    System.out.println("sb:" + result);
+
+                } catch (IOException | InterruptedException e) {
+                    AppMain.notificationService.createNotification("Problem at calibration -> " + e.getMessage(), NotificationType.ERROR);
+                }
+            }
+        }).start();
+    }
+
+    public void leaveCalbration() {
+        write("s C0");
+        calibrationMode = !calibrationMode;
+    }
+
+    public boolean calibrationHandler(CalibrationType calibrationType) {
         if (connected) {
             if (!cmd) toggleCmdMode();
             if (cmd) {
@@ -340,7 +389,8 @@ public class Connection extends Thread {
                     write("s EL" + environmentParameters.getActive().getOther().getElectricalLength() + "EN");
                     highSpeed();
                     calibrationMode = !calibrationMode;
-                } else {
+                }
+                if (calibrationMode) {
                     switch (calibrationType) {
                         case OPEN:
                             openCalibration();
@@ -350,8 +400,6 @@ public class Connection extends Thread {
                             break;
                         case LOAD:
                             loadCalibration();
-                            write("s C0");
-                            calibrationMode = !calibrationMode; // TODO: not in this order -> create state for cal
                             break;
                     }
                 }

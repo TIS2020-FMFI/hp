@@ -8,12 +8,19 @@ import org.jfree.data.xy.AbstractXYDataset;
 import java.util.List;
 
 
+
 public class StaticDataset extends AbstractXYDataset {
     private DatasetType type;
     private List<SingleValue> values;
     private int cursor = -1;
     private Measurement measurement;
 
+    /**
+     * Constructs dataset configured for loaded measurement
+     *
+     * @param measurement
+     * @param type
+     */
     public StaticDataset(Measurement measurement, DatasetType type) {
         this.type = type;
         this.measurement = measurement;

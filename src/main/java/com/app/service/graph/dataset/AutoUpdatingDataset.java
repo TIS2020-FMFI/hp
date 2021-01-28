@@ -1,5 +1,7 @@
 package com.app.service.graph.dataset;
 
+import com.app.service.AppMain;
+import com.app.service.graph.GraphState;
 import com.app.service.measurement.Measurement;
 import com.app.service.measurement.MeasurementState;
 import com.app.service.measurement.SingleValue;
@@ -12,18 +14,24 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
 public class AutoUpdatingDataset extends AbstractXYDataset {
     private int sizeData = 0;
     private String name;
     private DatasetType type;
-    private final long delay = 100;
-    private final long visualDelay = 200;
+    private final long delay = 20;
+    private final long visualDelay = 100;
     private List<SingleValue> values;
     private long lastEvent;
     private Measurement measurement;
     private boolean stopMeasurement = false;
 
+    /**
+     * Constructs dataset configured for real time plotting. Has a timer, that can be started and then it watches over
+     * measurement. If there are new data in measurement, it notifies listeners. (e.g. plot to repaint)
+     *
+     * @param measurement
+     * @param type serves to clarify which y axis is used in this instantiation
+     */
     public AutoUpdatingDataset(Measurement measurement, DatasetType type) {
         this.type = type;
         this.measurement = measurement;
@@ -81,17 +89,22 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
                         if (newValue == null) {
                             fireDatasetChanged();
                             cancel();
+                            if (AppMain.graphService.getRunningGraph() != null) {
+                                AppMain.graphService.getRunningGraph().setState(GraphState.DONE);
+                            }
                             measurement.setState(MeasurementState.FINISHED);
                             return;
                         }
                         values.add(newValue);
-
-                        long now = System.currentTimeMillis();
-                        if (now - lastEvent > visualDelay) {
-                            lastEvent = now;
-                            fireDatasetChanged();
-                        }
                         sizeData++;
+
+//
+//                        long now = System.currentTimeMillis();
+//                        if (now - lastEvent > visualDelay) {
+//                            lastEvent = now;
+                          fireDatasetChanged();
+
+//                        }
                     }
                 });
             }

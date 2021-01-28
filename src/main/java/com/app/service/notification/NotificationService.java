@@ -1,85 +1,61 @@
 package com.app.service.notification;
 
 import javafx.application.Platform;
-import javafx.scene.Cursor;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Vector;
 
 public class NotificationService {
     private final Image removeImg = new Image("assets/remove.png");
-    private VBox notificationContainer;
-    private Notification notification;
+    private final VBox notificationContainer;
+    private final Vector<Notification> notificationQueue;
 
     public NotificationService(VBox container) {
         notificationContainer = container;
+        notificationQueue = new Vector<>();
     }
 
-    public Notification getNotification() { return notification; }
-    public boolean isNotificationContainerEmpty() { return notification == null; }
+    public boolean isNotificationContainerEmpty() { return notificationQueue.isEmpty(); }
 
     public void createNotification(String message, NotificationType type) {
+        if (notificationQueue.size() > 1) {
+            removeNotification(0);
+        }
         ImageView removeIcon = new ImageView(removeImg);
-        removeIcon.getStyleClass().add("border");
-        removeIcon.setPreserveRatio(true);
-        removeIcon.setCursor(Cursor.HAND);
-        removeIcon.setFitWidth(25);
-        addNotification(new Notification(message, type, removeIcon));
-        removeIcon.setOnMouseReleased(event -> {
-            removeNotification(notification);
-            notification = null;
-        });
-    }
-
-    private void addNotification(Notification newNotification) {
-        newNotification.setPrevious(notification);
+        Notification notification = new Notification(message, type, removeIcon);
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
                 if (!isNotificationContainerEmpty()) {
                     Platform.runLater(() -> {
-                        if (notificationContainer.getChildren().contains(newNotification)) {
-                            notificationTimeOut(newNotification);
+                        if (notificationQueue.contains(notification)) {
+                            removeNotification(notification);
                         }
                     });
                 }
             }
         }, 8000);
-        moveInQueue();
-        notification = newNotification.show();
-        Platform.runLater(() -> notificationContainer.getChildren().add(notification));
-        // TODO: control
+        removeIcon.setOnMouseReleased(event -> removeNotification(notification));
+        notificationQueue.add(notification);
+        Platform.runLater(() -> notificationContainer.getChildren().add(notification.show()));
     }
 
     private void removeNotification(Notification notification) {
-        if (notification == null) {
-            notificationContainer.getChildren().clear();
-            return;
-        }
-        if (this.notification == notification && this.notification.getPrevious() != null) {
-            this.notification = this.notification.getPrevious();
-        }
-        notificationContainer.getChildren().remove(notification);
+        Platform.runLater(() -> {
+            notificationQueue.remove(notification);
+            notificationContainer.getChildren().remove(notification);
+        });
     }
 
-    private void moveInQueue() {
-        if (notification != null && notification.getPrevious() != null) {
-            removeNotification(notification.getPrevious());
-            notification.setPrevious(null);
-        }
-    }
-
-    private void notificationTimeOut(Notification newNotification) {
-        if (notification == newNotification) {
-            removeNotification(notification);
-            notification = null;
-        } else {
-            removeNotification(notification.getPrevious());
-            notification.setPrevious(null);
-        }
+    private void removeNotification(int nth) {
+        Platform.runLater(() -> {
+            Notification removed = notificationQueue.remove(nth);
+            notificationContainer.getChildren().remove(removed);
+        });
     }
 
 }

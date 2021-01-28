@@ -4,5 +4,24 @@ public enum GraphState {
     EMPTY,
     RUNNING,
     LOADED,
-    SAVED
+    DONE,
+    SAVED;
+
+    /**
+     *
+     * @param state
+     * @return
+     */
+    public static boolean isStatic(GraphState state) {
+        return !state.equals(RUNNING);
+    }
+
+    /**
+     *
+     * @param state
+     * @return
+     */
+    public static boolean canBeLoaded(GraphState state) {
+        return !state.equals(DONE);
+    }
 }

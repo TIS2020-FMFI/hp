@@ -22,6 +22,14 @@ public class Graph {
     private Measurement measurement;
     private CustomChart chart;
 
+    /**
+     * Constructor sets GraphState as EMPTY. Sets AnchorPane through linking it with java fxml element.
+     * Creates notification if Graph could not be initialized.
+     *
+     * @param root
+     * @param fxmlId
+     * @param type
+     */
     public Graph(Parent root, String fxmlId, GraphType type) {
         this.state = GraphState.EMPTY;
         this.type = type;
@@ -33,6 +41,11 @@ public class Graph {
         }
     }
 
+    /**
+     * Configures ChartViewer resolution and prepares AnchorPane for ChartViewer by setting Anchors to 0
+     *
+     * @return
+     */
     private ChartViewer createChartViewer() {
         ChartViewer chartViewer = new ChartViewer();
         chartViewer.setPrefWidth(680);
@@ -45,12 +58,36 @@ public class Graph {
         return chartViewer;
     }
 
+    /**
+     *
+     * @return
+     */
     public Measurement getMeasurement() { return measurement; }
+
+    /**
+     *
+     * @return
+     */
     public GraphState getState() { return state; }
+
+    /**
+     *
+     * @return
+     */
     public GraphType getType() { return type; }
 
+    /**
+     *
+     * @param state
+     */
     public void setState(GraphState state) { this.state = state; }
 
+    /**
+     * Runs the graph by setting Measurement, ChartViewer, AnchorPane and CustomChart.
+     * Sets new CustomChart with loaded measurement.
+     * Sets ChartViewer with CustomChart.
+     * Clears AnchorPane and Adds ChartViewer to AnchorPane.
+     */
     public void run() {
         state = GraphState.RUNNING;
         measurement = new Measurement(AppMain.environmentParameters.getActive());
@@ -60,6 +97,16 @@ public class Graph {
         chartViewer.setChart(chart.getChart());
     }
 
+    /**
+     * Loads graph by setting Measurement, ChartViewer, AnchorPane and CustomChart.
+     * Lets user choose file that is afterwards loaded.
+     * If user chooses file, measurement and graph are set.
+     * Sets new CustomChart with loaded measurement.
+     * Sets ChartViewer with CustomChart.
+     * Clears AnchorPane and Adds ChartViewer to AnchorPane
+     *
+     * @throws FileNotFoundException
+     */
     public void load() throws FileNotFoundException {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File("src/main/resources"));
@@ -76,6 +123,12 @@ public class Graph {
         }
     }
 
+    /**
+     * Calls chart.abortMeasurement() to stop datasets' timers,
+     * Sets MeasurementState as ABORTED,
+     * Clears the javafx AnchorPane,
+     * Sets GraphState as EMPTY -> makes it ready for another measurement
+     */
     public void abort() {
         chart.abortMeasurement();
         measurement.setState(MeasurementState.ABORTED);

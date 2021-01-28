@@ -24,7 +24,7 @@ public class CommunicationService {
         boolean success = false;
         try {
             success = connection.connect();
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | IOException | InterruptedException e) {
             AppMain.notificationService.createNotification(e.getMessage(), NotificationType.ERROR);
         }
         return success;
@@ -37,6 +37,10 @@ public class CommunicationService {
         }
     }
 
+    public void leaveCalibration() {
+        connection.leaveCalbration();
+    }
+
     public void autoConnect() {
         if (connect()) {
             AppMain.notificationService.createNotification("Connected successfully", NotificationType.SUCCESS);
@@ -45,19 +49,19 @@ public class CommunicationService {
         }
     }
 
-    public void runMeasurement(Measurement measurement) throws IOException {
+    public void runMeasurement(Measurement measurement) throws IOException, InterruptedException {
         connection.initMeasurement(measurement.getParameters().getDisplayYY().getX());
         if (measurement.getParameters().getOther().isAutoSweep()) {
             connection.startAutoMeasurement(measurement);
         }
     }
 
-    public void nextStep(Measurement measurement) throws IOException {
+    public void nextStep(Measurement measurement) throws IOException, InterruptedException {
         connection.stepMeasurement(measurement);
     }
 
-    public boolean runCalibration(CalibrationType calibrationType) throws IOException, InterruptedException {
-        return connection.calibrationHandler(calibrationType);
+    public void runCalibration(CalibrationType calibrationType) {
+        connection.calibrationHandler(calibrationType);
     }
 
     public void abortMeasurement() {

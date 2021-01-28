@@ -1,6 +1,10 @@
 package com.app.screen.controller;
 
 import com.app.service.AppMain;
+import com.app.service.calibration.CalibrationService;
+import com.app.service.calibration.CalibrationState;
+import com.app.service.calibration.CalibrationType;
+import com.app.service.notification.NotificationType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -13,11 +17,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class CalibrationController implements Initializable {
+
+    CalibrationService cs;
+    Timer calibrationWatcher;
+    CalibrationState oldCalibrationState;
 
     @FXML
     VBox calibrationContainer;
@@ -56,25 +62,59 @@ public class CalibrationController implements Initializable {
         }
         RadioButton selectedRadioButton = (RadioButton) calibrationType.getSelectedToggle();
         AppMain.calibrationService.runCalibration(selectedRadioButton.getText());
+        toggleButtons();
         calibrationInput.setDisable(true);
         electricalLengthInput.setDisable(true);
-        if (AppMain.calibrationService.isCalibrated()) {
-            runCalibrationBtn.setText("Close");
-        }
+    }
+
+    private void toggleButtons() {
+        boolean isRunning = cs.getState().equals(CalibrationState.RUNNING);
+        boolean isDone = cs.getState().equals(CalibrationState.DONE);
+        boolean isShort = cs.getCalibrationStates().get(CalibrationType.SHORT);
+        boolean isOpen = cs.getCalibrationStates().get(CalibrationType.OPEN);
+
+        runCalibrationBtn.setText(isDone ? "Close":"Run");
+        runCalibrationBtn.setDisable(isRunning);
+        shortType.setDisable(isRunning || isDone || isOpen || isShort);
+        openType.setDisable(isRunning || isDone || isOpen);
+        loadType.setDisable(isRunning || isDone);
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        AppMain.calibrationService.addRadioButtons(new LinkedList<>(Arrays.asList(shortType, openType, loadType)));
+        cs = AppMain.calibrationService;
+        oldCalibrationState = cs.getState();
+        cs.addRadioButtons(new HashMap<>() {
+            {
+                put(CalibrationType.SHORT, shortType);
+                put(CalibrationType.OPEN, openType);
+                put(CalibrationType.LOAD, loadType);
+            }
+        });
 
-        if (AppMain.calibrationService.isCalibrated()) {
-            runCalibrationBtn.setText("Close");
-        }
+        toggleButtons();
         calibrationInput.setText(AppMain.environmentParameters.getActive().getOther().getCapacitance() + "");
         electricalLengthInput.setText(AppMain.environmentParameters.getActive().getOther().getElectricalLength() + "");
-        if (AppMain.calibrationService.isCalibrationInProcess()) {
+        if (cs.isCalibrationInProcess()) {
             calibrationInput.setDisable(true);
             electricalLengthInput.setDisable(true);
+        }
+
+        if (!cs.getState().equals(CalibrationState.DONE)) {
+            calibrationWatcher = new Timer();
+            calibrationWatcher.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (!oldCalibrationState.equals(cs.getState())) {
+                        toggleButtons();
+                        oldCalibrationState = cs.getState();
+                        if (cs.getState().equals(CalibrationState.DONE)) {
+                            calibrationWatcher.cancel();
+                        }
+                        cs.showNotification("Calibrating processed successfully. " + (cs.getState().equals(CalibrationState.DONE) ? "Check with machine, please!":"Change standard, please!"), NotificationType.SUCCESS);
+                    }
+                }
+            }, 100,10);
         }
     }
 
