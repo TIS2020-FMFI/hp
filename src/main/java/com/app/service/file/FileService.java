@@ -64,6 +64,10 @@ public class FileService {
         return false;
     }
 
+    public boolean autosaveMeasurement(Measurement measurement){
+        return JsonParser.writeNewMeasurement(autoSavingDir, measurement);
+    }
+
     public Measurement loadMeasurement(String path){
         return JsonParser.readMeasurement(path);
     }
