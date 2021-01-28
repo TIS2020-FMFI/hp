@@ -7,6 +7,7 @@ import com.app.service.graph.GraphState;
 import com.app.service.graph.GraphType;
 import com.app.service.measurement.DisplayAOption;
 import com.app.service.measurement.DisplayBOption;
+import com.app.service.measurement.MeasurementState;
 import com.app.service.notification.NotificationType;
 import com.app.service.utils.Utils;
 import javafx.application.Platform;
@@ -606,6 +607,7 @@ public class MainController implements Initializable {
     public void saveUpperGraph(MouseEvent mouseEvent) {
         if (gs.upperGraph != null && gs.upperGraph.getMeasurement() != null) {
             if(AppMain.fileService.saveAsMeasurement(gs.upperGraph.getMeasurement())) {
+                gs.upperGraph.getMeasurement().setState(MeasurementState.SAVED);
                 AppMain.notificationService.createNotification("The measurement in the upper graph is saved.", NotificationType.SUCCESS);
             }else{
                 AppMain.notificationService.createNotification("The measurement in the upper graph was not saved.", NotificationType.ERROR);
@@ -617,6 +619,7 @@ public class MainController implements Initializable {
     public void saveLowerGraph(MouseEvent mouseEvent) {
         if (gs.lowerGraph != null && gs.lowerGraph.getMeasurement() != null) {
             if(AppMain.fileService.saveAsMeasurement(gs.lowerGraph.getMeasurement())){
+                gs.lowerGraph.getMeasurement().setState(MeasurementState.SAVED);
                 AppMain.notificationService.createNotification("The measurement in the lower graph is saved.", NotificationType.SUCCESS);
             }else{
                 AppMain.notificationService.createNotification("The measurement in the lower graph was not saved.", NotificationType.ERROR);

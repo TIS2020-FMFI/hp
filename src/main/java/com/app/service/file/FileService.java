@@ -5,6 +5,7 @@ import com.app.service.AppMain;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.measurement.Measurement;
 import com.app.service.measurement.MeasurementState;
+import com.app.service.notification.NotificationType;
 import javafx.stage.DirectoryChooser;
 
 import java.io.File;
@@ -65,7 +66,11 @@ public class FileService {
     }
 
     public boolean autosaveMeasurement(Measurement measurement){
-        return JsonParser.writeNewMeasurement(autoSavingDir, measurement);
+        if(MeasurementState.FINISHED.equals(measurement.getState())) {
+            return JsonParser.writeNewMeasurement(autoSavingDir, measurement);
+        }
+        AppMain.notificationService.createNotification("Only completed measurement can be saved.", NotificationType.WARNING);
+        return false;
     }
 
     public Measurement loadMeasurement(String path){
