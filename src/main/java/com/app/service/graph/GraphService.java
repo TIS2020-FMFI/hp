@@ -148,10 +148,7 @@ public class GraphService {
      */
     public boolean isMeasurementSaved(GraphType type) {
         Graph temp = getGraphByType(type);
-        if (temp.getState().equals(GraphState.EMPTY) || temp.getState().equals(GraphState.LOADED) || temp.getState().equals(GraphState.SAVED)) {
-            return true;
-        }
-        return !List.of(MeasurementState.WAITING, MeasurementState.STARTED, MeasurementState.FINISHED).contains(temp.getMeasurement().getState());
+        return List.of(MeasurementState.ABORTED, MeasurementState.SAVED, MeasurementState.LOADED).contains(temp.getMeasurement().getState());
     }
 
 }
