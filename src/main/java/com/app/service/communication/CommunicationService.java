@@ -56,8 +56,8 @@ public class CommunicationService {
         connection.stepMeasurement(measurement);
     }
 
-    public boolean runCalibration(CalibrationType calibrationType) throws IOException, InterruptedException {
-        return connection.calibrationHandler(calibrationType);
+    public void runCalibration(CalibrationType calibrationType) {
+        connection.calibrationHandler(calibrationType);
     }
 
     public void abortMeasurement() {
