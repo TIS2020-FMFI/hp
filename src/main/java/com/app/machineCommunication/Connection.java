@@ -106,14 +106,14 @@ public class Connection extends Thread {
             } else {
                 AppMain.notificationService.createNotification("Can not toggle cmd mode, machine not connected", NotificationType.ERROR);
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             AppMain.notificationService.createNotification("Attempted to toggle cmd mode, but failed!", NotificationType.ERROR);
         }
     }
 
-    private StringBuilder read() throws IOException, NullPointerException, InterruptedException {
+    private StringBuilder read() throws IOException, InterruptedException {
         StringBuilder result = new StringBuilder();
-        Integer count = 0;
+        int count = 0;
         while (true) {
             if (!readEnd.ready()) {
                 Thread.sleep(200);
