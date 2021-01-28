@@ -18,21 +18,24 @@ import java.util.*;
 
 public class CalibrationService {
     private final String path;
+    private CalibrationState state;
     private NotificationService notificationService;
-    private LinkedList<RadioButton> toggleGroupType;
     private Map<CalibrationType, RadioButton> calibrationButtons;
     private Map<CalibrationType, Boolean> calibrationStates;
-    private final LinkedList<Boolean> toggleGroupTypeDisabled;
     private Stage stage;
     private double electricalLength;
     private double capacitance;
-    private boolean isCalibrating;
 
     public CalibrationService(String controllerPath) {
         path = controllerPath;
-        toggleGroupType = new LinkedList<>();
-        toggleGroupTypeDisabled = new LinkedList<>(Arrays.asList(false, false, false));
-        isCalibrating = false;
+        state = CalibrationState.READY;
+        calibrationStates = new HashMap<>() {
+            {
+                put(CalibrationType.SHORT, false);
+                put(CalibrationType.OPEN, false);
+                put(CalibrationType.LOAD, false);
+            }
+        };
     }
 
     public void openCalibration() {
@@ -51,23 +54,35 @@ public class CalibrationService {
             notificationService = new NotificationService(notificationContainer);
             stage.show();
         } catch (NoSuchElementException | IOException e) {
+            e.printStackTrace();
             AppMain.notificationService.createNotification(e.getMessage(), NotificationType.ERROR);
         }
     }
 
-    public boolean isCalibrationInProgress() {
-        return isCalibrating;
+    public CalibrationState getState() {
+        return state;
     }
 
-    public void setIsCalibrationInProgress(boolean status) {
-        isCalibrating = status;
+    public Map<CalibrationType, Boolean> getCalibrationStates() {
+        return calibrationStates;
+    }
+
+    public void setCalibrationState(CalibrationState state) {
+        if (state.equals(CalibrationState.READY) && calibrationStates.get(CalibrationType.LOAD)) {
+            this.state = CalibrationState.DONE;
+            return;
+        }
+        this.state = state;
+        if (state.equals(CalibrationState.READY)) {
+            setAnotherActive();
+        }
     }
 
     public void closeCalibration() {
         stage.close();
     }
 
-    private void showNotification(String content, NotificationType type) {
+    public void showNotification(String content, NotificationType type) {
         notificationService.createNotification(content, type);
     }
 
@@ -76,22 +91,11 @@ public class CalibrationService {
         setAnotherActive();
     }
 
-    private Integer getAssociatedRadioButtonIndex(CalibrationType type) {
-        for (int i=0; i < toggleGroupType.size(); i++) {
-            if (CalibrationType.valueOf(toggleGroupType.get(i).getText().toUpperCase()).equals(type)) {
-                return i;
-            }
-        }
-        return null;
-    }
-
     public boolean isCalibrated() {
-        for (RadioButton radio : toggleGroupType) {
-            if (!radio.isDisabled()) {
-                return false;
-            }
-        }
-        return true;
+        return state.equals(CalibrationState.DONE);
+    }
+    public boolean isCalibrationInProcess() {
+        return state.equals(CalibrationState.RUNNING);
     }
 
     private CalibrationType getActiveType() {
@@ -101,15 +105,6 @@ public class CalibrationService {
             }
         }
         return setAnotherActive();
-    }
-
-    public boolean isCalibrationInProcess() {
-        for (RadioButton radio : toggleGroupType) {
-            if (radio.isDisabled()) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private CalibrationType setAnotherActive() {
@@ -124,22 +119,13 @@ public class CalibrationService {
 
     public void runCalibration(String calibrationType) {
         try {
-            CalibrationType requestedCalibrationType = CalibrationType.getTypeFromString(calibrationType);
-            isCalibrating = true;
-            boolean calibrationSuccessful = AppMain.communicationService.runCalibration(requestedCalibrationType);
-            if (!calibrationSuccessful) {
-                throw new RuntimeException("Calibration failed!");
-            } else {
-                showNotification("Calibration " + requestedCalibrationType.toString() + " processed successfully.", NotificationType.SUCCESS);
-                Integer associatedRadioButtonIndex = getAssociatedRadioButtonIndex(requestedCalibrationType);
-                if (associatedRadioButtonIndex == null) {
-                    throw new NoSuchElementException("Calibration type RadioButton not present!");
-                }
-                toggleGroupType.get(associatedRadioButtonIndex).setDisable(true);
-                toggleGroupTypeDisabled.set(associatedRadioButtonIndex, true);
-                setAnotherActive();
+            if (isCalibrationInProcess()) {
+                throw new RuntimeException("Calibration in progress!");
             }
-        } catch (NoSuchAttributeException | IOException | RuntimeException | InterruptedException e) {
+            CalibrationType requestedCalibrationType = CalibrationType.getTypeFromString(calibrationType);
+            state = CalibrationState.RUNNING;
+            AppMain.communicationService.runCalibration(requestedCalibrationType);
+        } catch (NoSuchAttributeException | RuntimeException e) {
             showNotification("upss! -> " + e.getMessage(), NotificationType.ERROR);
         }
     }

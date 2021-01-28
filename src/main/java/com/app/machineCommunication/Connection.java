@@ -2,6 +2,7 @@ package com.app.machineCommunication;
 
 
 import com.app.service.AppMain;
+import com.app.service.calibration.CalibrationState;
 import com.app.service.calibration.CalibrationType;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.file.parameters.MeasuredQuantity;
@@ -12,8 +13,6 @@ import com.app.service.measurement.SingleValue;
 import com.app.service.notification.NotificationType;
 
 import java.io.*;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class Connection extends Thread {
@@ -61,7 +60,7 @@ public class Connection extends Thread {
 
             } else if (process != null) {
                 write("connect 19");
-                if(timer == null) {
+                if (timer == null) {
                     writer();
                 }
                 try {
@@ -86,17 +85,21 @@ public class Connection extends Thread {
         return process;
     }
 
-    public void toggleCmdMode() throws IOException {
-        if (connected) {
-            write("cmd");
-            StringBuilder result = read();
-            if (!result.toString().equals("!not ready, try again later (cmd)")) {
-                cmd = !cmd;
+    public void toggleCmdMode() {
+        try {
+            if (connected) {
+                write("cmd");
+                StringBuilder result = read();
+                if (!result.toString().equals("!not ready, try again later (cmd)")) {
+                    cmd = !cmd;
+                } else {
+                    AppMain.notificationService.createNotification("CMD connection failed, try to press any button on machine", NotificationType.ERROR);
+                }
             } else {
-                AppMain.notificationService.createNotification("CMD connection failed, try to press any button on machine", NotificationType.ERROR);
+                AppMain.notificationService.createNotification("Can not toggle cmd mode, machine not connected", NotificationType.ERROR);
             }
-        } else {
-            AppMain.notificationService.createNotification("Can not toggle cmd mode, machine not connected", NotificationType.ERROR);
+        } catch (IOException e) {
+            AppMain.notificationService.createNotification("Attempted to toggle cmd mode, but failed!", NotificationType.ERROR);
         }
     }
 
@@ -301,54 +304,55 @@ public class Connection extends Thread {
         write("s BI" + environmentParameters.getActive().getVoltageSweep().getSpot() + "EN");
     }
 
-    public void openCalibration() throws IOException {
+    public void openCalibration() {
         write("s A4");
         write("s CS");
         calibrationReader();
     }
 
-    public void shortCalibration() throws IOException {
+    public void shortCalibration() {
         write("s A5");
         write("s CS");
         calibrationReader();
     }
 
-    public void loadCalibration() throws IOException {
+    public void loadCalibration() {
         write("s A6");
         write("s CS");
         calibrationReader();
     }
-     public void calibrationReader() {
-        AppMain.calibrationService.setIsCalibrationInProgress(true);
-         new Thread(() -> {
-             StringBuilder result = new StringBuilder();
-             while (true) {
-                 write("a");
-                 try {
-                     if (!readEnd.ready()) {
-                         sleep(1);
-                         continue;
-                     }
-                     char letter = (char) readEnd.read();
-                     if ((letter == '\n') && (result.length() > 1)) {
-                         if (result.charAt(1) != 'F') {
-                             AppMain.calibrationService.setIsCalibrationInProgress(false);
-                             Thread.currentThread().interrupt();
-                             break;
-                         } else {
-                             System.out.println("reading cal" + result.toString());
-                             result = new StringBuilder();
-                         }
-                     } else
-                         result.append(letter);
-                 } catch (IOException | InterruptedException e) {
-                     AppMain.notificationService.createNotification("Problem at calibration -> " + e.getMessage(), NotificationType.ERROR);
-                 }
-             }
-         }).start();
-     }
 
-    public boolean calibrationHandler(CalibrationType calibrationType) throws IOException {
+    public void calibrationReader() {
+        AppMain.calibrationService.setCalibrationState(CalibrationState.RUNNING);
+        new Thread(() -> {
+            StringBuilder result = new StringBuilder();
+            while (true) {
+                write("a");
+                try {
+                    if (!readEnd.ready()) {
+                        sleep(1);
+                        continue;
+                    }
+                    char letter = (char) readEnd.read();
+                    if ((letter == '\n') && (result.length() > 1)) {
+                        if (result.charAt(1) != 'F') {
+                            AppMain.calibrationService.setCalibrationState(CalibrationState.READY);
+                            Thread.currentThread().interrupt();
+                            break;
+                        } else {
+                            System.out.println("reading cal" + result.toString());
+                            result = new StringBuilder();
+                        }
+                    } else
+                        result.append(letter);
+                } catch (IOException | InterruptedException e) {
+                    AppMain.notificationService.createNotification("Problem at calibration -> " + e.getMessage(), NotificationType.ERROR);
+                }
+            }
+        }).start();
+    }
+
+    public boolean calibrationHandler(CalibrationType calibrationType) {
         if (connected) {
             if (!cmd) toggleCmdMode();
             if (cmd) {

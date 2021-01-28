@@ -20,7 +20,7 @@ public enum CalibrationType {
             case "OPEN":
                 return CalibrationType.OPEN;
             default:
-                throw new NoSuchAttributeException("Calibration type not recognized!");
+                throw new NoSuchAttributeException("Calibration type " + type + " not recognized!");
         }
     }
 }
