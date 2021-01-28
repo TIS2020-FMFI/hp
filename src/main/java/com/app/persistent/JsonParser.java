@@ -132,43 +132,47 @@ public class JsonParser {
 
 //    private static Parameters readParameters(GraphType type, JSONObject obj) {
     private static Parameters readParameters(Map<String, Object> graphParams) {
+
         Parameters params = new Parameters();
+        try {
+            DisplayYY displayYY = new DisplayYY();
+            FrequencySweep frequencySweep = new FrequencySweep();
+            VoltageSweep voltageSweep = new VoltageSweep();
+            Other other = new Other();
 
-        DisplayYY displayYY = new DisplayYY();
-        FrequencySweep frequencySweep = new FrequencySweep();
-        VoltageSweep voltageSweep = new VoltageSweep();
-        Other other = new Other();
+            displayYY.setA((String) graphParams.get("displayA"));
+            displayYY.setB((String) graphParams.get("displayB"));
+            String tempX = (String) graphParams.get("displayX");
+            displayYY.setX(tempX != null ? MeasuredQuantity.valueOf(tempX) : null);
 
-        displayYY.setA((String) graphParams.get("displayA"));
-        displayYY.setB((String) graphParams.get("displayB"));
-        String tempX = (String) graphParams.get("displayX");
-        displayYY.setX(tempX != null ? MeasuredQuantity.valueOf(tempX) : null);
+            Map<String, Object> frequency = (HashMap) graphParams.get("frequency");
+            frequencySweep.setStart((Double) frequency.get("start"));
+            frequencySweep.setStop((Double) frequency.get("stop"));
+            frequencySweep.setStep((Double) frequency.get("step"));
+            frequencySweep.setSpot((Double) frequency.get("spot"));
 
-        Map<String, Object> frequency = (HashMap) graphParams.get("frequency");
-        frequencySweep.setStart((Double) frequency.get("start"));
-        frequencySweep.setStop((Double) frequency.get("stop"));
-        frequencySweep.setStep((Double) frequency.get("step"));
-        frequencySweep.setSpot((Double) frequency.get("spot"));
+            Map<String, Object> voltage = (HashMap) graphParams.get("voltage");
+            voltageSweep.setStart((Double) voltage.get("start"));
+            voltageSweep.setStop((Double) voltage.get("stop"));
+            voltageSweep.setStep((Double) voltage.get("step"));
+            voltageSweep.setSpot((Double) voltage.get("spot"));
 
-        Map<String, Object> voltage = (HashMap) graphParams.get("voltage");
-        voltageSweep.setStart((Double) voltage.get("start"));
-        voltageSweep.setStop((Double) voltage.get("stop"));
-        voltageSweep.setStep((Double) voltage.get("step"));
-        voltageSweep.setSpot((Double) voltage.get("spot"));
+            Map<String, Object> o = (HashMap) graphParams.get("other");
+            other.setCapacitance((Double) o.get("capacitance"));
+            other.setElectricalLength((Double) o.get("electricalLength"));
+            String tempSweepType = (String) o.get("sweepType");
+            other.setSweepType(tempSweepType != null ? SweepType.valueOf(tempSweepType) : null);
+            other.setHighSpeed((Boolean) o.get("highSpeed"));
+            other.setAutoSweep((Boolean) o.get("autoSweep"));
 
-        Map<String, Object> o = (HashMap) graphParams.get("other");
-        other.setCapacitance((Double) o.get("capacitance"));
-        other.setElectricalLength((Double) o.get("electricalLength"));
-        String tempSweepType = (String) o.get("sweepType");
-        other.setSweepType(tempSweepType != null ? SweepType.valueOf(tempSweepType) : null);
-        other.setHighSpeed((Boolean) o.get("highSpeed"));
-        other.setAutoSweep((Boolean) o.get("autoSweep"));
-
-        params.setComment("manually added");
-        params.setDisplayYY(displayYY);
-        params.setFrequencySweep(frequencySweep);
-        params.setVoltageSweep(voltageSweep);
-        params.setOther(other);
+            params.setComment("manually added");
+            params.setDisplayYY(displayYY);
+            params.setFrequencySweep(frequencySweep);
+            params.setVoltageSweep(voltageSweep);
+            params.setOther(other);
+        }catch (Exception e){
+            AppMain.notificationService.createNotification("Failed to load parameters correctly.", NotificationType.ERROR);
+        }
         return params;
     }
 
@@ -210,6 +214,7 @@ public class JsonParser {
             return true;
         } catch (IOException e) {
             e.printStackTrace();
+
         }
 
         return false;
@@ -279,7 +284,7 @@ public class JsonParser {
             measurement.setState(MeasurementState.LOADED);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            AppMain.notificationService.createNotification("Failed to load measurement correctly.", NotificationType.ERROR);
         }
         return measurement;
     }
