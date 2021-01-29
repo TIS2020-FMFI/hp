@@ -1,15 +1,12 @@
 package com.app.service.graph;
 
 import com.app.service.AppMain;
-import com.app.service.measurement.Measurement;
 import com.app.service.measurement.MeasurementState;
 import com.app.service.notification.NotificationType;
 import javafx.scene.Parent;
+import javafx.scene.control.TextArea;
 
-import java.awt.*;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -100,9 +97,10 @@ public class GraphService {
      * Sends to CommunicationService notification that machine should do one next step of measurement.
      * If IOException occurs during this, notifies that error occured.
      */
-    public void runNextStep() {
+    public void runNextStep(TextArea currentValueDisplay) {
         try {
             AppMain.communicationService.nextStep(getRunningGraph().getMeasurement());
+//            currentValueDisplay.setText(String.valueOf(getRunningGraph().getMeasurement().getData().get(getRunningGraph().getMeasurement().getData().size()-1)));
         } catch (IOException | InterruptedException e) {
             AppMain.notificationService.createNotification("Error occurred while running next step -> " + e.getMessage(), NotificationType.ERROR);
         }

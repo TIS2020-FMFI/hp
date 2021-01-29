@@ -183,6 +183,9 @@ public class MainController implements Initializable {
     @FXML
     Button quitMenu;
 
+    @FXML
+    TextArea currentValueDisplay;
+
 
     public void updateComment(MouseEvent event) {
         ep.getActive().setComment(ep.getActiveGraphType().equals(GraphType.UPPER) ? commentInputUpper.getText() : commentInputLower.getText());
@@ -213,6 +216,7 @@ public class MainController implements Initializable {
             toggleDisabling();
             upperGraphRun.setText("Run");
             upperToolbar.getItems().remove(upperPointNext);
+//            upperToolbar.getItems().remove(currentValueDisplay);
         } else if (!gs.isRunningGraph()) {
             if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
                 AppMain.abortDataDialog.openDialog(type);
@@ -230,6 +234,7 @@ public class MainController implements Initializable {
             toggleDisabling();
             lowerGraphRun.setText("Run");
             lowerToolbar.getItems().remove(lowerPointNext);
+//            lowerToolbar.getItems().remove(currentValueDisplay);
         } else if (!gs.isRunningGraph()) {
             if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
                 AppMain.abortDataDialog.openDialog(type);
@@ -294,15 +299,20 @@ public class MainController implements Initializable {
             if ((graphType.equals(GraphType.UPPER) ? otherAutoSweepUpper : otherAutoSweepLower).getValue().equals("OFF")) {
                 AppMain.notificationService.createNotification("Auto sweep is off", NotificationType.ANNOUNCEMENT);
                 Button pointButton = new Button("Next");
-                pointButton.setOnMouseReleased(e -> gs.runNextStep());
+//                currentValueDisplay = new TextArea();
+//                currentValueDisplay.setId("currentValueDisplay");
+                pointButton.setOnMouseReleased(e -> gs.runNextStep(currentValueDisplay));
                 if (graphType.equals(GraphType.UPPER)) {
                     upperPointNext = pointButton;
                     upperPointNext.setId("upperPointNext");
                     upperToolbar.getItems().add(upperPointNext);
+//                    upperToolbar.getItems().add(currentValueDisplay);
                 } else {
                     lowerPointNext = pointButton;
                     lowerPointNext.setId("lowerPointNext");
                     lowerToolbar.getItems().add(lowerPointNext);
+//                    lowerToolbar.getItems().add(currentValueDisplay);
+
                 }
             } else {
                 AppMain.notificationService.createNotification("Auto sweep is on", NotificationType.ANNOUNCEMENT);
@@ -424,7 +434,13 @@ public class MainController implements Initializable {
                     if (GraphState.isStatic(gs.getStateByType(type))) {
                         Platform.runLater(() -> {
                             (type.equals(GraphType.UPPER) ? upperGraphRun : lowerGraphRun).setText("Run");
-                            upperToolbar.getItems().remove(type.equals(GraphType.UPPER) ? upperPointNext : lowerPointNext);
+                            if (type.equals(GraphType.UPPER)) {
+                                upperToolbar.getItems().remove(upperPointNext);
+//                                upperToolbar.getItems().remove(currentValueDisplay);
+                            } else {
+                                lowerToolbar.getItems().remove(lowerPointNext);
+//                                lowerToolbar.getItems().remove(currentValueDisplay);
+                            }
                         });
                     }
                     if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().getState().equals(MeasurementState.ABORTED)) {
