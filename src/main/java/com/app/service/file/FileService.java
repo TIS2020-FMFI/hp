@@ -2,6 +2,7 @@ package com.app.service.file;
 
 import com.app.persistent.JsonParser;
 import com.app.service.AppMain;
+import com.app.service.exceptions.WrongDataFormatException;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.measurement.Measurement;
 import com.app.service.measurement.MeasurementState;
@@ -54,9 +55,9 @@ public class FileService {
         return JsonParser.readEnvironmentParameters(configPath);
     }
 
-    public boolean saveAsMeasurement(Measurement measurement){
+    public boolean saveAsMeasurement(Measurement measurement) {
         String path = chooseSavingDirectory();
-        if(measurement != null) {
+        if (measurement != null) {
             if (measurement.getState().equals(MeasurementState.LOADED) || measurement.getState().equals(MeasurementState.FINISHED) ||
                     measurement.getState().equals(MeasurementState.SAVED)) {
                 LocalTime localTime = LocalTime.now();
@@ -70,16 +71,21 @@ public class FileService {
         return false;
     }
 
-    public boolean autosaveMeasurement(Measurement measurement){
-        if(MeasurementState.FINISHED.equals(measurement.getState())) {
+    public boolean autosaveMeasurement(Measurement measurement) {
+        if (MeasurementState.FINISHED.equals(measurement.getState())) {
             return JsonParser.writeNewMeasurement(autoSavingDir, measurement);
         }
         AppMain.notificationService.createNotification("Only completed measurement can be saved.", NotificationType.WARNING);
         return false;
     }
 
-    public Measurement loadMeasurement(String path){
-        return JsonParser.readMeasurement(path);
+    public Measurement loadMeasurement(String path) {
+        try {
+            return JsonParser.readMeasurement(path);
+        } catch (WrongDataFormatException e) {
+            AppMain.notificationService.createNotification(e.getMessage(), NotificationType.ERROR);
+        }
+        return null;
     }
 
     public String setNewAutoSaveDirectory() {

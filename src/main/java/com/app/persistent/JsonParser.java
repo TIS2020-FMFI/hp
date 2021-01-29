@@ -1,6 +1,7 @@
 package com.app.persistent;
 
 import com.app.service.AppMain;
+import com.app.service.exceptions.WrongDataFormatException;
 import com.app.service.file.parameters.*;
 import com.app.service.graph.GraphType;
 import com.app.service.measurement.Measurement;
@@ -12,12 +13,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,18 +29,16 @@ public class JsonParser {
         JSONObject jo = new JSONObject();
         jo.put("upper", getParametersMap(ep.getByType(GraphType.UPPER)));
         jo.put("lower", getParametersMap(ep.getByType(GraphType.LOWER)));
-//        Files.write(Paths.get("persistent/" + fileName), jo.toJSONString().getBytes());
+
         PrintWriter pw = new PrintWriter(fileName);
         pw.write(jo.toJSONString());
 
         pw.flush();
         pw.close();
-
         return true;
     }
 
     private static Map<String, Object> getParametersMap(Parameters params) {
-//        Parameters params = ep.getByType(type);
         Map<String, Object> temp = new HashMap<>();
 
         temp.put("displayA", params.getDisplayYY().getA());
@@ -74,27 +70,28 @@ public class JsonParser {
         return temp;
     }
 
-    public static EnvironmentParameters readEnvironmentParameters(String fileName) {
+    public static EnvironmentParameters readEnvironmentParameters(String filePath) {
         EnvironmentParameters ep = new EnvironmentParameters();
         Parameters paramsUpper = new Parameters();
         Parameters paramsLower = new Parameters();
 
         try {
-            Object obj = new JSONParser().parse(new FileReader(fileName));
+            Object obj = new JSONParser().parse(new FileReader(JsonParser.class.getResource(filePath).getPath()));
 
             JSONObject jo = (JSONObject) obj;
 
             paramsUpper = readParameters((HashMap) jo.get("upper"));
             paramsLower = readParameters((HashMap) jo.get("lower"));
 
-//            paramsUpper = readParameters(GraphType.UPPER, jo);
-//            paramsLower = readParameters(GraphType.LOWER, jo);
             paramsUpper.checkAll();
             paramsLower.checkAll();
-        } catch (IOException | ParseException e) {
-            if (!AppMain.debugMode) {
-                AppMain.notificationService.createNotification("Failed to load previous values, setting to default", NotificationType.ANNOUNCEMENT);
+        } catch (IOException | ParseException | WrongDataFormatException e) {
+            if (AppMain.notificationService != null) {
+                AppMain.notificationService.createNotification("Failed to load previous parameters.. setting to default.", NotificationType.ANNOUNCEMENT);
+            } else {
+                System.out.println("failed to load env parameters from file " + filePath + "; setting default values");
             }
+
             DisplayYY displayYY = new DisplayYY();
             FrequencySweep frequencySweep = new FrequencySweep();
             VoltageSweep voltageSweep = new VoltageSweep();
@@ -131,9 +128,7 @@ public class JsonParser {
         return ep;
     }
 
-//    private static Parameters readParameters(GraphType type, JSONObject obj) {
-    private static Parameters readParameters(Map<String, Object> graphParams) {
-
+    private static Parameters readParameters(Map<String, Object> graphParams) throws WrongDataFormatException {
         Parameters params = new Parameters();
         try {
             DisplayYY displayYY = new DisplayYY();
@@ -171,15 +166,18 @@ public class JsonParser {
             params.setFrequencySweep(frequencySweep);
             params.setVoltageSweep(voltageSweep);
             params.setOther(other);
-        }catch (Exception e){
-            AppMain.notificationService.createNotification("Failed to load parameters correctly.", NotificationType.ERROR);
+        } catch (NullPointerException e){
+            if (AppMain.debugMode && AppMain.notificationService != null) {
+                AppMain.notificationService.createNotification("Failed to load parameters correctly -> " + e.getMessage(), NotificationType.ERROR);
+            } else {
+                throw new WrongDataFormatException();
+            }
         }
         return params;
     }
 
     public static boolean writeNewMeasurement(String autoSavingDir, Measurement measurement) {
         try {
-
             JSONObject jo = new JSONObject();
             Parameters parameters = measurement.getParameters();
             parameters.checkAll();
@@ -214,10 +212,8 @@ public class JsonParser {
 
             return true;
         } catch (IOException e) {
-            e.printStackTrace();
-
+            AppMain.notificationService.createNotification("Failed to write data to file -> " + e.getMessage(), NotificationType.ERROR);
         }
-
         return false;
     }
 
@@ -251,12 +247,12 @@ public class JsonParser {
 
             return true;
         } catch (IOException | ParseException e) {
-            e.printStackTrace();
+            AppMain.notificationService.createNotification("Failed to write data to file -> " + e.getMessage(), NotificationType.ERROR);
         }
         return false;
     }
 
-    public static Measurement readMeasurement(String fileName){
+    public static Measurement readMeasurement(String fileName) throws WrongDataFormatException {
         Measurement measurement = new Measurement(new Parameters());
         try {
 
@@ -285,7 +281,11 @@ public class JsonParser {
             measurement.setState(MeasurementState.LOADED);
 
         } catch (IOException | ParseException e) {
-            AppMain.notificationService.createNotification("Failed to load measurement correctly.", NotificationType.ERROR);
+            if (AppMain.debugMode && AppMain.notificationService != null) {
+                AppMain.notificationService.createNotification("Failed to load measurement correctly -> " + e.getMessage(), NotificationType.ERROR);
+            } else {
+                throw new WrongDataFormatException(e.getMessage());
+            }
         }
         return measurement;
     }
