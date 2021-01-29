@@ -7,8 +7,9 @@ import com.app.service.measurement.Measurement;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.labels.StandardXYItemLabelGenerator;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.SamplingXYLineRenderer;
+import org.jfree.chart.renderer.xy.XYSplineRenderer;
 import org.jfree.data.xy.AbstractXYDataset;
 
 import java.awt.*;
@@ -85,10 +86,20 @@ public class CustomChart extends ChartPanel {
         plot.setDataset(1, series2);
 
         //customize the plot with renderers and axis
-        plot.setRenderer(0, new SamplingXYLineRenderer());//use default fill paint for first series
-        SamplingXYLineRenderer splinerenderer = new SamplingXYLineRenderer();
-        splinerenderer.setSeriesFillPaint(0, Color.BLUE);
-        plot.setRenderer(1, splinerenderer);
+        XYSplineRenderer splinerenderer1 = new XYSplineRenderer();
+        splinerenderer1.setSeriesItemLabelsVisible(0,true);
+        plot.setRenderer(0, splinerenderer1);
+        splinerenderer1.setAutoPopulateSeriesFillPaint(true);
+        splinerenderer1.setDefaultItemLabelGenerator(new StandardXYItemLabelGenerator());
+
+        XYSplineRenderer splinerenderer0 = new XYSplineRenderer();
+        splinerenderer0.setSeriesFillPaint(0, Color.BLUE);
+        splinerenderer0.setSeriesItemLabelsVisible(0,true);
+        plot.setRenderer(1, splinerenderer0);
+        splinerenderer0.setAutoPopulateSeriesFillPaint(true);
+        splinerenderer0.setDefaultItemLabelGenerator(new StandardXYItemLabelGenerator());
+        splinerenderer0.setDefaultItemLabelsVisible(true);
+        splinerenderer0.setItemLabelAnchorOffset(-8);
 
         NumberAxis yaxis1 = new NumberAxis(Y1name);
         NumberAxis yaxis2 = new NumberAxis(Y2name);
@@ -107,8 +118,6 @@ public class CustomChart extends ChartPanel {
         plot.mapDatasetToRangeAxis(0, 0);
         plot.mapDatasetToRangeAxis(1, 1);
 
-        //((NumberAxis)plot.getRangeAxis(1)).setAutoRangeIncludesZero(false); // add
-
         //configure the chart
         plot.getRangeAxis(0).setLabelPaint(Color.BLUE);
         plot.getRangeAxis(1).setLabelPaint(Color.RED);
@@ -125,6 +134,7 @@ public class CustomChart extends ChartPanel {
         chart.setBackgroundPaint(null);
         chart.setBorderVisible(false);
         chart.removeLegend();
+        chart.setElementHinting(true);
     }
 
     /**
