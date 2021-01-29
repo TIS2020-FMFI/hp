@@ -104,22 +104,22 @@ public class Graph {
      * Sets new CustomChart with loaded measurement.
      * Sets ChartViewer with CustomChart.
      * Clears AnchorPane and Adds ChartViewer to AnchorPane
-     *
-     * @throws FileNotFoundException
      */
-    public void load() throws FileNotFoundException {
+    public void load() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File("src/main/resources"));
+        fileChooser.setInitialDirectory(new File("../"));
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json");
         fileChooser.getExtensionFilters().add(extFilter);
         File selectedFile = fileChooser.showOpenDialog(new Stage());
         if (selectedFile != null) {
-            state = GraphState.LOADED;
             measurement = AppMain.fileService.loadMeasurement(selectedFile.getPath());
-            scene.getChildren().clear();
-            scene.getChildren().add(chartViewer);
-            chart = new CustomChart(measurement, true);
-            chartViewer.setChart(chart.getChart());
+            if (measurement != null) {
+                state = GraphState.LOADED;
+                scene.getChildren().clear();
+                scene.getChildren().add(chartViewer);
+                chart = new CustomChart(measurement, true);
+                chartViewer.setChart(chart.getChart());
+            }
         }
     }
 

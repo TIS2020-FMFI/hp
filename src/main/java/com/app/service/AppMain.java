@@ -28,14 +28,14 @@ public class AppMain extends Application {
     public static GraphService graphService;
     public static CommunicationService communicationService;
     public static EnvironmentParameters environmentParameters;
-    public static boolean debugMode = true;
+    public static boolean debugMode = false;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         // its important to keep this method in this order!
         ps = primaryStage;
 
-        fileService = new FileService("src/main/resources/persistent/config.json");
+        fileService = new FileService("/persistent/config.json");
         environmentParameters = fileService.loadConfig();
         graphService = new GraphService();
 

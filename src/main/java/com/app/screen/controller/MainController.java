@@ -2,7 +2,6 @@ package com.app.screen.controller;
 
 import com.app.service.AppMain;
 import com.app.service.file.parameters.*;
-import com.app.service.graph.Graph;
 import com.app.service.graph.GraphService;
 import com.app.service.graph.GraphState;
 import com.app.service.graph.GraphType;
@@ -19,7 +18,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -375,8 +373,8 @@ public class MainController implements Initializable {
             if (AppMain.fileService.saveConfig()) {
                 Utils.closeApp();
             }
-        } else if (gs.getGraphByType(GraphType.UPPER).getMeasurement() != null && !gs.getGraphByType(GraphType.UPPER).getMeasurement().canLooseData()
-                && gs.getGraphByType(GraphType.LOWER).getMeasurement() != null && !gs.getGraphByType(GraphType.LOWER).getMeasurement().canLooseData()) {
+        } else if (gs.getGraphByType(GraphType.UPPER).getMeasurement() == null || !gs.getGraphByType(GraphType.UPPER).getMeasurement().canLooseData()
+                && gs.getGraphByType(GraphType.LOWER).getMeasurement() == null || !gs.getGraphByType(GraphType.LOWER).getMeasurement().canLooseData()) {
                 Utils.closeApp();
         } else {
             AppMain.dataNotSavedDialog.openDialog();
@@ -438,6 +436,7 @@ public class MainController implements Initializable {
     }
 
     private void initializeUpper() {
+        System.out.println("upper -> " + ep.getByType(GraphType.UPPER).getDisplayYY().getA());
         String displayA = ep.getByType(GraphType.UPPER).getDisplayYY().getA();
 
         if (DisplayAOption.isAbsOption(displayA)) {
@@ -483,6 +482,7 @@ public class MainController implements Initializable {
     }
 
     private void initializeLower() {
+        System.out.println("lower -> " + ep.getByType(GraphType.LOWER).getDisplayYY().getA());
         String displayA = ep.getByType(GraphType.LOWER).getDisplayYY().getA();
 
         if (DisplayAOption.isAbsOption(displayA)) {

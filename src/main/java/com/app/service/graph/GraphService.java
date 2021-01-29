@@ -117,8 +117,6 @@ public class GraphService {
     public void loadGraph(GraphType type) {
         try {
             getGraphByType(type).load();
-        } catch (FileNotFoundException e) {
-            AppMain.notificationService.createNotification("File you are trying to load does not exist", NotificationType.ERROR);
         } catch (NumberFormatException e) {
             AppMain.notificationService.createNotification("Could not parse loaded data -> " + e.getMessage(), NotificationType.ERROR);
         } catch (Exception e) {
