@@ -383,8 +383,8 @@ public class MainController implements Initializable {
             if (AppMain.fileService.saveConfig()) {
                 Utils.closeApp();
             }
-        } else if (gs.getGraphByType(GraphType.UPPER).getMeasurement() == null || !gs.getGraphByType(GraphType.UPPER).getMeasurement().canLooseData()
-                && gs.getGraphByType(GraphType.LOWER).getMeasurement() == null || !gs.getGraphByType(GraphType.LOWER).getMeasurement().canLooseData()) {
+        } else if ((gs.getGraphByType(GraphType.UPPER).getMeasurement() == null || !gs.getGraphByType(GraphType.UPPER).getMeasurement().canLooseData())
+                && (gs.getGraphByType(GraphType.LOWER).getMeasurement() == null || !gs.getGraphByType(GraphType.LOWER).getMeasurement().canLooseData())) {
                 Utils.closeApp();
         } else {
             AppMain.dataNotSavedDialog.openDialog();
