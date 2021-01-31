@@ -58,13 +58,17 @@ public class FileService {
     }
 
     public boolean saveAsMeasurement(Measurement measurement) {
-        String path = chooseSavingDirectory();
-        if (measurement != null && !path.equals("")) {
-            if (measurement.getState().equals(MeasurementState.LOADED) || measurement.getState().equals(MeasurementState.FINISHED) ||
-                    measurement.getState().equals(MeasurementState.SAVED)) {
-                    path = setTimeAndDisplayToPath(path, measurement);
+        if (measurement != null && (measurement.getState().equals(MeasurementState.LOADED) || measurement.getState().equals(MeasurementState.FINISHED) ||
+                measurement.getState().equals(MeasurementState.SAVED))) {
+            String path = chooseSavingDirectory();
+            if(!path.equals("")){
+                path = setTimeAndDisplayToPath(path, measurement);
                 return JsonParser.writeNewMeasurement(path, measurement);
+            }else{
+                AppMain.notificationService.createNotification("Save path was not select.", NotificationType.ERROR);
             }
+        }else {
+            AppMain.notificationService.createNotification("Only the completed measurement can be saved.", NotificationType.ERROR);
         }
         return false;
     }
@@ -143,7 +147,7 @@ public class FileService {
                 AppMain.notificationService.createNotification("Export path was not select.", NotificationType.ERROR);
             }
         }else {
-            AppMain.notificationService.createNotification("Only the finished measurement can be exported.", NotificationType.ERROR);
+            AppMain.notificationService.createNotification("Only the completed measurement can be exported.", NotificationType.ERROR);
         }
         return false;
     }
