@@ -1,13 +1,11 @@
 package com.app.service.graph;
 
 import com.app.service.AppMain;
-import com.app.service.measurement.MeasurementState;
 import com.app.service.notification.NotificationType;
 import javafx.scene.Parent;
 import javafx.scene.control.TextArea;
 
 import java.io.IOException;
-import java.util.List;
 
 
 public class GraphService {
@@ -80,7 +78,7 @@ public class GraphService {
     /**
      * Starts running Graph, which is got from getGraphByType(type), by calling Graph.run().
      * Runs the measurement.
-     * Sends notification if error occurs during measurment.
+     * Sends notification if error occurs during measurement.
      *
      * @param type
      */
@@ -95,7 +93,7 @@ public class GraphService {
 
     /**
      * Sends to CommunicationService notification that machine should do one next step of measurement.
-     * If IOException occurs during this, notifies that error occured.
+     * If IOException occurs during this, notifies that error occurred.
      */
     public void runNextStep(TextArea currentValueDisplay) {
         try {
@@ -123,7 +121,7 @@ public class GraphService {
     }
 
     /**
-     * Aborts the measurment by sending appropriate command to machine, cancels dataset timers and destroys graph.
+     * Aborts the measurement by sending appropriate command to machine, cancels dataset timers and destroys graph.
      * If error occurs, notifies.
      *
      * @param type
@@ -135,16 +133,6 @@ public class GraphService {
         } catch (Exception e) {
             AppMain.notificationService.createNotification("Error occurred while aborting measurement -> " + e.getMessage(), NotificationType.ERROR);
         }
-    }
-
-    /**
-     *
-     * @param type
-     * @return
-     */
-    public boolean isMeasurementSaved(GraphType type) {
-        Graph temp = getGraphByType(type);
-        return List.of(MeasurementState.ABORTED, MeasurementState.SAVED, MeasurementState.LOADED).contains(temp.getMeasurement().getState());
     }
 
 }
