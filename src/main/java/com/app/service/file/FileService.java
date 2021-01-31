@@ -60,19 +60,25 @@ public class FileService {
         if (measurement != null && !path.equals("")) {
             if (measurement.getState().equals(MeasurementState.LOADED) || measurement.getState().equals(MeasurementState.FINISHED) ||
                     measurement.getState().equals(MeasurementState.SAVED)) {
-                LocalTime localTime = LocalTime.now();
-                path = path + localTime.getHour() + ":" + localTime.getMinute() +
-                        "-" + measurement.getParameters().getDisplayYY().getA() + "-" +
-                        measurement.getParameters().getDisplayYY().getB() + "-" +
-                        measurement.getParameters().getDisplayYY().getX().toString();
+                    path = setTimeAndDisplayToPath(path, measurement);
                 return JsonParser.writeNewMeasurement(path, measurement);
             }
         }
         return false;
     }
 
+    public String setTimeAndDisplayToPath(String path, Measurement measurement){
+        LocalTime localTime = LocalTime.now();
+        path = path + localTime.getHour() + "-" + localTime.getMinute() +
+                "-" + measurement.getParameters().getDisplayYY().getA() + "-" +
+                measurement.getParameters().getDisplayYY().getB() + "-" +
+                measurement.getParameters().getDisplayYY().getX().toString();
+        return path;
+    }
+
     public boolean autoSaveMeasurement(Measurement measurement) {
         if (MeasurementState.FINISHED.equals(measurement.getState())) {
+            autoSavingDir = setTimeAndDisplayToPath(autoSavingDir, measurement);
             return JsonParser.writeNewMeasurement(autoSavingDir, measurement);
         }
         AppMain.notificationService.createNotification("Only completed measurement can be saved.", NotificationType.WARNING);
