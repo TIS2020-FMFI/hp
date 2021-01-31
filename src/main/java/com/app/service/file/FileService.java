@@ -6,10 +6,12 @@ import com.app.service.exceptions.WrongDataFormatException;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.measurement.Measurement;
 import com.app.service.measurement.MeasurementState;
+import com.app.service.measurement.SingleValue;
 import com.app.service.notification.NotificationType;
 import javafx.stage.DirectoryChooser;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -115,5 +117,34 @@ public class FileService {
         }
         newSavingDir = newSavingDir.replaceAll("\\\\", "/");
         return newSavingDir;
+    }
+
+    public boolean exportAs(Measurement measurement){
+        if(measurement != null && (MeasurementState.FINISHED.equals(measurement.getState()) ||
+                MeasurementState.SAVED.equals(measurement.getState()) || MeasurementState.LOADED.equals(measurement.getState()))) {
+            String path = chooseSavingDirectory();
+            if(!path.equals("")) {
+                path = setTimeAndDisplayToPath(path, measurement) + ".txt";
+                try (FileWriter writer = new FileWriter(path, false)) {
+                    String string = "";
+                    if (measurement.getData().size() > 0) {
+                        for (SingleValue singleValue : measurement.getData()) {
+                            string = singleValue.getDisplayA() + " " + singleValue.getDisplayB() + " " + singleValue.getDisplayX() + "\n";
+                            writer.write(string);
+                        }
+                        writer.flush();
+                        return true;
+                    }
+                }
+                catch(IOException ex){
+                    return false;
+                }
+            }else{
+                AppMain.notificationService.createNotification("Export path was not select.", NotificationType.ERROR);
+            }
+        }else {
+            AppMain.notificationService.createNotification("Only the finished measurement can be exported.", NotificationType.ERROR);
+        }
+        return false;
     }
 }

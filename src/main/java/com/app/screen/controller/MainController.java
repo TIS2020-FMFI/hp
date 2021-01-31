@@ -624,9 +624,27 @@ public class MainController implements Initializable {
     }
 
     public void exportUpperGraph(MouseEvent mouseEvent) {
+        if(gs.upperGraph.getMeasurement() != null){
+            if(AppMain.fileService.exportAs(gs.upperGraph.getMeasurement())){
+                AppMain.notificationService.createNotification("The measurement in the upper graph was exported.", NotificationType.SUCCESS);
+            }else{
+                AppMain.notificationService.createNotification("The measurement in the upper graph failed to export.", NotificationType.ERROR);
+            }
+        }else{
+            AppMain.notificationService.createNotification("Measurement not found in the upper graph", NotificationType.ERROR);
+        }
     }
 
     public void exportLowerGraph(MouseEvent mouseEvent) {
+        if(gs.lowerGraph.getMeasurement() != null){
+            if(AppMain.fileService.exportAs(gs.lowerGraph.getMeasurement())){
+                AppMain.notificationService.createNotification("The measurement in the lower graph was exported.", NotificationType.SUCCESS);
+            }else{
+                AppMain.notificationService.createNotification("The measurement in the lower graph failed to export.", NotificationType.ERROR);
+            }
+        }else{
+            AppMain.notificationService.createNotification("Measurement not found in the lower graph", NotificationType.ERROR);
+        }
     }
 
     public void saveUpperGraph(MouseEvent mouseEvent) {
