@@ -103,7 +103,7 @@ public class FileService {
                     localDate.getDayOfMonth() + "/";
             autoSavingDir = newAutoSavingDir.replaceAll("\\\\", "/");
         }
-        return newAutoSavingDir;
+        return autoSavingDir;
     }
 
     private String chooseSavingDirectory() {
