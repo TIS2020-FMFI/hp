@@ -19,8 +19,8 @@ import java.util.*;
 
 public class Connection extends Thread {
     boolean cmd = false;
-    boolean calibrationMode = false;
     private boolean connected = false;
+    private boolean calibrationMode = false;
     private Process process;
     private BufferedReader readEnd;
     private BufferedWriter writeEnd;
@@ -386,6 +386,7 @@ public class Connection extends Thread {
             if (cmd) {
                 if (!calibrationMode) {
                     write("s C1");
+                    write(" s OC" + environmentParameters.getActive().getOther().getCapacitance() + "EN");
                     write("s EL" + environmentParameters.getActive().getOther().getElectricalLength() + "EN");
                     highSpeed();
                     calibrationMode = !calibrationMode;
