@@ -4,14 +4,12 @@ import com.app.service.AppMain;
 import com.app.service.graph.GraphState;
 import com.app.service.notification.NotificationType;
 import com.app.service.utils.Utils;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.io.IOException;
 
 
@@ -42,7 +40,7 @@ public class DataNotSavedDialog {
         if(AppMain.graphService.upperGraph != null && !AppMain.graphService.upperGraph.getState().equals(GraphState.RUNNING)) {
             boolean success;
             if (AppMain.fileService.isAutoSave()) {
-                success = AppMain.fileService.autosaveMeasurement(AppMain.graphService.upperGraph.getMeasurement());
+                success = AppMain.fileService.autoSaveMeasurement(AppMain.graphService.upperGraph.getMeasurement());
             } else {
                 AppMain.notificationService.createNotification("Select a folder to save the measurement from the upper graph.", NotificationType.ANNOUNCEMENT);
                 success = AppMain.fileService.saveAsMeasurement(AppMain.graphService.upperGraph.getMeasurement());
@@ -56,7 +54,7 @@ public class DataNotSavedDialog {
         if(AppMain.graphService.lowerGraph != null && !AppMain.graphService.lowerGraph.getState().equals(GraphState.RUNNING)) {
             boolean success;
             if (AppMain.fileService.isAutoSave()) {
-                success = AppMain.fileService.autosaveMeasurement(AppMain.graphService.lowerGraph.getMeasurement());
+                success = AppMain.fileService.autoSaveMeasurement(AppMain.graphService.lowerGraph.getMeasurement());
             } else {
                 AppMain.notificationService.createNotification("Select a folder to save the measurement from the lower graph.", NotificationType.ANNOUNCEMENT);
                 success = AppMain.fileService.saveAsMeasurement(AppMain.graphService.lowerGraph.getMeasurement());
