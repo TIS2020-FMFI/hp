@@ -386,7 +386,7 @@ public class Connection extends Thread {
             if (cmd) {
                 if (!calibrationMode) {
                     write("s C1");
-                    write(" s OC" + environmentParameters.getActive().getOther().getCapacitance() + "EN");
+                    write("s OC" + environmentParameters.getActive().getOther().getCapacitance() + "EN");
                     write("s EL" + environmentParameters.getActive().getOther().getElectricalLength() + "EN");
                     highSpeed();
                     calibrationMode = !calibrationMode;
