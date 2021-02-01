@@ -92,19 +92,6 @@ public class GraphService {
     }
 
     /**
-     * Sends to CommunicationService notification that machine should do one next step of measurement.
-     * If IOException occurs during this, notifies that error occurred.
-     */
-    public void runNextStep(TextArea currentValueDisplay) {
-        try {
-            AppMain.communicationService.nextStep(getRunningGraph().getMeasurement());
-//            currentValueDisplay.setText(String.valueOf(getRunningGraph().getMeasurement().getData().get(getRunningGraph().getMeasurement().getData().size()-1)));
-        } catch (IOException | InterruptedException e) {
-            AppMain.notificationService.createNotification("Error occurred while running next step -> " + e.getMessage(), NotificationType.ERROR);
-        }
-    }
-
-    /**
      * Loads Graph, which is got from getGraphByType(type), by calling Graph.load().
      * Sends notification if error occurs during loading.
      *

@@ -18,6 +18,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -245,6 +246,22 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Sends to CommunicationService notification that machine should do one next step of measurement.
+     * If IOException occurs during this, notifies that error occurred.
+     */
+    public void runNextStep(TextArea currentValueDisplay) {
+        try {
+            AppMain.communicationService.nextStep(gs.getRunningGraph().getMeasurement());
+//            currentValueDisplay.setText(String.valueOf(getRunningGraph().getMeasurement().getData().get(getRunningGraph().getMeasurement().getData().size()-1)));
+        } catch (IOException | InterruptedException e) {
+            AppMain.notificationService.createNotification("Error occurred while running next step -> " + e.getMessage(), NotificationType.ERROR);
+        } catch (NullPointerException e) {
+            lowerToolbar.getItems().remove(lowerPointNext);
+            upperToolbar.getItems().remove(upperPointNext);
+        }
+    }
+
     private void runMeasurement(GraphType graphType, Button triggerButton) {
         ep.setActiveGraphType(graphType);
         createGraphWatcher(graphType);
@@ -301,7 +318,7 @@ public class MainController implements Initializable {
                 Button pointButton = new Button("Next");
 //                currentValueDisplay = new TextArea();
 //                currentValueDisplay.setId("currentValueDisplay");
-                pointButton.setOnMouseReleased(e -> gs.runNextStep(currentValueDisplay));
+                pointButton.setOnMouseReleased(e -> runNextStep(currentValueDisplay));
                 if (graphType.equals(GraphType.UPPER)) {
                     upperPointNext = pointButton;
                     upperPointNext.setId("upperPointNext");
@@ -323,8 +340,10 @@ public class MainController implements Initializable {
         } catch (NullPointerException e) {
             if (graphType.equals(GraphType.UPPER)) {
                 gs.upperGraph.setState(GraphState.EMPTY);
+                upperToolbar.getItems().remove(upperPointNext);
             } else {
                 gs.lowerGraph.setState(GraphState.EMPTY);
+                lowerToolbar.getItems().remove(lowerPointNext);
             }
             triggerButton.setText("Run");
             AppMain.notificationService.createNotification("Error occurred when starting measurement -> " + e.getMessage(), NotificationType.ERROR);
