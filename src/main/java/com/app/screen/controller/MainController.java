@@ -639,7 +639,11 @@ public class MainController implements Initializable {
     }
 
     public void setAutoSaveDirectory(MouseEvent mouseEvent) {
-        savingDirMenu.setText(AppMain.fileService.setNewAutoSaveDirectory());
+        String newDirPath = AppMain.fileService.setNewAutoSaveDirectory();
+        if (newDirPath.length() >= 50) {
+            newDirPath = newDirPath.substring(0,3)+ "..." + newDirPath.substring(newDirPath.length() - 50 + newDirPath.substring(newDirPath.length() - 50).indexOf("/"));
+        }
+        savingDirMenu.setText(newDirPath);
     }
 
     public void exportUpperGraph(MouseEvent mouseEvent) {
