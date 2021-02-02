@@ -263,55 +263,10 @@ public class MainController implements Initializable {
     }
 
     private void runMeasurement(GraphType graphType, Button triggerButton) {
-        ep.setActiveGraphType(graphType);
         createGraphWatcher(graphType);
 
         try {
-            DisplayYY newDisplayYY = ep.getActive().getDisplayYY();
-            RadioButton selectedDisplayA = (RadioButton) (graphType.equals(GraphType.UPPER) ? displayAUpper : displayALower).getSelectedToggle();
-            RadioButton selectedDisplayB = (RadioButton) (graphType.equals(GraphType.UPPER) ? displayBUpper : displayBLower).getSelectedToggle();
-
-            if (selectedDisplayA == null || selectedDisplayB == null) {
-                throw new NullPointerException("Values not properly set! Display A or B not set.. or both :)");
-            }
-
-            String displayA = selectedDisplayA.getText();
-            if ((graphType.equals(GraphType.LOWER) && displayALowerABS.isSelected() && DisplayAOption.isAbsOption(DisplayAOption.valueOf(displayA))) ||
-                    (graphType.equals(GraphType.UPPER) && displayAUpperABS.isSelected() && DisplayAOption.isAbsOption(DisplayAOption.valueOf(displayA)))) {
-                displayA = DisplayAOption.getAbsOption(DisplayAOption.valueOf(displayA));
-            }
-
-            newDisplayYY.setA(displayA);
-            newDisplayYY.setB(selectedDisplayB.getText());
-
-            RadioButton selectedDisplayX = (RadioButton) ((graphType.equals(GraphType.UPPER) ? toggleUpperXAxis : toggleLowerXAxis).getSelectedToggle());
-            newDisplayYY.setX(selectedDisplayX.getText().equals("Frequency") ? MeasuredQuantity.FREQUENCY : MeasuredQuantity.VOLTAGE);
-
-            ep.getActive().setDisplayYY(newDisplayYY);
-
-            FrequencySweep newFrequencySweep = ep.getActive().getFrequencySweep();
-            newFrequencySweep.setStart(Double.parseDouble((graphType.equals(GraphType.UPPER) ? frequencyStartUpper : frequencyStartLower).getText()));
-            newFrequencySweep.setStop(Double.parseDouble((graphType.equals(GraphType.UPPER) ? frequencyStopUpper : frequencyStopLower).getText()));
-            newFrequencySweep.setStep(Double.parseDouble((graphType.equals(GraphType.UPPER) ? frequencyStepUpper : frequencyStepLower).getText()));
-            newFrequencySweep.setSpot(Double.parseDouble((graphType.equals(GraphType.UPPER) ? frequencySpotUpper : frequencySpotLower).getText()));
-            ep.getActive().setFrequencySweep(newFrequencySweep);
-
-            VoltageSweep newVoltageSweep = new VoltageSweep();
-            newVoltageSweep.setStart(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageStartUpper : voltageStartLower).getText()));
-            newVoltageSweep.setStop(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageStopUpper : voltageStopLower).getText()));
-            newVoltageSweep.setStep(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageStepUpper : voltageStepLower).getText()));
-            newVoltageSweep.setSpot(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageSpotUpper : voltageSpotUpper).getText()));
-            ep.getActive().setVoltageSweep(newVoltageSweep);
-
-            Other newOther = new Other();
-            newOther.setCapacitance(Double.parseDouble((graphType.equals(GraphType.UPPER) ? otherCapacitanceUpper : otherCapacitanceLower).getText()));
-            newOther.setElectricalLength(Double.parseDouble((graphType.equals(GraphType.UPPER) ? otherElectricalLengthUpper : otherElectricalLengthLower).getText()));
-            newOther.setAutoSweep((graphType.equals(GraphType.UPPER) ? otherAutoSweepUpper : otherAutoSweepLower).getValue().equals("ON"));
-            newOther.setHighSpeed((graphType.equals(GraphType.UPPER) ? otherHighSpeedUpper : otherHighSpeedLower).getValue().equals("ON"));
-            newOther.setSweepType((graphType.equals(GraphType.UPPER) ? otherSweepTypeUpper : otherSweepTypeLower).getValue().equals("LINEAR") ? SweepType.LINEAR : SweepType.LOG);
-            ep.getActive().setOther(newOther);
-
-            ep.getActive().checkAll();
+            setParametersToEnvironmentParameters(graphType);
 
             if ((graphType.equals(GraphType.UPPER) ? otherAutoSweepUpper : otherAutoSweepLower).getValue().equals("OFF")) {
                 AppMain.notificationService.createNotification("Auto sweep is off", NotificationType.ANNOUNCEMENT);
@@ -348,6 +303,55 @@ public class MainController implements Initializable {
             triggerButton.setText("Run");
             AppMain.notificationService.createNotification("Error occurred when starting measurement -> " + e.getMessage(), NotificationType.ERROR);
         }
+    }
+
+    public void setParametersToEnvironmentParameters(GraphType graphType){
+        ep.setActiveGraphType(graphType);
+        DisplayYY newDisplayYY = ep.getActive().getDisplayYY();
+        RadioButton selectedDisplayA = (RadioButton) (graphType.equals(GraphType.UPPER) ? displayAUpper : displayALower).getSelectedToggle();
+        RadioButton selectedDisplayB = (RadioButton) (graphType.equals(GraphType.UPPER) ? displayBUpper : displayBLower).getSelectedToggle();
+
+        if (selectedDisplayA == null || selectedDisplayB == null) {
+            throw new NullPointerException("Values not properly set! Display A or B not set.. or both :)");
+        }
+
+        String displayA = selectedDisplayA.getText();
+        if ((graphType.equals(GraphType.LOWER) && displayALowerABS.isSelected() && DisplayAOption.isAbsOption(DisplayAOption.valueOf(displayA))) ||
+                (graphType.equals(GraphType.UPPER) && displayAUpperABS.isSelected() && DisplayAOption.isAbsOption(DisplayAOption.valueOf(displayA)))) {
+            displayA = DisplayAOption.getAbsOption(DisplayAOption.valueOf(displayA));
+        }
+
+        newDisplayYY.setA(displayA);
+        newDisplayYY.setB(selectedDisplayB.getText());
+
+        RadioButton selectedDisplayX = (RadioButton) ((graphType.equals(GraphType.UPPER) ? toggleUpperXAxis : toggleLowerXAxis).getSelectedToggle());
+        newDisplayYY.setX(selectedDisplayX.getText().equals("Frequency") ? MeasuredQuantity.FREQUENCY : MeasuredQuantity.VOLTAGE);
+
+        ep.getActive().setDisplayYY(newDisplayYY);
+
+        FrequencySweep newFrequencySweep = ep.getActive().getFrequencySweep();
+        newFrequencySweep.setStart(Double.parseDouble((graphType.equals(GraphType.UPPER) ? frequencyStartUpper : frequencyStartLower).getText()));
+        newFrequencySweep.setStop(Double.parseDouble((graphType.equals(GraphType.UPPER) ? frequencyStopUpper : frequencyStopLower).getText()));
+        newFrequencySweep.setStep(Double.parseDouble((graphType.equals(GraphType.UPPER) ? frequencyStepUpper : frequencyStepLower).getText()));
+        newFrequencySweep.setSpot(Double.parseDouble((graphType.equals(GraphType.UPPER) ? frequencySpotUpper : frequencySpotLower).getText()));
+        ep.getActive().setFrequencySweep(newFrequencySweep);
+
+        VoltageSweep newVoltageSweep = new VoltageSweep();
+        newVoltageSweep.setStart(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageStartUpper : voltageStartLower).getText()));
+        newVoltageSweep.setStop(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageStopUpper : voltageStopLower).getText()));
+        newVoltageSweep.setStep(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageStepUpper : voltageStepLower).getText()));
+        newVoltageSweep.setSpot(Double.parseDouble((graphType.equals(GraphType.UPPER) ? voltageSpotUpper : voltageSpotUpper).getText()));
+        ep.getActive().setVoltageSweep(newVoltageSweep);
+
+        Other newOther = new Other();
+        newOther.setCapacitance(Double.parseDouble((graphType.equals(GraphType.UPPER) ? otherCapacitanceUpper : otherCapacitanceLower).getText()));
+        newOther.setElectricalLength(Double.parseDouble((graphType.equals(GraphType.UPPER) ? otherElectricalLengthUpper : otherElectricalLengthLower).getText()));
+        newOther.setAutoSweep((graphType.equals(GraphType.UPPER) ? otherAutoSweepUpper : otherAutoSweepLower).getValue().equals("ON"));
+        newOther.setHighSpeed((graphType.equals(GraphType.UPPER) ? otherHighSpeedUpper : otherHighSpeedLower).getValue().equals("ON"));
+        newOther.setSweepType((graphType.equals(GraphType.UPPER) ? otherSweepTypeUpper : otherSweepTypeLower).getValue().equals("LINEAR") ? SweepType.LINEAR : SweepType.LOG);
+        ep.getActive().setOther(newOther);
+
+        ep.getActive().checkAll();
     }
 
     public void loadUpperGraph(MouseEvent event) {
@@ -389,6 +393,13 @@ public class MainController implements Initializable {
 
     public void triggerCalibration(MouseEvent event) {
         if (AppMain.communicationService.isConnected()) {
+            if(!gs.isRunningGraph()){
+                if(parametersTabPane.getSelectionModel().isSelected(0)){
+                    setParametersToEnvironmentParameters(GraphType.UPPER);
+                }else{
+                    setParametersToEnvironmentParameters(GraphType.LOWER);
+                }
+            }
             AppMain.calibrationService.openCalibration();
         } else {
             AppMain.notificationService.createNotification("Machine not connected!", NotificationType.ANNOUNCEMENT);
