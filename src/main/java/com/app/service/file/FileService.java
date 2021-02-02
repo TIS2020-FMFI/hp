@@ -63,6 +63,7 @@ public class FileService {
             String path = chooseSavingDirectory();
             if(!path.equals("")){
                 path = setTimeAndDisplayToPath(path, measurement);
+                path = path + ".json";
                 return JsonParser.writeNewMeasurement(path, measurement);
             }else{
                 AppMain.notificationService.createNotification("Save path was not select.", NotificationType.ERROR);
@@ -85,6 +86,7 @@ public class FileService {
     public boolean autoSaveMeasurement(Measurement measurement) {
         if (MeasurementState.FINISHED.equals(measurement.getState())) {
             autoSavingDir = setTimeAndDisplayToPath(autoSavingDir, measurement);
+            autoSavingDir = autoSavingDir + ".json";
             return JsonParser.writeNewMeasurement(autoSavingDir, measurement);
         }
         AppMain.notificationService.createNotification("Only completed measurement can be saved.", NotificationType.WARNING);
