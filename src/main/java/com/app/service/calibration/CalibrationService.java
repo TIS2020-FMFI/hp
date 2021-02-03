@@ -10,7 +10,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import javax.naming.directory.NoSuchAttributeException;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Timer;
@@ -109,9 +108,6 @@ public class CalibrationService {
 
     public void runCalibration(String calibrationType, String from, String to, boolean isHighSpeed) {
         try {
-//            if (isCalibrationInProcess()) {
-//                throw new RuntimeException("Calibration in progress!");
-//            }
             state = CalibrationState.RUNNING;
             double fromFreq = Double.parseDouble(from);
             double toFreq = Double.parseDouble(to);
@@ -119,8 +115,11 @@ public class CalibrationService {
                 AppMain.calibrationService.showNotification("End frequency cannot be smaller than starting frequency!", NotificationType.WARNING);
                 state = CalibrationState.READY;
             } else {
-                AppMain.communicationService.runCalibration(CalibrationType.valueOf(calibrationType.toUpperCase()), fromFreq, toFreq, isHighSpeed);
-//                setCalibrationState(CalibrationState.DONE); // TODO: remove
+                if (AppMain.debugMode) {
+                    setCalibrationState(CalibrationState.DONE);
+                } else {
+                    AppMain.communicationService.runCalibration(CalibrationType.valueOf(calibrationType.toUpperCase()), fromFreq, toFreq, isHighSpeed);
+                }
             }
         } catch(NumberFormatException e) {
             AppMain.calibrationService.showNotification("Could not parse inputs, please, check the formats! -> " + e.getMessage(), NotificationType.ERROR);

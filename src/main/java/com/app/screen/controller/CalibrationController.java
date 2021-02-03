@@ -99,9 +99,11 @@ public class CalibrationController implements Initializable {
                     if (!cs.getOldCalibrationState().equals(cs.getState())) {
                         cs.setOldCalibrationState(cs.getState());
                         toggleButtons();
-                        if (cs.getState().equals(CalibrationState.DONE)) {
+                        if (cs.isCalibrated()) {
                             cs.showNotification("Calibrating processed successfully. " + (cs.getState().equals(CalibrationState.DONE) ? "Check with machine, please!":"Change standard, please!"), NotificationType.SUCCESS);
                             watcher.cancel();
+                        } else {
+                            cs.showNotification("Please, switch standards as required below.", NotificationType.ANNOUNCEMENT);
                         }
                     }
                 }

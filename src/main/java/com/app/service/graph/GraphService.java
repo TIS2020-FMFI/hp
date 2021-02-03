@@ -3,9 +3,6 @@ package com.app.service.graph;
 import com.app.service.AppMain;
 import com.app.service.notification.NotificationType;
 import javafx.scene.Parent;
-import javafx.scene.control.TextArea;
-
-import java.io.IOException;
 
 
 public class GraphService {

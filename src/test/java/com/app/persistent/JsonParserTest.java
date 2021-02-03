@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class JsonParserTest {
 
-    FileService fileService = new FileService("persistent/config.json");
+    FileService fileService = new FileService("config.json");
     EnvironmentParameters ep = new EnvironmentParameters();
 
     @Test
