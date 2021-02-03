@@ -77,7 +77,7 @@ public class JsonParser {
         Parameters paramsLower = new Parameters();
 
         try {
-            Object obj = new JSONParser().parse(new FileReader(JsonParser.class.getResource(filePath).getPath()));
+            Object obj = new JSONParser().parse(new FileReader(filePath));
 
             JSONObject jo = (JSONObject) obj;
 

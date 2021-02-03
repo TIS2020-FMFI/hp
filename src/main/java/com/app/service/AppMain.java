@@ -35,7 +35,7 @@ public class AppMain extends Application {
         // its important to keep this method in this order!
         ps = primaryStage;
 
-        fileService = new FileService("/persistent/config.json");
+        fileService = new FileService("persistent/config.json");
         environmentParameters = fileService.loadConfig();
         graphService = new GraphService();
 
