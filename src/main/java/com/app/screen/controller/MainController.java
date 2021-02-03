@@ -407,7 +407,7 @@ public class MainController implements Initializable {
         gs.loadGraph(type);
         if (gs.upperGraph.getState().equals(GraphState.LOADED)) {
             ep.setUpperGraphParameters(gs.upperGraph.getMeasurement().getParameters());
-            setParam(GraphType.UPPER);
+            setParam(GraphType.UPPER, displayAUpper, displayBUpper);
         }
     }
 
@@ -426,7 +426,7 @@ public class MainController implements Initializable {
         gs.loadGraph(type);
         if (gs.lowerGraph.getState().equals(GraphState.LOADED)) {
             ep.setLowerGraphParameters(gs.lowerGraph.getMeasurement().getParameters());
-            setParam(GraphType.LOWER);
+            setParam(GraphType.LOWER, displayALower, displayBLower);
         }
     }
 
@@ -448,13 +448,11 @@ public class MainController implements Initializable {
     public void triggerCalibration(MouseEvent event) {
         if (AppMain.communicationService.isConnected()) {
             if(!gs.isRunningGraph()){
-                if(parametersTabPane.getSelectionModel().isSelected(0)){
-                    setParametersToEnvironmentParameters(GraphType.UPPER);
-                }else{
-                    setParametersToEnvironmentParameters(GraphType.LOWER);
-                }
+                setParametersToEnvironmentParameters(parametersTabPane.getSelectionModel().isSelected(0) ? GraphType.UPPER:GraphType.LOWER);
+                AppMain.calibrationService.openCalibration();
+            } else {
+                AppMain.notificationService.createNotification("Cannot trigger calibration while measuring!", NotificationType.ERROR);
             }
-            AppMain.calibrationService.openCalibration();
         } else {
             AppMain.notificationService.createNotification("Machine not connected!", NotificationType.ANNOUNCEMENT);
         }
@@ -562,39 +560,51 @@ public class MainController implements Initializable {
      *
      * @param graphType
      */
-    public void setParam(GraphType graphType) {
-        String displayA = ep.getByType(graphType).getDisplayYY().getA();
-
-        String finalDisplayA = displayA;
-        displayAUpper.getToggles().forEach(item -> {
+    public void setParam(GraphType graphType, ToggleGroup displayA, ToggleGroup displayB) {
+        displayA.getToggles().forEach(item -> {
             ToggleButton btn = (ToggleButton) item;
-            if (btn.getText().equals(finalDisplayA)) {
+            if (btn.getText().equals(ep.getByType(graphType).getDisplayYY().getA())) {
                 item.setSelected(true);
             }
         });
-        displayBUpper.getToggles().forEach(item -> {
+        displayB.getToggles().forEach(item -> {
             ToggleButton btn = (ToggleButton) item;
             if (btn.getText().equals(ep.getByType(graphType).getDisplayYY().getB())) {
                 item.setSelected(true);
             }
         });
 
-        commentInputUpper.textProperty().addListener((Observable, oldValue, newValue) -> {
-            ep.getByType(graphType).setComment(newValue);
-        });
+        if (graphType.equals(GraphType.UPPER)) {
+            frequencyStartUpper.setText("" + ep.getByType(graphType).getFrequencySweep().getStart());
+            frequencyStopUpper.setText("" + ep.getByType(graphType).getFrequencySweep().getStop());
+            frequencySpotUpper.setText("" + ep.getByType(graphType).getFrequencySweep().getSpot());
+            frequencyStepUpper.setText("" + ep.getByType(graphType).getFrequencySweep().getStep());
 
-        frequencyStartUpper.setText("" + ep.getByType(graphType).getFrequencySweep().getStart());
-        frequencyStopUpper.setText("" + ep.getByType(graphType).getFrequencySweep().getStop());
-        frequencySpotUpper.setText("" + ep.getByType(graphType).getFrequencySweep().getSpot());
-        frequencyStepUpper.setText("" + ep.getByType(graphType).getFrequencySweep().getStep());
+            voltageStartUpper.setText("" + ep.getByType(graphType).getVoltageSweep().getStart());
+            voltageStopUpper.setText("" + ep.getByType(graphType).getVoltageSweep().getStop());
+            voltageSpotUpper.setText("" + ep.getByType(graphType).getVoltageSweep().getSpot());
+            voltageStepUpper.setText("" + ep.getByType(graphType).getVoltageSweep().getStep());
 
-        voltageStartUpper.setText("" + ep.getByType(graphType).getVoltageSweep().getStart());
-        voltageStopUpper.setText("" + ep.getByType(graphType).getVoltageSweep().getStop());
-        voltageSpotUpper.setText("" + ep.getByType(graphType).getVoltageSweep().getSpot());
-        voltageStepUpper.setText("" + ep.getByType(graphType).getVoltageSweep().getStep());
+            otherCapacitanceUpper.setText("" + ep.getByType(graphType).getOther().getCapacitance());
+            otherElectricalLengthUpper.setText("" + ep.getByType(graphType).getOther().getElectricalLength());
 
-        otherCapacitanceUpper.setText("" + ep.getByType(graphType).getOther().getCapacitance());
-        otherElectricalLengthUpper.setText("" + ep.getByType(graphType).getOther().getElectricalLength());
+            commentInputUpper.setText(ep.getByType(graphType).getComment());
+        } else {
+            frequencyStartLower.setText("" + ep.getByType(graphType).getFrequencySweep().getStart());
+            frequencyStopLower.setText("" + ep.getByType(graphType).getFrequencySweep().getStop());
+            frequencySpotLower.setText("" + ep.getByType(graphType).getFrequencySweep().getSpot());
+            frequencyStepLower.setText("" + ep.getByType(graphType).getFrequencySweep().getStep());
+
+            voltageStartLower.setText("" + ep.getByType(graphType).getVoltageSweep().getStart());
+            voltageStopLower.setText("" + ep.getByType(graphType).getVoltageSweep().getStop());
+            voltageSpotLower.setText("" + ep.getByType(graphType).getVoltageSweep().getSpot());
+            voltageStepLower.setText("" + ep.getByType(graphType).getVoltageSweep().getStep());
+
+            otherCapacitanceLower.setText("" + ep.getByType(graphType).getOther().getCapacitance());
+            otherElectricalLengthLower.setText("" + ep.getByType(graphType).getOther().getElectricalLength());
+
+            commentInputLower.setText(ep.getByType(graphType).getComment());
+        }
     }
 
 
@@ -602,7 +612,11 @@ public class MainController implements Initializable {
      * Initializes input parameters from GUI (upper Graph parameters)
      */
     private void initializeUpper() {
-        setParam(GraphType.UPPER);
+        setParam(GraphType.UPPER, displayAUpper, displayBUpper);
+
+        commentInputUpper.textProperty().addListener((Observable, oldValue, newValue) -> {
+            ep.getByType(GraphType.UPPER).setComment(newValue);
+        });
 
         otherSweepTypeUpper.getItems().addAll("LINEAR", "LOG");
         otherSweepTypeUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0 : 1);
@@ -618,7 +632,11 @@ public class MainController implements Initializable {
      * Initializes input parameters from GUI (lower Graph parameters)
      */
     private void initializeLower() {
-        setParam(GraphType.LOWER);
+        setParam(GraphType.LOWER, displayALower, displayBLower);
+
+        commentInputLower.textProperty().addListener((Observable, oldValue, newValue) -> {
+            ep.getByType(GraphType.LOWER).setComment(newValue);
+        });
 
         // ----- initialize all dropbox -> coz its not possible to do so in sceneBuilder yet
         otherSweepTypeLower.getItems().addAll("LINEAR", "LOG");
