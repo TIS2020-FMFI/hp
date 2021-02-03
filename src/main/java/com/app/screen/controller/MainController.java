@@ -182,10 +182,6 @@ public class MainController implements Initializable {
     TextArea currentValueDisplay;
 
 
-    public void updateComment(MouseEvent event) {
-        ep.getActive().setComment(ep.getActiveGraphType().equals(GraphType.UPPER) ? commentInputUpper.getText() : commentInputLower.getText());
-    }
-
     private void toggleDisabling() {
         boolean isConnected = AppMain.communicationService != null && AppMain.communicationService.isConnected();
         boolean isUpperEmpty = gs.getGraphByType(GraphType.UPPER) == null || gs.getGraphByType(GraphType.UPPER).getState().equals(GraphState.EMPTY);
@@ -221,8 +217,7 @@ public class MainController implements Initializable {
         }
     }
 
-    public void startUpperGraphMeasurement()
-    {
+    public void startUpperGraphMeasurement() {
         parametersTabPane.getSelectionModel().select(upperGraphTab);
         runMeasurement(GraphType.UPPER);
     }
@@ -356,6 +351,8 @@ public class MainController implements Initializable {
         newOther.setSweepType((graphType.equals(GraphType.UPPER) ? otherSweepTypeUpper : otherSweepTypeLower).getValue().equals("LINEAR") ? SweepType.LINEAR : SweepType.LOG);
         ep.getActive().setOther(newOther);
 
+        ep.getActive().setComment(graphType.equals(GraphType.UPPER) ? commentInputUpper.getText() : commentInputLower.getText());
+
         ep.getActive().checkAll();
     }
 
@@ -487,7 +484,6 @@ public class MainController implements Initializable {
     }
 
     private void initializeUpper() {
-        System.out.println("upper -> " + ep.getByType(GraphType.UPPER).getDisplayYY().getA());
         String displayA = ep.getByType(GraphType.UPPER).getDisplayYY().getA();
 
         String finalDisplayA = displayA;
@@ -532,7 +528,6 @@ public class MainController implements Initializable {
     }
 
     private void initializeLower() {
-        System.out.println("lower -> " + ep.getByType(GraphType.LOWER).getDisplayYY().getA());
         String displayA = ep.getByType(GraphType.LOWER).getDisplayYY().getA();
 
         String finalDisplayA = displayA;
@@ -686,7 +681,7 @@ public class MainController implements Initializable {
 
     public void saveUpperGraph(MouseEvent mouseEvent) {
         if (gs.upperGraph.getMeasurement() != null) {
-            gs.upperGraph.getMeasurement().updateComment(commentInputUpper.getText());
+            gs.upperGraph.getMeasurement().getParameters().setComment(commentInputUpper.getText());
             if (AppMain.fileService.saveAsMeasurement(gs.upperGraph.getMeasurement())) {
                 gs.upperGraph.getMeasurement().setState(MeasurementState.SAVED);
                 AppMain.notificationService.createNotification("The measurement in the upper graph was saved.", NotificationType.SUCCESS);
@@ -700,7 +695,7 @@ public class MainController implements Initializable {
 
     public void saveLowerGraph(MouseEvent mouseEvent) {
         if (gs.lowerGraph.getMeasurement() != null) {
-            gs.lowerGraph.getMeasurement().updateComment(commentInputLower.getText());
+            gs.lowerGraph.getMeasurement().getParameters().setComment(commentInputLower.getText());
             if (AppMain.fileService.saveAsMeasurement(gs.lowerGraph.getMeasurement())) {
                 gs.lowerGraph.getMeasurement().setState(MeasurementState.SAVED);
                 AppMain.notificationService.createNotification("The measurement in the lower graph was saved.", NotificationType.SUCCESS);

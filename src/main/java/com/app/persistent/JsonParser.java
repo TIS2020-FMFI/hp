@@ -185,8 +185,8 @@ public class JsonParser {
 
             jo.put("parameters", getParametersMap(parameters));
 
-            if(measurement.getComment() != null){
-                jo.put("comment", measurement.getComment().toString());
+            if(measurement.getParameters().getComment() != null){
+                jo.put("comment", measurement.getParameters().getComment().toString());
             }
 
             JSONArray jsonArray = new JSONArray();
@@ -271,7 +271,7 @@ public class JsonParser {
 
             String comment = jo.get("comment").toString();
             if(comment != null) {
-                measurement.updateComment(comment);
+                measurement.getParameters().setComment(comment);
             }
 
             JSONArray jsonArray = (JSONArray) jo.get("values");
