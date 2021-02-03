@@ -22,6 +22,7 @@ import java.util.TimerTask;
 public class FileService {
     private final String configPath;
     private String autoSavingDir;
+    private String fileName;
     private boolean autoSave;
     Timer timerAutoSave = new Timer();
 
@@ -64,9 +65,8 @@ public class FileService {
                 measurement.getState().equals(MeasurementState.SAVED))) {
             String path = chooseSavingDirectory();
             if(!path.equals("")){
-                path = setTimeAndDisplayToPath(path, measurement);
-                path = path + ".json";
-                return JsonParser.writeNewMeasurement(path, measurement);
+                fileName = setTimeAndDisplayToPath(measurement) + ".json";
+                return JsonParser.writeNewMeasurement(path, fileName, measurement);
             }else{
                 AppMain.notificationService.createNotification("Save path was not select.", NotificationType.ERROR);
             }
@@ -76,20 +76,19 @@ public class FileService {
         return false;
     }
 
-    public String setTimeAndDisplayToPath(String path, Measurement measurement){
+    public String setTimeAndDisplayToPath(Measurement measurement){
         LocalTime localTime = LocalTime.now();
-        path = path +"/" + localTime.getHour() + "-" + localTime.getMinute() +
+        String filename = "/" + localTime.getHour() + "-" + localTime.getMinute() +
                 "-" + measurement.getParameters().getDisplayYY().getA() + "-" +
                 measurement.getParameters().getDisplayYY().getB() + "-" +
                 measurement.getParameters().getDisplayYY().getX().toString();
-        return path;
+        return filename;
     }
 
     public boolean autoSaveMeasurement(Measurement measurement) {
         if (MeasurementState.FINISHED.equals(measurement.getState()) || MeasurementState.STARTED.equals(measurement.getState())) {
-            autoSavingDir = setTimeAndDisplayToPath(autoSavingDir, measurement);
-            autoSavingDir = autoSavingDir + ".json";
-            return JsonParser.writeNewMeasurement(autoSavingDir, measurement);
+            fileName =  setTimeAndDisplayToPath(measurement) + ".json";
+            return JsonParser.writeNewMeasurement(autoSavingDir, fileName, measurement);
         }
         AppMain.notificationService.createNotification("Only completed measurement can be saved.", NotificationType.WARNING);
         return false;
@@ -132,7 +131,7 @@ public class FileService {
                 MeasurementState.SAVED.equals(measurement.getState()) || MeasurementState.LOADED.equals(measurement.getState()))) {
             String path = chooseSavingDirectory();
             if(!path.equals("")) {
-                path = setTimeAndDisplayToPath(path, measurement) + ".txt";
+                path = path + "/" + setTimeAndDisplayToPath(measurement) + ".txt";
                 try (FileWriter writer = new FileWriter(path, false)) {
                     String string = "";
                     if (measurement.getData().size() > 0) {
@@ -161,7 +160,7 @@ public class FileService {
         String savedDir = "";
         if (autoSave) {
             autoSaveMeasurement(measurement);
-            savedDir = autoSavingDir;
+            savedDir = autoSavingDir + fileName;
             String finalSavedDir = savedDir;
             timerAutoSave.schedule(new TimerTask() {
                 @Override

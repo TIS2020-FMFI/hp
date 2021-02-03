@@ -177,7 +177,7 @@ public class JsonParser {
         return params;
     }
 
-    public static boolean writeNewMeasurement(String autoSavingDir, Measurement measurement) {
+    public static boolean writeNewMeasurement(String autoSavingDir, String fileName, Measurement measurement) {
         try {
             JSONObject jo = new JSONObject();
             Parameters parameters = measurement.getParameters();
@@ -205,10 +205,12 @@ public class JsonParser {
 
             jo.put("values", jsonArray);
 
+
+
             File file = new File(autoSavingDir);
             file.mkdirs();
 
-            PrintWriter pw = new PrintWriter(file);
+            PrintWriter pw = new PrintWriter(file + "/" + fileName);
             pw.write(jo.toJSONString());
 
             pw.flush();
