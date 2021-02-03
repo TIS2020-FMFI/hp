@@ -619,15 +619,6 @@
                                                                         <Insets bottom="5.0" left="10.0" right="10.0" top="20.0" />
                                                                      </VBox.margin>
                                                                   </TextArea>
-                                                                  <HBox alignment="BOTTOM_RIGHT" fillHeight="false" VBox.vgrow="NEVER">
-                                                                     <children>
-                                                                        <Button alignment="CENTER" mnemonicParsing="false" onMouseReleased="#updateComment" styleClass="graph-btn" text="Save" textAlignment="CENTER">
-                                                                           <HBox.margin>
-                                                                              <Insets bottom="5.0" left="10.0" right="10.0" />
-                                                                           </HBox.margin>
-                                                                        </Button>
-                                                                     </children>
-                                                                  </HBox>
                                                                </children>
                                                             </VBox>
                                                          </children>
@@ -1195,15 +1186,6 @@
                                                                         <Insets bottom="5.0" left="10.0" right="10.0" top="20.0" />
                                                                      </VBox.margin>
                                                                   </TextArea>
-                                                                  <HBox alignment="BOTTOM_RIGHT" fillHeight="false" VBox.vgrow="NEVER">
-                                                                     <children>
-                                                                        <Button alignment="CENTER" mnemonicParsing="false" onMouseReleased="#updateComment" styleClass="graph-btn" text="Save" textAlignment="CENTER">
-                                                                           <HBox.margin>
-                                                                              <Insets bottom="5.0" left="10.0" right="10.0" />
-                                                                           </HBox.margin>
-                                                                        </Button>
-                                                                     </children>
-                                                                  </HBox>
                                                                </children>
                                                             </VBox>
                                                          </children>

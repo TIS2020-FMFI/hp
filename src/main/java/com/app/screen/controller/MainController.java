@@ -504,6 +504,10 @@ public class MainController implements Initializable {
             }
         });
 
+        commentInputUpper.textProperty().addListener((Observable, oldValue, newValue) -> {
+            ep.getByType(GraphType.UPPER).setComment(newValue);
+        });
+
         frequencyStartUpper.setText("" + ep.getByType(GraphType.UPPER).getFrequencySweep().getStart());
         frequencyStopUpper.setText("" + ep.getByType(GraphType.UPPER).getFrequencySweep().getStop());
         frequencySpotUpper.setText("" + ep.getByType(GraphType.UPPER).getFrequencySweep().getSpot());
@@ -543,6 +547,10 @@ public class MainController implements Initializable {
             if (btn.getText().equals(ep.getByType(GraphType.LOWER).getDisplayYY().getB())) {
                 item.setSelected(true);
             }
+        });
+
+        commentInputLower.textProperty().addListener((Observable, oldValue, newValue) -> {
+            ep.getByType(GraphType.LOWER).setComment(newValue);
         });
 
         frequencyStartLower.setText("" + ep.getByType(GraphType.LOWER).getFrequencySweep().getStart());
