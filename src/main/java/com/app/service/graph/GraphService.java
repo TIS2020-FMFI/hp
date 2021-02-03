@@ -85,8 +85,10 @@ public class GraphService {
     public void run(GraphType type) {
         try {
             getGraphByType(type).run();
+            AppMain.fileService.autoSaveDuringMeasurement(getRunningGraph().getMeasurement());
             AppMain.communicationService.runMeasurement(getRunningGraph().getMeasurement());
         } catch (Exception e) {
+            AppMain.fileService.cancelTimer();
             AppMain.notificationService.createNotification("Error occurred while running measurement -> " + e.getMessage(), NotificationType.ERROR);
         }
     }

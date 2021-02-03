@@ -15,13 +15,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class FileService {
     private final String configPath;
     private String autoSavingDir;
     private boolean autoSave;
-    private boolean stopSave = false;
+    Timer timerAutoSave = new Timer();
 
 
     public FileService(String configPath) {
@@ -76,7 +78,7 @@ public class FileService {
 
     public String setTimeAndDisplayToPath(String path, Measurement measurement){
         LocalTime localTime = LocalTime.now();
-        path = path + localTime.getHour() + "-" + localTime.getMinute() +
+        path = path +"/" + localTime.getHour() + "-" + localTime.getMinute() +
                 "-" + measurement.getParameters().getDisplayYY().getA() + "-" +
                 measurement.getParameters().getDisplayYY().getB() + "-" +
                 measurement.getParameters().getDisplayYY().getX().toString();
@@ -84,7 +86,7 @@ public class FileService {
     }
 
     public boolean autoSaveMeasurement(Measurement measurement) {
-        if (MeasurementState.FINISHED.equals(measurement.getState())) {
+        if (MeasurementState.FINISHED.equals(measurement.getState()) || MeasurementState.STARTED.equals(measurement.getState())) {
             autoSavingDir = setTimeAndDisplayToPath(autoSavingDir, measurement);
             autoSavingDir = autoSavingDir + ".json";
             return JsonParser.writeNewMeasurement(autoSavingDir, measurement);
@@ -136,7 +138,7 @@ public class FileService {
                     if (measurement.getData().size() > 0) {
                         for (SingleValue singleValue : measurement.getData()) {
                             if (singleValue == null) break;
-                            string = singleValue.getDisplayA() + " " + singleValue.getDisplayB() + " " + singleValue.getDisplayX() + "\n";
+                            string = singleValue.getDisplayX() + " " + singleValue.getDisplayA() + " " + singleValue.getDisplayB() + "\n";
                             writer.write(string);
                         }
                         writer.flush();
@@ -153,5 +155,34 @@ public class FileService {
             AppMain.notificationService.createNotification("Only the completed measurement can be exported.", NotificationType.ERROR);
         }
         return false;
+    }
+
+    public void autoSaveDuringMeasurement(Measurement measurement) {
+        String savedDir = "";
+        if (autoSave) {
+            autoSaveMeasurement(measurement);
+            savedDir = autoSavingDir;
+            String finalSavedDir = savedDir;
+            timerAutoSave.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (measurement.getState().equals(MeasurementState.STARTED)) {
+                        if (measurement.getState().equals(MeasurementState.FINISHED) && measurement.getIndexOfTheValueToSave() == measurement.getData().size() - 1) {
+                            measurement.setState(MeasurementState.SAVED);
+                            timerAutoSave.cancel();
+                            return;
+                        }
+                        if (measurement.getData().size() > measurement.getIndexOfTheValueToSave()) {
+                            JsonParser.writeNewValues(finalSavedDir, measurement);
+                        }
+                    }
+
+                }
+            }, 100, 5000);
+        }
+    }
+
+    public void cancelTimer(){
+        timerAutoSave.cancel();
     }
 }

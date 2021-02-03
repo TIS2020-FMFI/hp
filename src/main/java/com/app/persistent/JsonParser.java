@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -204,7 +205,10 @@ public class JsonParser {
 
             jo.put("values", jsonArray);
 
-            PrintWriter pw = new PrintWriter(autoSavingDir);
+            File file = new File(autoSavingDir);
+            file.mkdirs();
+
+            PrintWriter pw = new PrintWriter(file);
             pw.write(jo.toJSONString());
 
             pw.flush();
