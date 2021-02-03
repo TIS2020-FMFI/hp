@@ -29,19 +29,31 @@ public class Connection extends Thread {
     private Timer timer;
 
     public Connection() {
-        try {
+        /*try {
             process = Runtime.getRuntime().exec("C:/s/hp/hpctrl.exe -i"); // TODO: set to default within project
             readEnd = new BufferedReader(new InputStreamReader(process.getInputStream()));
             writeEnd = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
         } catch (IOException e) {
             AppMain.notificationService.createNotification("hpctrl.exe missing, read help for more info", NotificationType.ERROR);
-        }
+        }*/
         environmentParameters = AppMain.environmentParameters;
         commands = new Vector<>();
     }
 
     public boolean isConnected() {
         return connected;
+    }
+
+    public boolean reconnect(){
+        try {
+            process = Runtime.getRuntime().exec("C:/s/hp/hpctrl.exe -i"); // TODO: set to default within project
+            readEnd = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            writeEnd = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
+            return true;
+        } catch (IOException e) {
+            AppMain.notificationService.createNotification("hpctrl.exe missing, read help for more info", NotificationType.ERROR);
+        }
+        return false;
     }
 
     public boolean connect() throws RuntimeException, IOException, InterruptedException {
@@ -59,8 +71,10 @@ public class Connection extends Thread {
                 }
                 timer.cancel();
                 timer = null;
+                process = null;
 
-            } else if (process != null) {
+            } else {
+                if (!reconnect()) return connected;
                 write("connect 19");
                 write("cmd");
                 if (timer == null) {
@@ -69,8 +83,6 @@ public class Connection extends Thread {
                 if (!checkConnection())
                     throw new RuntimeException("Auto-Connection failed, try it manually");
                 cmd = true;
-            } else {
-                throw new RuntimeException("hpctrl.exe could not be lunched, read help for more info");
             }
         } else {
             cmd = true;
@@ -176,6 +188,7 @@ public class Connection extends Thread {
             write("s WU");
             write("c");
             new Thread(() -> {
+                boolean some_data_arrived = false;
                 StringBuilder result = new StringBuilder();
                 while (!List.of(MeasurementState.ABORTED, MeasurementState.FINISHED).contains(measurement.getState())) {
                     try {
@@ -185,7 +198,7 @@ public class Connection extends Thread {
                         }
                         char letter = (char) readEnd.read();
                         if ((letter == '\n') && (result.length() > 1)) {
-                            if (result.charAt(1) == 'N') {
+                            if ((result.charAt(1) == 'N') && some_data_arrived) {
                                 write("n");
                                 measurement.addSingleValue(null);
                                 Thread.currentThread().interrupt();
@@ -194,6 +207,7 @@ public class Connection extends Thread {
                                 System.out.println("reading " + result.toString());
                                 measurement.addSingleValue(new SingleValue(result.toString()));
                                 result = new StringBuilder();
+                                some_data_arrived = true;
                             }
                         } else
                             result.append(letter);
@@ -259,16 +273,16 @@ public class Connection extends Thread {
             case "C":
                 write("s A8");
                 break;
-            case "Z":
+            case "|Z|":
                 write("s A1");
                 break;
-            case "Y":
+            case "|Y|":
                 write("s A2");
                 break;
-            case "r":
+            case "|Γ|":
                 write("s A3");
                 break;
-            case "rx":
+            case "Γx":
                 write("s A6");
                 break;
             case "G":
@@ -291,10 +305,10 @@ public class Connection extends Thread {
             case "Q":
                 write("s B4");
                 break;
-            case "0(rad)":
+            case "Θ(rad)":
                 write("s B2");
                 break;
-            case "0(deg)":
+            case "Θ(deg)":
                 if (environmentParameters.getActive().getDisplayYY().getA().contains("|"))
                     write("B3"); //B4 ?
                 else
@@ -319,13 +333,13 @@ public class Connection extends Thread {
     }
 
     public void openCalibration() {
-        write("s A4");
+        write("s A5");
         write("s CS");
         calibrationReader();
     }
 
     public void shortCalibration() {
-        write("s A5");
+        write("s A4");
         write("s CS");
         calibrationReader();
     }
