@@ -26,6 +26,7 @@ public class Connection extends Thread {
     private EnvironmentParameters environmentParameters;
     private Vector<String> commands;
     private Timer timer;
+    private double finalCalibrationFrequency;
 
     public Connection() {
         /*try {
@@ -363,7 +364,7 @@ public class Connection extends Thread {
                     char letter = (char) readEnd.read();
                     if ((letter == '\n') && (result.length() > 1)) {
                         try {
-                            if (Double.parseDouble(Utils.lineSplitAndExtractNumbers(result.toString(),",")[0]) == 600) {
+                            if (Double.parseDouble(Utils.lineSplitAndExtractNumbers(result.toString(),",")[0]) == finalCalibrationFrequency) {
                                 AppMain.calibrationService.setCalibrationState(CalibrationState.DONE);
                                 Thread.currentThread().interrupt();
                                 return;
@@ -402,6 +403,7 @@ public class Connection extends Thread {
                     calibrationMode = !calibrationMode;
                 }
                 if (calibrationMode) {
+                    finalCalibrationFrequency = to;
                     highSpeed(isHighSpeed);
                     write("s TF" + from + "EN");
                     write("s PF" + to + "EN");
