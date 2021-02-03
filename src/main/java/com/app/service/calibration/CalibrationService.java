@@ -6,15 +6,12 @@ import com.app.service.notification.NotificationType;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.RadioButton;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import javax.naming.directory.NoSuchAttributeException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Timer;
 
@@ -22,9 +19,8 @@ import java.util.Timer;
 public class CalibrationService {
     private final String path;
     private CalibrationState state;
+    private CalibrationType type;
     private NotificationService notificationService;
-    private Map<CalibrationType, RadioButton> calibrationButtons;
-    private Map<CalibrationType, Boolean> calibrationStates;
     private Stage stage;
     private String from;
     private String to;
@@ -35,13 +31,7 @@ public class CalibrationService {
     public CalibrationService(String controllerPath) {
         path = controllerPath;
         state = CalibrationState.READY;
-        calibrationStates = new HashMap<>() {
-            {
-                put(CalibrationType.SHORT, false);
-                put(CalibrationType.OPEN, false);
-                put(CalibrationType.LOAD, false);
-            }
-        };
+        type = CalibrationType.SHORT;
     }
 
     public void openCalibration() {
@@ -69,20 +59,17 @@ public class CalibrationService {
     public CalibrationState getState() {
         return state;
     }
-
-    public Map<CalibrationType, Boolean> getCalibrationStates() {
-        return calibrationStates;
-    }
+    public CalibrationType getType() { return type; }
 
     public void setCalibrationState(CalibrationState state) {
-        if (state.equals(CalibrationState.READY) && calibrationStates.get(CalibrationType.LOAD)) {
-            this.state = CalibrationState.DONE;
-            AppMain.communicationService.leaveCalibration();
-            return;
-        }
         this.state = state;
-        if (state.equals(CalibrationState.READY)) {
-            setAnotherActive();
+        if (state.equals(CalibrationState.DONE)) {
+            if (type.equals(CalibrationType.LOAD)) {
+                AppMain.communicationService.leaveCalibration();
+            } else {
+                type = type.equals(CalibrationType.SHORT) ? CalibrationType.OPEN:CalibrationType.LOAD;
+                this.state = CalibrationState.READY;
+            }
         }
     }
 
@@ -105,6 +92,7 @@ public class CalibrationService {
     }
 
     public void closeCalibration() {
+        calibrationWatcher.cancel();
         stage.close();
     }
 
@@ -112,55 +100,44 @@ public class CalibrationService {
         notificationService.createNotification(content, type);
     }
 
-    public void addRadioButtons(Map<CalibrationType, RadioButton> radioButtons) {
-        calibrationButtons = radioButtons;
-        setAnotherActive();
-    }
-
     public boolean isCalibrated() {
-        return state.equals(CalibrationState.DONE);
+        return state.equals(CalibrationState.DONE) && type.equals(CalibrationType.LOAD);
     }
     public boolean isCalibrationInProcess() {
-        return state.equals(CalibrationState.RUNNING);
-    }
-
-    private CalibrationType getActiveType() {
-        for (Map.Entry<CalibrationType, RadioButton> button : calibrationButtons.entrySet()) {
-            if (button.getValue().isSelected()) {
-                return button.getKey();
-            }
-        }
-        return setAnotherActive();
-    }
-
-    private CalibrationType setAnotherActive() {
-        for (Map.Entry<CalibrationType, Boolean> cal : calibrationStates.entrySet()) {
-            if (!cal.getValue()) {
-                calibrationButtons.get(cal.getKey()).selectedProperty().set(true);
-                return cal.getKey();
-            }
-        }
-        return CalibrationType.SHORT;
+        return !(type.equals(CalibrationType.SHORT) && state.equals(CalibrationState.READY)) && !isCalibrated();
     }
 
     public void runCalibration(String calibrationType, String from, String to, boolean isHighSpeed) {
         try {
-            if (isCalibrationInProcess()) {
-                throw new RuntimeException("Calibration in progress!");
-            }
-            CalibrationType requestedCalibrationType = CalibrationType.getTypeFromString(calibrationType);
+//            if (isCalibrationInProcess()) {
+//                throw new RuntimeException("Calibration in progress!");
+//            }
             state = CalibrationState.RUNNING;
             double fromFreq = Double.parseDouble(from);
             double toFreq = Double.parseDouble(to);
             if (toFreq < fromFreq) {
-                AppMain.notificationService.createNotification("End frequency cannot be smaller than starting frequency!", NotificationType.ERROR);
+                AppMain.calibrationService.showNotification("End frequency cannot be smaller than starting frequency!", NotificationType.WARNING);
+                state = CalibrationState.READY;
             } else {
-                AppMain.communicationService.runCalibration(requestedCalibrationType, fromFreq, toFreq, isHighSpeed);
+                AppMain.communicationService.runCalibration(CalibrationType.valueOf(calibrationType.toUpperCase()), fromFreq, toFreq, isHighSpeed);
+//                setCalibrationState(CalibrationState.DONE); // TODO: remove
             }
         } catch(NumberFormatException e) {
-            AppMain.calibrationService.showNotification("Could not parse inputs, please, check their formats! -> " + e.getMessage(), NotificationType.ERROR);
-        } catch (NoSuchAttributeException | RuntimeException e) {
+            AppMain.calibrationService.showNotification("Could not parse inputs, please, check the formats! -> " + e.getMessage(), NotificationType.ERROR);
+        } catch (RuntimeException e) {
             showNotification("upss! -> " + e.getMessage(), NotificationType.ERROR);
         }
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public String getTo() {
+        return to;
+    }
+
+    public boolean isHighSpeed() {
+        return isHighSpeed;
     }
 }

@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
@@ -14,11 +19,11 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="300.0" prefWidth="600.0" stylesheets="@styles/calibrationScreenStyles.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.screen.controller.CalibrationController">
+<AnchorPane prefHeight="350.0" prefWidth="600.0" stylesheets="@styles/calibrationScreenStyles.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.screen.controller.CalibrationController">
    <children>
       <VBox fx:id="calibrationContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="289.0" prefWidth="600.0" AnchorPane.bottomAnchor="11.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <VBox fx:id="notificationContainer" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="49.0" prefWidth="600.0" stylesheets="@styles/notificationStyles.css">
+            <VBox fx:id="notificationContainer" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="100.0" prefWidth="600.0" stylesheets="@styles/notificationStyles.css">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
@@ -100,26 +105,9 @@
                               </HBox>
                            </children>
                         </GridPane>
-                        <HBox alignment="CENTER" minHeight="50.0" prefHeight="70.0" prefWidth="200.0" spacing="30.0">
+                        <HBox alignment="CENTER" minHeight="50.0" prefHeight="30.0" prefWidth="200.0" spacing="30.0">
                            <children>
-                              <RadioButton fx:id="shortType" mnemonicParsing="false" selected="true" text="short">
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor>
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="calibrationType" />
-                                 </toggleGroup>
-                              </RadioButton>
-                              <RadioButton fx:id="openType" mnemonicParsing="false" text="open" toggleGroup="$calibrationType">
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor>
-                              </RadioButton>
-                              <RadioButton fx:id="loadType" mnemonicParsing="false" text="load" toggleGroup="$calibrationType">
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor>
-                              </RadioButton>
+                              <Label fx:id="calibrationType" text="short" />
                            </children>
                         </HBox>
                         <HBox alignment="CENTER" minHeight="50.0" prefHeight="70.0" prefWidth="200.0" spacing="30.0">

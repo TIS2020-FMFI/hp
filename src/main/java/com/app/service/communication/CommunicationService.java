@@ -38,7 +38,7 @@ public class CommunicationService {
     }
 
     public void leaveCalibration() {
-        connection.leaveCalbration();
+        connection.leaveCalibration();
     }
 
     public void autoConnect() {

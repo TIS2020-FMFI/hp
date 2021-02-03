@@ -365,7 +365,7 @@ public class Connection extends Thread {
                     if ((letter == '\n') && (result.length() > 1)) {
                         try {
                             if (Double.parseDouble(Utils.lineSplitAndExtractNumbers(result.toString(),",")[0]) == 600) {
-                                AppMain.calibrationService.setCalibrationState(CalibrationState.READY);
+                                AppMain.calibrationService.setCalibrationState(CalibrationState.DONE);
                                 Thread.currentThread().interrupt();
                                 return;
                             }
@@ -389,7 +389,7 @@ public class Connection extends Thread {
         }).start();
     }
 
-    public void leaveCalbration() {
+    public void leaveCalibration() {
         write("s C0");
         calibrationMode = !calibrationMode;
     }

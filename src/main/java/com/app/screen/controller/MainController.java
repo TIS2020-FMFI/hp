@@ -221,8 +221,7 @@ public class MainController implements Initializable {
         }
     }
 
-    public void startUpperGraphMeasurement()
-    {
+    public void startUpperGraphMeasurement() {
         parametersTabPane.getSelectionModel().select(upperGraphTab);
         runMeasurement(GraphType.UPPER);
     }
@@ -487,7 +486,6 @@ public class MainController implements Initializable {
     }
 
     private void initializeUpper() {
-        System.out.println("upper -> " + ep.getByType(GraphType.UPPER).getDisplayYY().getA());
         String displayA = ep.getByType(GraphType.UPPER).getDisplayYY().getA();
 
         String finalDisplayA = displayA;
@@ -532,7 +530,6 @@ public class MainController implements Initializable {
     }
 
     private void initializeLower() {
-        System.out.println("lower -> " + ep.getByType(GraphType.LOWER).getDisplayYY().getA());
         String displayA = ep.getByType(GraphType.LOWER).getDisplayYY().getA();
 
         String finalDisplayA = displayA;
