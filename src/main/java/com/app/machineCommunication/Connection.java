@@ -241,7 +241,7 @@ public class Connection extends Thread {
             }
             displayFunctions();
             sweepType();
-            highSpeed();
+            highSpeed(environmentParameters.getActive().getOther().isHighSpeed());
             if (type == MeasuredQuantity.FREQUENCY) {
                 frequencySweep();
             } else {
@@ -250,8 +250,8 @@ public class Connection extends Thread {
         }
     }
 
-    public void highSpeed() {
-        if (environmentParameters.getActive().getOther().isHighSpeed())
+    public void highSpeed(boolean highspeed) {
+        if (highspeed)
             write("s H1");
         else {
             write("s H0");
@@ -400,11 +400,12 @@ public class Connection extends Thread {
             if (cmd) {
                 if (!calibrationMode) {
                     write("s C1");
-                    highSpeed();
                     calibrationMode = !calibrationMode;
                 }
                 if (calibrationMode) {
-                    // TODO: add write(highspeed, from and to freq) here
+                    highSpeed(isHighSpeed);
+                    write("s TF" + from + "EN");
+                    write("s PF" + to + "EN");
                     switch (calibrationType) {
                         case OPEN:
                             openCalibration();
