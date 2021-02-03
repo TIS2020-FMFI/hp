@@ -162,12 +162,11 @@ public class JsonParser {
             other.setHighSpeed((Boolean) o.get("highSpeed"));
             other.setAutoSweep((Boolean) o.get("autoSweep"));
 
-            params.setComment("manually added");
             params.setDisplayYY(displayYY);
             params.setFrequencySweep(frequencySweep);
             params.setVoltageSweep(voltageSweep);
             params.setOther(other);
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             if (AppMain.debugMode && AppMain.notificationService != null) {
                 AppMain.notificationService.createNotification("Failed to load parameters correctly -> " + e.getMessage(), NotificationType.ERROR);
             } else {
@@ -185,16 +184,16 @@ public class JsonParser {
 
             jo.put("parameters", getParametersMap(parameters));
 
-            if(measurement.getParameters().getComment() != null){
+            if (measurement.getParameters().getComment() != null) {
                 jo.put("comment", measurement.getParameters().getComment().toString());
             }
 
             JSONArray jsonArray = new JSONArray();
 
-            for(int i=0; i < measurement.getData().size() -1; i++){
+            for (int i = 0; i < measurement.getData().size() - 1; i++) {
                 JSONObject singleValue = new JSONObject();
                 SingleValue singleV = measurement.getData().get(i);
-                if(singleV != null) {
+                if (singleV != null) {
                     singleValue.put("valueDisplayA", singleV.getDisplayA());
                     singleValue.put("valueDisplayB", singleV.getDisplayB());
                     singleValue.put("valueDisplayX", singleV.getDisplayX());
@@ -204,7 +203,6 @@ public class JsonParser {
             measurement.setIndexOfTheValueToSave(jsonArray.size());
 
             jo.put("values", jsonArray);
-
 
 
             File file = new File(autoSavingDir);
@@ -230,10 +228,10 @@ public class JsonParser {
             JSONArray jsonArray = (JSONArray) jo.get("values");
 
             int index = measurement.getIndexOfTheValueToSave();
-            for(int i = index; i < measurement.getData().size(); i++){
+            for (int i = index; i < measurement.getData().size(); i++) {
                 JSONObject singleValue = new JSONObject();
                 SingleValue singleV = measurement.getData().get(i);
-                if(singleV != null) {
+                if (singleV != null) {
                     singleValue.put("valueDisplayA", singleV.getDisplayA());
                     singleValue.put("valueDisplayB", singleV.getDisplayB());
                     singleValue.put("valueDisplayX", singleV.getDisplayX());
@@ -261,31 +259,38 @@ public class JsonParser {
     public static Measurement readMeasurement(String fileName) throws WrongDataFormatException {
         Measurement measurement = new Measurement(new Parameters());
         try {
-
             Object obj = new JSONParser().parse(new FileReader(fileName));
             JSONObject jo = (JSONObject) obj;
 
-            Parameters parameters = readParameters((HashMap) jo.get("parameters"));
+            Object params = jo.get("parameters");
+            if (params == null) {
+                throw new NullPointerException("parameters");
+            }
+            Parameters parameters = readParameters((HashMap) params);
             parameters.checkAll();
             measurement.setParameters(parameters);
 
-            String comment = jo.get("comment").toString();
-            if(comment != null) {
-                measurement.getParameters().setComment(comment);
+            Object comment = jo.get("comment");
+            if (comment != null) {
+                measurement.getParameters().setComment(comment.toString());
+            } else {
+                throw new NullPointerException("comment");
             }
 
-            JSONArray jsonArray = (JSONArray) jo.get("values");
-
-
-            for (Object o : jsonArray) {
-                JSONObject value = (JSONObject) o;
-                SingleValue singleValue = new SingleValue((Double) value.get("valueDisplayA"),
-                        (Double) value.get("valueDisplayB"), (Double) value.get("valueDisplayX"));
-                measurement.addSingleValue(singleValue);
+            Object jsonArray = jo.get("values");
+            if (jsonArray != null) {
+                for (Object o : (JSONArray) jsonArray) {
+                    JSONObject value = (JSONObject) o;
+                    SingleValue singleValue = new SingleValue((Double) value.get("valueDisplayA"),
+                            (Double) value.get("valueDisplayB"), (Double) value.get("valueDisplayX"));
+                    measurement.addSingleValue(singleValue);
+                }
+            } else {
+                throw new NullPointerException("values");
             }
-
             measurement.setState(MeasurementState.LOADED);
-
+        } catch (NullPointerException e) {
+            AppMain.notificationService.createNotification("Wrong measurement format, missing property! -> missing " + e.getMessage(), NotificationType.ERROR);
         } catch (IOException | ParseException e) {
             if (AppMain.debugMode && AppMain.notificationService != null) {
                 AppMain.notificationService.createNotification("Failed to load measurement correctly -> " + e.getMessage(), NotificationType.ERROR);
