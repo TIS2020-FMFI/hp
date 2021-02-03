@@ -407,7 +407,7 @@ public class MainController implements Initializable {
         gs.loadGraph(type);
         if (gs.upperGraph.getState().equals(GraphState.LOADED)) {
             ep.setUpperGraphParameters(gs.upperGraph.getMeasurement().getParameters());
-            initializeUpper();
+            setParam(GraphType.UPPER);
         }
     }
 
@@ -426,7 +426,7 @@ public class MainController implements Initializable {
         gs.loadGraph(type);
         if (gs.lowerGraph.getState().equals(GraphState.LOADED)) {
             ep.setLowerGraphParameters(gs.lowerGraph.getMeasurement().getParameters());
-            initializeLower();
+            setParam(GraphType.LOWER);
         }
     }
 
@@ -558,10 +558,12 @@ public class MainController implements Initializable {
     }
 
     /**
-     * Initializes input parameters from GUI (upper Graph parameters)
+     * Sets parameters to environment parameters from GraphType.
+     *
+     * @param graphType
      */
-    private void initializeUpper() {
-        String displayA = ep.getByType(GraphType.UPPER).getDisplayYY().getA();
+    public void setParam(GraphType graphType) {
+        String displayA = ep.getByType(graphType).getDisplayYY().getA();
 
         String finalDisplayA = displayA;
         displayAUpper.getToggles().forEach(item -> {
@@ -572,27 +574,35 @@ public class MainController implements Initializable {
         });
         displayBUpper.getToggles().forEach(item -> {
             ToggleButton btn = (ToggleButton) item;
-            if (btn.getText().equals(ep.getByType(GraphType.UPPER).getDisplayYY().getB())) {
+            if (btn.getText().equals(ep.getByType(graphType).getDisplayYY().getB())) {
                 item.setSelected(true);
             }
         });
 
         commentInputUpper.textProperty().addListener((Observable, oldValue, newValue) -> {
-            ep.getByType(GraphType.UPPER).setComment(newValue);
+            ep.getByType(graphType).setComment(newValue);
         });
 
-        frequencyStartUpper.setText("" + ep.getByType(GraphType.UPPER).getFrequencySweep().getStart());
-        frequencyStopUpper.setText("" + ep.getByType(GraphType.UPPER).getFrequencySweep().getStop());
-        frequencySpotUpper.setText("" + ep.getByType(GraphType.UPPER).getFrequencySweep().getSpot());
-        frequencyStepUpper.setText("" + ep.getByType(GraphType.UPPER).getFrequencySweep().getStep());
+        frequencyStartUpper.setText("" + ep.getByType(graphType).getFrequencySweep().getStart());
+        frequencyStopUpper.setText("" + ep.getByType(graphType).getFrequencySweep().getStop());
+        frequencySpotUpper.setText("" + ep.getByType(graphType).getFrequencySweep().getSpot());
+        frequencyStepUpper.setText("" + ep.getByType(graphType).getFrequencySweep().getStep());
 
-        voltageStartUpper.setText("" + ep.getByType(GraphType.UPPER).getVoltageSweep().getStart());
-        voltageStopUpper.setText("" + ep.getByType(GraphType.UPPER).getVoltageSweep().getStop());
-        voltageSpotUpper.setText("" + ep.getByType(GraphType.UPPER).getVoltageSweep().getSpot());
-        voltageStepUpper.setText("" + ep.getByType(GraphType.UPPER).getVoltageSweep().getStep());
+        voltageStartUpper.setText("" + ep.getByType(graphType).getVoltageSweep().getStart());
+        voltageStopUpper.setText("" + ep.getByType(graphType).getVoltageSweep().getStop());
+        voltageSpotUpper.setText("" + ep.getByType(graphType).getVoltageSweep().getSpot());
+        voltageStepUpper.setText("" + ep.getByType(graphType).getVoltageSweep().getStep());
 
-        otherCapacitanceUpper.setText("" + ep.getByType(GraphType.UPPER).getOther().getCapacitance());
-        otherElectricalLengthUpper.setText("" + ep.getByType(GraphType.UPPER).getOther().getElectricalLength());
+        otherCapacitanceUpper.setText("" + ep.getByType(graphType).getOther().getCapacitance());
+        otherElectricalLengthUpper.setText("" + ep.getByType(graphType).getOther().getElectricalLength());
+    }
+
+
+    /**
+     * Initializes input parameters from GUI (upper Graph parameters)
+     */
+    private void initializeUpper() {
+        setParam(GraphType.UPPER);
 
         otherSweepTypeUpper.getItems().addAll("LINEAR", "LOG");
         otherSweepTypeUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0 : 1);
@@ -608,38 +618,8 @@ public class MainController implements Initializable {
      * Initializes input parameters from GUI (lower Graph parameters)
      */
     private void initializeLower() {
-        String displayA = ep.getByType(GraphType.LOWER).getDisplayYY().getA();
+        setParam(GraphType.LOWER);
 
-        String finalDisplayA = displayA;
-        displayALower.getToggles().forEach(item -> {
-            ToggleButton btn = (ToggleButton) item;
-            if (btn.getText().equals(finalDisplayA)) {
-                item.setSelected(true);
-            }
-        });
-        displayBLower.getToggles().forEach(item -> {
-            ToggleButton btn = (ToggleButton) item;
-            if (btn.getText().equals(ep.getByType(GraphType.LOWER).getDisplayYY().getB())) {
-                item.setSelected(true);
-            }
-        });
-
-        commentInputLower.textProperty().addListener((Observable, oldValue, newValue) -> {
-            ep.getByType(GraphType.LOWER).setComment(newValue);
-        });
-
-        frequencyStartLower.setText("" + ep.getByType(GraphType.LOWER).getFrequencySweep().getStart());
-        frequencyStopLower.setText("" + ep.getByType(GraphType.LOWER).getFrequencySweep().getStop());
-        frequencySpotLower.setText("" + ep.getByType(GraphType.LOWER).getFrequencySweep().getSpot());
-        frequencyStepLower.setText("" + ep.getByType(GraphType.LOWER).getFrequencySweep().getStep());
-
-        voltageStartLower.setText("" + ep.getByType(GraphType.LOWER).getVoltageSweep().getStart());
-        voltageStopLower.setText("" + ep.getByType(GraphType.LOWER).getVoltageSweep().getStop());
-        voltageSpotLower.setText("" + ep.getByType(GraphType.LOWER).getVoltageSweep().getSpot());
-        voltageStepLower.setText("" + ep.getByType(GraphType.LOWER).getVoltageSweep().getStep());
-
-        otherCapacitanceLower.setText("" + ep.getByType(GraphType.LOWER).getOther().getCapacitance());
-        otherElectricalLengthLower.setText("" + ep.getByType(GraphType.LOWER).getOther().getElectricalLength());
         // ----- initialize all dropbox -> coz its not possible to do so in sceneBuilder yet
         otherSweepTypeLower.getItems().addAll("LINEAR", "LOG");
         otherSweepTypeLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0 : 1);
