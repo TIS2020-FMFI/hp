@@ -182,6 +182,9 @@ public class MainController implements Initializable {
     TextArea currentValueDisplay;
 
 
+    /**
+     * Disables buttons according based on states of Graph and Connection.
+     */
     private void toggleDisabling() {
         boolean isConnected = AppMain.communicationService != null && AppMain.communicationService.isConnected();
         boolean isUpperEmpty = gs.getGraphByType(GraphType.UPPER) == null || gs.getGraphByType(GraphType.UPPER).getState().equals(GraphState.EMPTY);
@@ -200,6 +203,12 @@ public class MainController implements Initializable {
         lowerGraphExport.setDisable(isLowerRunning || isLowerEmpty);
     }
 
+    /**
+     * Triggers machine to start measurement and display Graph + data in upper part of application.
+     * Sets states of Graph, Buttons and Measurement accordingly.
+     *
+     * @param event
+     */
     public void runUpperGraph(MouseEvent event) {
         GraphType type = GraphType.UPPER;
         if (gs.isRunningGraph() && gs.getGraphByType(type).getState().equals(GraphState.RUNNING)) {
@@ -217,11 +226,20 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Runs Measurement and Displays Graph in Upper part of application.
+     */
     public void startUpperGraphMeasurement() {
         parametersTabPane.getSelectionModel().select(upperGraphTab);
         runMeasurement(GraphType.UPPER);
     }
 
+    /**
+     * Triggers machine to start measurement and display Graph + data in lower part of application.
+     * Sets states of Graph, Buttons and Measurement accordingly.
+     *
+     * @param event
+     */
     public void runLowerGraph(MouseEvent event) {
         GraphType type = GraphType.LOWER;
         if (gs.isRunningGraph() && gs.getGraphByType(type).getState().equals(GraphState.RUNNING)) {
@@ -239,6 +257,9 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Runs Measurement and Displays Graph in lower part of application.
+     */
     public void startLowerGraphMeasurement()
     {
         parametersTabPane.getSelectionModel().select(lowerGraphTab);
@@ -261,6 +282,16 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Triggers machine to start measurement with input parameters set in EnvironmentParameters
+     * (holding all input setting parameters).
+     * Sets states of Graph, Buttons and Measurement accordingly and starts to display data in Graph in lower/upper part
+     * of application based on where user triggered run button.
+     * If autosweep is off, adds Next Button to continue manual measurement.
+     * If autosweep is on, starts automatical measurement.
+     *
+     * @param graphType
+     */
     private void runMeasurement(GraphType graphType) {
         createGraphWatcher(graphType);
 
@@ -309,6 +340,11 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Sets all user input parameters from GUI to EnvironmentParameters to have them ready for measurement.
+     *
+     * @param graphType
+     */
     public void setParametersToEnvironmentParameters(GraphType graphType){
         ep.setActiveGraphType(graphType);
         DisplayYY newDisplayYY = ep.getActive().getDisplayYY();
@@ -356,6 +392,11 @@ public class MainController implements Initializable {
         ep.getActive().checkAll();
     }
 
+    /**
+     * Load data from .json file into Graph visualization in the upper part of application.
+     *
+     * @param event
+     */
     public void loadUpperGraph(MouseEvent event) {
         GraphType type = GraphType.UPPER;
         parametersTabPane.getSelectionModel().select(upperGraphTab);
@@ -370,6 +411,11 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Load data from .json file into Graph visualization in the lower part of application.
+     *
+     * @param event
+     */
     public void loadLowerGraph(MouseEvent event) {
         GraphType type = GraphType.LOWER;
         parametersTabPane.getSelectionModel().select(lowerGraphTab);
@@ -384,15 +430,21 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Sets autosaving ON/OF based on user input.
+     *
+     * @param event
+     */
     public void toggleAutoSave(MouseEvent event) {
         AppMain.fileService.setAutoSave(!AppMain.fileService.isAutoSave());
         autoSaveMenu.setText("Auto save: " + (AppMain.fileService.isAutoSave() ? "ON" : "OFF"));
     }
 
-    public void resetInstrument(MouseEvent event) {
-        // TODO: are we still doing it ???
-    }
-
+    /**
+     * Opens calibration screen if machine is connected or makes a notification that it is not.
+     *
+     * @param event
+     */
     public void triggerCalibration(MouseEvent event) {
         if (AppMain.communicationService.isConnected()) {
             if(!gs.isRunningGraph()){
@@ -408,6 +460,12 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Quits application.
+     * If measurement is in process, notifies that user should abort it or wait.
+     *
+     * @param event
+     */
     public void quitApp(MouseEvent event) {
         if (gs.isRunningGraph()) {
             AppMain.notificationService.createNotification("There is a measurement in process, either wait or abort it.", NotificationType.WARNING);
@@ -423,10 +481,22 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Shows help window.
+     *
+     * @param event
+     */
     public void showHelpWindow(MouseEvent event) {
         AppMain.helpService.openHelp();
     }
 
+    /**
+     * Initializes upper and lower graph with all parameters.
+     * Makes ConnectionWatcher which watches over connection (if connection is not active, disables buttons)
+     *
+     * @param location
+     * @param resources
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         AppMain.ps.setOnCloseRequest(request -> quitApp(null));
@@ -455,6 +525,10 @@ public class MainController implements Initializable {
         }, 100, 100);
     }
 
+    /**
+     * Makes GraphWatcher which watches over graph state (disables buttons / deletes according to states)
+     * @param type
+     */
     private void createGraphWatcher(GraphType type) {
         graphWatcher = new Timer();
         graphWatcher.schedule(new TimerTask() {
@@ -483,6 +557,9 @@ public class MainController implements Initializable {
         }, 100, 100);
     }
 
+    /**
+     * Initializes input parameters from GUI (upper Graph parameters)
+     */
     private void initializeUpper() {
         String displayA = ep.getByType(GraphType.UPPER).getDisplayYY().getA();
 
@@ -527,6 +604,9 @@ public class MainController implements Initializable {
         otherAutoSweepUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isAutoSweep() ? 0 : 1);
     }
 
+    /**
+     * Initializes input parameters from GUI (lower Graph parameters)
+     */
     private void initializeLower() {
         String displayA = ep.getByType(GraphType.LOWER).getDisplayYY().getA();
 
@@ -571,6 +651,9 @@ public class MainController implements Initializable {
         otherAutoSweepLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isAutoSweep() ? 0 : 1);
     }
 
+    /**
+     * Creates listeners (for change of values, inputs) for displayA , displayB toggles for each Graph Type (upper/lower)
+     */
     private void createConstraintListener() {
         displayAUpper.selectedToggleProperty().addListener((observableValue, oldValue, newValue) -> {
             List<DisplayBOption> bOptions = DisplayBOption.getBOptionsByA(DisplayAOption.getOptionFromString(((RadioButton) newValue).getText()));
@@ -642,11 +725,22 @@ public class MainController implements Initializable {
         });
     }
 
+    /**
+     * Sets connection ACTIVE / INACTIVE based on user click.
+     * Disables buttons if GPIB not connected.
+     *
+     * @param mouseEvent
+     */
     public void runConnection(MouseEvent mouseEvent) {
         gpibMenu.setText("GPIB connection: " + (AppMain.communicationService.connect() ? "ACTIVE" : "INACTIVE"));
         toggleDisabling();
     }
 
+    /**
+     * Sets autosave directory, if it is too long shortens it.
+     *
+     * @param mouseEvent
+     */
     public void setAutoSaveDirectory(MouseEvent mouseEvent) {
         String newDirPath = AppMain.fileService.setNewAutoSaveDirectory();
         if (newDirPath.length() >= 50) {
@@ -655,6 +749,12 @@ public class MainController implements Initializable {
         savingDirMenu.setText(newDirPath);
     }
 
+    /**
+     * Exports upper graph measurement.
+     * If it fails, creates notification.
+     *
+     * @param mouseEvent
+     */
     public void exportUpperGraph(MouseEvent mouseEvent) {
         if(gs.upperGraph.getMeasurement() != null){
             if(AppMain.fileService.exportAs(gs.upperGraph.getMeasurement())){
@@ -667,6 +767,12 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Exports lower graph measurement.
+     * If it fails, creates notification.
+     *
+     * @param mouseEvent
+     */
     public void exportLowerGraph(MouseEvent mouseEvent) {
         if(gs.lowerGraph.getMeasurement() != null){
             if(AppMain.fileService.exportAs(gs.lowerGraph.getMeasurement())){
@@ -679,6 +785,12 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Saves upper graph measurement data. (difference from export is in that it can save comments)
+     * If it fails, creates notification.
+     *
+     * @param mouseEvent
+     */
     public void saveUpperGraph(MouseEvent mouseEvent) {
         if (gs.upperGraph.getMeasurement() != null) {
             gs.upperGraph.getMeasurement().getParameters().setComment(commentInputUpper.getText());
@@ -693,6 +805,11 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Saves lower graph measurement data. (difference from export is in that it can save comments)
+     * If it fails, creates notification.
+     * @param mouseEvent
+     */
     public void saveLowerGraph(MouseEvent mouseEvent) {
         if (gs.lowerGraph.getMeasurement() != null) {
             gs.lowerGraph.getMeasurement().getParameters().setComment(commentInputLower.getText());
@@ -707,6 +824,11 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Updates GPIB menu (sets ACTIVE / INACTIVE)
+     *
+     * @param status
+     */
     public void updateGpibMenu(boolean status) {
         Platform.runLater(() -> gpibMenu.setText("GPIB connection: " + (status ? "ACTIVE" : "INACTIVE")));
     }
