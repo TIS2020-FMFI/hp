@@ -50,7 +50,7 @@ public class CommunicationService {
     }
 
     public void runMeasurement(Measurement measurement) throws IOException, InterruptedException {
-        connection.initMeasurement(measurement.getParameters().getDisplayYY().getX());
+        connection.initMeasurement(measurement.getParameters().getDisplayYY().getX(), measurement, measurement.getParameters().getOther().isAutoSweep());
         if (measurement.getParameters().getOther().isAutoSweep()) {
             connection.startAutoMeasurement(measurement);
         }

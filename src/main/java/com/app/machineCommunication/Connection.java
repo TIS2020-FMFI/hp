@@ -234,7 +234,7 @@ public class Connection extends Thread {
         }
     }
 
-    public void initMeasurement(MeasuredQuantity type) throws IOException, InterruptedException {
+    public void initMeasurement(MeasuredQuantity type, Measurement measurement, boolean isAutoSweepOn) throws IOException, InterruptedException {
         if (connected) {
             if (!cmd) {
                 toggleCmdMode();
@@ -246,6 +246,16 @@ public class Connection extends Thread {
                 frequencySweep();
             } else {
                 voltageSweep();
+            }
+            if (!isAutoSweepOn) {
+                write("a");
+                StringBuilder result = read(true);
+                System.out.println("reading " + result.toString());
+                SingleValue next = new SingleValue(result.toString(),measurement);
+                measurement.addSingleValue(next);
+                if (Double.compare(next.getDisplayX(), (measurement.getParameters().getDisplayYY().getX().equals(MeasuredQuantity.FREQUENCY) ? measurement.getParameters().getFrequencySweep().getStop() : measurement.getParameters().getVoltageSweep().getStop())) >= 0) {
+                    measurement.addSingleValue(null);
+                }
             }
         }
     }
