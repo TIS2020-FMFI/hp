@@ -1,5 +1,6 @@
 package com.app.service.file;
 
+import com.app.screen.controller.MainController;
 import com.app.service.AppMain;
 import com.app.service.graph.GraphState;
 import com.app.service.graph.GraphType;
@@ -20,15 +21,17 @@ public class AbortDataDialog {
     private final String path;
     private GraphType graphType;
     private Stage stage;
-    private com.app.screen.controller.MainController mainController;
+    private MainController mainController;
+    private boolean isRun;
 
     public AbortDataDialog(String controllerPath) {
         path = controllerPath;
     }
 
-    public void openDialog(GraphType graphType, com.app.screen.controller.MainController mainController) {
+    public void openDialog(GraphType graphType, MainController mainController, boolean isRun) {
         this.graphType = graphType;
         this.mainController = mainController;
+        this.isRun = isRun;
         try {
             stage = new Stage();
 
@@ -45,8 +48,19 @@ public class AbortDataDialog {
 
     public void abortMeasurement() {
         AppMain.graphService.getGraphByType(graphType).abort();
-        if (graphType == GraphType.UPPER) mainController.startUpperGraphMeasurement();
-        else mainController.startLowerGraphMeasurement();
+        if (isRun) {
+            if (graphType == GraphType.UPPER) {
+                mainController.startUpperGraphMeasurement();
+            } else {
+                mainController.startLowerGraphMeasurement();
+            }
+        } else {
+            if (graphType == GraphType.UPPER) {
+                mainController.loadUpperGraph(null);
+            } else {
+                mainController.loadLowerGraph(null);
+            }
+        }
         close();
     }
 

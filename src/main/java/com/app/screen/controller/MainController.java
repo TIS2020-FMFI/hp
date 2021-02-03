@@ -219,7 +219,7 @@ public class MainController implements Initializable {
 //            upperToolbar.getItems().remove(currentValueDisplay);
         } else if (!gs.isRunningGraph()) {
             if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
-                AppMain.abortDataDialog.openDialog(type, this);
+                AppMain.abortDataDialog.openDialog(type, this, true);
             } else {
                 startUpperGraphMeasurement();
             }
@@ -250,7 +250,7 @@ public class MainController implements Initializable {
 //            lowerToolbar.getItems().remove(currentValueDisplay);
         } else if (!gs.isRunningGraph()) {
             if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
-                AppMain.abortDataDialog.openDialog(type, this);
+                AppMain.abortDataDialog.openDialog(type, this, true);
             } else {
                 startLowerGraphMeasurement();
             }
@@ -401,7 +401,7 @@ public class MainController implements Initializable {
         GraphType type = GraphType.UPPER;
         parametersTabPane.getSelectionModel().select(upperGraphTab);
         if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
-            AppMain.abortDataDialog.openDialog(type, this);
+            AppMain.abortDataDialog.openDialog(type, this, false);
             return;
         }
         gs.loadGraph(type);
@@ -420,7 +420,7 @@ public class MainController implements Initializable {
         GraphType type = GraphType.LOWER;
         parametersTabPane.getSelectionModel().select(lowerGraphTab);
         if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
-            AppMain.abortDataDialog.openDialog(type, this);
+            AppMain.abortDataDialog.openDialog(type, this, false);
             return;
         }
         gs.loadGraph(type);
