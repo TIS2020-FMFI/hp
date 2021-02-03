@@ -44,7 +44,14 @@ public class CalibrationController implements Initializable {
     TextField electricalLengthInput;
 
     @FXML
+    ToggleGroup calibrationSpeed;
+    @FXML
+    RadioButton highSpeed;
+    @FXML
+    RadioButton lowSpeed;
+    @FXML
     ToggleGroup calibrationType;
+
     @FXML
     RadioButton shortType;
     @FXML
@@ -60,8 +67,9 @@ public class CalibrationController implements Initializable {
         if (AppMain.calibrationService.isCalibrated()) {
             AppMain.calibrationService.closeCalibration();
         }
-        RadioButton selectedRadioButton = (RadioButton) calibrationType.getSelectedToggle();
-        AppMain.calibrationService.runCalibration(selectedRadioButton.getText());
+        RadioButton selectedRadioButtonType = (RadioButton) calibrationType.getSelectedToggle();
+        RadioButton selectedRadioButtonSpeed = (RadioButton) calibrationSpeed.getSelectedToggle();
+        AppMain.calibrationService.runCalibration(selectedRadioButtonType.getText(), calibrationInput.getText(), electricalLengthInput.getText(), selectedRadioButtonSpeed == highSpeed);
         toggleButtons();
         calibrationInput.setDisable(true);
         electricalLengthInput.setDisable(true);

@@ -60,8 +60,8 @@ public class CommunicationService {
         connection.stepMeasurement(measurement);
     }
 
-    public void runCalibration(CalibrationType calibrationType) {
-        connection.calibrationHandler(calibrationType);
+    public void runCalibration(CalibrationType calibrationType, double from, double to, boolean isHighSpeed) {
+        connection.calibrationHandler(calibrationType, from, to, isHighSpeed);
     }
 
     public void abortMeasurement() {

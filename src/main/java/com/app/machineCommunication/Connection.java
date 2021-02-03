@@ -394,7 +394,7 @@ public class Connection extends Thread {
         calibrationMode = !calibrationMode;
     }
 
-    public boolean calibrationHandler(CalibrationType calibrationType) {
+    public boolean calibrationHandler(CalibrationType calibrationType, double from, double to, boolean isHighSpeed) {
         if (connected) {
             if (!cmd) toggleCmdMode();
             if (cmd) {
@@ -404,6 +404,7 @@ public class Connection extends Thread {
                     calibrationMode = !calibrationMode;
                 }
                 if (calibrationMode) {
+                    // TODO: add write(highspeed, from and to freq) here
                     switch (calibrationType) {
                         case OPEN:
                             openCalibration();

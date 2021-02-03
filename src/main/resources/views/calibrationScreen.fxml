@@ -124,15 +124,15 @@
                         </HBox>
                         <HBox alignment="CENTER" minHeight="50.0" prefHeight="70.0" prefWidth="200.0" spacing="30.0">
                            <children>
-                              <RadioButton fx:id="highSpeedCalib" mnemonicParsing="false" selected="true" text="High speed">
+                              <RadioButton fx:id="highSpeed" mnemonicParsing="false" selected="true" text="High speed">
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
                                  <toggleGroup>
-                                    <ToggleGroup fx:id="calibrationType1" />
+                                    <ToggleGroup fx:id="calibrationSpeed" />
                                  </toggleGroup>
                               </RadioButton>
-                              <RadioButton fx:id="lowSpeedCalib" mnemonicParsing="false" text="Low Speed" toggleGroup="$calibrationType1">
+                              <RadioButton fx:id="lowSpeed" mnemonicParsing="false" text="Low Speed" toggleGroup="$calibrationSpeed">
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>

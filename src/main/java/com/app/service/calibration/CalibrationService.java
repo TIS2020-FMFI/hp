@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 
 import javax.naming.directory.NoSuchAttributeException;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.*;
 
 
@@ -118,14 +119,16 @@ public class CalibrationService {
         return CalibrationType.SHORT;
     }
 
-    public void runCalibration(String calibrationType) {
+    public void runCalibration(String calibrationType, String from, String to, boolean isHighSpeed) {
         try {
             if (isCalibrationInProcess()) {
                 throw new RuntimeException("Calibration in progress!");
             }
             CalibrationType requestedCalibrationType = CalibrationType.getTypeFromString(calibrationType);
             state = CalibrationState.RUNNING;
-            AppMain.communicationService.runCalibration(requestedCalibrationType);
+            AppMain.communicationService.runCalibration(requestedCalibrationType, Double.parseDouble(from), Double.parseDouble(to), isHighSpeed);
+        } catch(NumberFormatException e) {
+            AppMain.calibrationService.showNotification("Could not parse inputs, please, check their formats! -> " + e.getMessage(), NotificationType.ERROR);
         } catch (NoSuchAttributeException | RuntimeException e) {
             showNotification("upss! -> " + e.getMessage(), NotificationType.ERROR);
         }
