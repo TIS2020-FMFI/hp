@@ -126,12 +126,12 @@
                                                             </HBox>
                                                             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                                                <children>
-                                                                  <RadioButton mnemonicParsing="false" text="0(rad)" toggleGroup="$displayBUpper">
+                                                                  <RadioButton mnemonicParsing="false" text="Θ(rad)" toggleGroup="$displayBUpper">
                                                                      <padding>
                                                                         <Insets left="5.0" right="5.0" />
                                                                      </padding>
                                                                   </RadioButton>
-                                                                  <RadioButton mnemonicParsing="false" text="0(deg)" toggleGroup="$displayBUpper">
+                                                                  <RadioButton mnemonicParsing="false" text="Θ(deg)" toggleGroup="$displayBUpper">
                                                                      <padding>
                                                                         <Insets left="5.0" right="5.0" />
                                                                      </padding>
@@ -143,7 +143,7 @@
                                                             </HBox>
                                                             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                                                <children>
-                                                                  <RadioButton mnemonicParsing="false" text="ry" toggleGroup="$displayBUpper">
+                                                                  <RadioButton mnemonicParsing="false" text="Γy" toggleGroup="$displayBUpper">
                                                                      <padding>
                                                                         <Insets left="5.0" right="5.0" />
                                                                      </padding>
@@ -175,7 +175,7 @@
                                                             </HBox>
                                                             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                                                                <children>
-                                                                  <RadioButton mnemonicParsing="false" text="rx" toggleGroup="$displayAUpper">
+                                                                  <RadioButton mnemonicParsing="false" text="Γx" toggleGroup="$displayAUpper">
                                                                      <padding>
                                                                         <Insets left="5.0" right="5.0" />
                                                                      </padding>
@@ -187,26 +187,21 @@
                                                             </HBox>
                                                             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.rowIndex="2">
                                                                <children>
-                                                                  <RadioButton mnemonicParsing="false" text="Z" toggleGroup="$displayAUpper">
+                                                                  <RadioButton mnemonicParsing="false" text="|Z|" toggleGroup="$displayAUpper">
                                                                      <padding>
                                                                         <Insets left="5.0" right="5.0" />
                                                                      </padding>
                                                                   </RadioButton>
-                                                                  <RadioButton mnemonicParsing="false" text="Y" toggleGroup="$displayAUpper">
+                                                                  <RadioButton mnemonicParsing="false" text="|Y|" toggleGroup="$displayAUpper">
                                                                      <padding>
                                                                         <Insets left="5.0" right="5.0" />
                                                                      </padding>
                                                                   </RadioButton>
-                                                                  <RadioButton mnemonicParsing="false" text="r" toggleGroup="$displayAUpper">
+                                                                  <RadioButton mnemonicParsing="false" text="|Γ|" toggleGroup="$displayAUpper">
                                                                      <padding>
                                                                         <Insets left="5.0" right="5.0" />
                                                                      </padding>
                                                                   </RadioButton>
-                                                                  <CheckBox fx:id="displayAUpperABS" mnemonicParsing="false" prefHeight="27.0" text="abs">
-                                                                     <HBox.margin>
-                                                                        <Insets />
-                                                                     </HBox.margin>
-                                                                  </CheckBox>
                                                                </children>
                                                                <padding>
                                                                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -624,15 +619,6 @@
                                                                         <Insets bottom="5.0" left="10.0" right="10.0" top="20.0" />
                                                                      </VBox.margin>
                                                                   </TextArea>
-                                                                  <HBox alignment="BOTTOM_RIGHT" fillHeight="false" VBox.vgrow="NEVER">
-                                                                     <children>
-                                                                        <Button alignment="CENTER" mnemonicParsing="false" onMouseReleased="#updateComment" styleClass="graph-btn" text="Save" textAlignment="CENTER">
-                                                                           <HBox.margin>
-                                                                              <Insets bottom="5.0" left="10.0" right="10.0" />
-                                                                           </HBox.margin>
-                                                                        </Button>
-                                                                     </children>
-                                                                  </HBox>
                                                                </children>
                                                             </VBox>
                                                          </children>
@@ -707,12 +693,12 @@
                                                             </HBox>
                                                             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                                                <children>
-                                                                  <RadioButton mnemonicParsing="false" text="0(rad)" toggleGroup="$displayBLower">
+                                                                  <RadioButton mnemonicParsing="false" text="Θ(rad)" toggleGroup="$displayBLower">
                                                                      <padding>
                                                                         <Insets left="5.0" right="5.0" />
                                                                      </padding>
                                                                   </RadioButton>
-                                                                  <RadioButton mnemonicParsing="false" text="0(deg)" toggleGroup="$displayBLower">
+                                                                  <RadioButton mnemonicParsing="false" text="Θ(deg)" toggleGroup="$displayBLower">
                                                                      <padding>
                                                                         <Insets left="5.0" right="5.0" />
                                                                      </padding>
@@ -724,7 +710,7 @@
                                                             </HBox>
                                                             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                                                <children>
-                                                                  <RadioButton mnemonicParsing="false" text="ry" toggleGroup="$displayBLower">
+                                                                  <RadioButton mnemonicParsing="false" text="Γy" toggleGroup="$displayBLower">
                                                                      <padding>
                                                                         <Insets left="5.0" right="5.0" />
                                                                      </padding>
@@ -756,7 +742,7 @@
                                                             </HBox>
                                                             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                                                                <children>
-                                                                  <RadioButton mnemonicParsing="false" text="rx" toggleGroup="$displayALower">
+                                                                  <RadioButton mnemonicParsing="false" text="Γx" toggleGroup="$displayALower">
                                                                      <padding>
                                                                         <Insets left="5.0" right="5.0" />
                                                                      </padding>
@@ -768,26 +754,21 @@
                                                             </HBox>
                                                             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.rowIndex="2">
                                                                <children>
-                                                                  <RadioButton mnemonicParsing="false" text="Z" toggleGroup="$displayALower">
+                                                                  <RadioButton mnemonicParsing="false" text="|Z|" toggleGroup="$displayALower">
                                                                      <padding>
                                                                         <Insets left="5.0" right="5.0" />
                                                                      </padding>
                                                                   </RadioButton>
-                                                                  <RadioButton mnemonicParsing="false" text="Y" toggleGroup="$displayALower">
+                                                                  <RadioButton mnemonicParsing="false" text="|Y|" toggleGroup="$displayALower">
                                                                      <padding>
                                                                         <Insets left="5.0" right="5.0" />
                                                                      </padding>
                                                                   </RadioButton>
-                                                                  <RadioButton mnemonicParsing="false" text="r" toggleGroup="$displayALower">
+                                                                  <RadioButton mnemonicParsing="false" text="|Γ|" toggleGroup="$displayALower">
                                                                      <padding>
                                                                         <Insets left="5.0" right="5.0" />
                                                                      </padding>
                                                                   </RadioButton>
-                                                                  <CheckBox fx:id="displayALowerABS" mnemonicParsing="false" prefHeight="27.0" text="abs">
-                                                                     <HBox.margin>
-                                                                        <Insets />
-                                                                     </HBox.margin>
-                                                                  </CheckBox>
                                                                </children>
                                                                <padding>
                                                                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -1205,15 +1186,6 @@
                                                                         <Insets bottom="5.0" left="10.0" right="10.0" top="20.0" />
                                                                      </VBox.margin>
                                                                   </TextArea>
-                                                                  <HBox alignment="BOTTOM_RIGHT" fillHeight="false" VBox.vgrow="NEVER">
-                                                                     <children>
-                                                                        <Button alignment="CENTER" mnemonicParsing="false" onMouseReleased="#updateComment" styleClass="graph-btn" text="Save" textAlignment="CENTER">
-                                                                           <HBox.margin>
-                                                                              <Insets bottom="5.0" left="10.0" right="10.0" />
-                                                                           </HBox.margin>
-                                                                        </Button>
-                                                                     </children>
-                                                                  </HBox>
                                                                </children>
                                                             </VBox>
                                                          </children>

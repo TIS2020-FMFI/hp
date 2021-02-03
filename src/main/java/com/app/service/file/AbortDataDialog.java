@@ -20,13 +20,15 @@ public class AbortDataDialog {
     private final String path;
     private GraphType graphType;
     private Stage stage;
+    private com.app.screen.controller.MainController mainController;
 
     public AbortDataDialog(String controllerPath) {
         path = controllerPath;
     }
 
-    public void openDialog(GraphType graphType) {
+    public void openDialog(GraphType graphType, com.app.screen.controller.MainController mainController) {
         this.graphType = graphType;
+        this.mainController = mainController;
         try {
             stage = new Stage();
 
@@ -43,6 +45,8 @@ public class AbortDataDialog {
 
     public void abortMeasurement() {
         AppMain.graphService.getGraphByType(graphType).abort();
+        if (graphType == GraphType.UPPER) mainController.startUpperGraphMeasurement();
+        else mainController.startLowerGraphMeasurement();
         close();
     }
 

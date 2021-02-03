@@ -90,9 +90,6 @@ public class MainController implements Initializable {
     ToggleGroup displayAUpper;
 
     @FXML
-    CheckBox displayAUpperABS;
-
-    @FXML
     ToggleGroup displayBUpper;
 
     @FXML
@@ -133,9 +130,6 @@ public class MainController implements Initializable {
 
     @FXML
     ToggleGroup displayBLower;
-
-    @FXML
-    CheckBox displayALowerABS;
 
     @FXML
     TextField frequencyStartLower;
@@ -220,12 +214,17 @@ public class MainController implements Initializable {
 //            upperToolbar.getItems().remove(currentValueDisplay);
         } else if (!gs.isRunningGraph()) {
             if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
-                AppMain.abortDataDialog.openDialog(type);
+                AppMain.abortDataDialog.openDialog(type, this);
             } else {
-                parametersTabPane.getSelectionModel().select(upperGraphTab);
-                runMeasurement(GraphType.UPPER, (Button) event.getSource());
+                startUpperGraphMeasurement();
             }
         }
+    }
+
+    public void startUpperGraphMeasurement()
+    {
+        parametersTabPane.getSelectionModel().select(upperGraphTab);
+        runMeasurement(GraphType.UPPER);
     }
 
     public void runLowerGraph(MouseEvent event) {
@@ -238,12 +237,17 @@ public class MainController implements Initializable {
 //            lowerToolbar.getItems().remove(currentValueDisplay);
         } else if (!gs.isRunningGraph()) {
             if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
-                AppMain.abortDataDialog.openDialog(type);
+                AppMain.abortDataDialog.openDialog(type, this);
             } else {
-                parametersTabPane.getSelectionModel().select(lowerGraphTab);
-                runMeasurement(GraphType.LOWER, (Button) event.getSource());
+                startLowerGraphMeasurement();
             }
         }
+    }
+
+    public void startLowerGraphMeasurement()
+    {
+        parametersTabPane.getSelectionModel().select(lowerGraphTab);
+        runMeasurement(GraphType.LOWER);
     }
 
     /**
@@ -262,8 +266,13 @@ public class MainController implements Initializable {
         }
     }
 
-    private void runMeasurement(GraphType graphType, Button triggerButton) {
+    private void runMeasurement(GraphType graphType) {
         createGraphWatcher(graphType);
+
+        Button triggerButton;
+
+        if (graphType.equals(GraphType.UPPER)) triggerButton = upperGraphRun;
+        else triggerButton = lowerGraphRun;
 
         try {
             setParametersToEnvironmentParameters(graphType);
@@ -316,10 +325,6 @@ public class MainController implements Initializable {
         }
 
         String displayA = selectedDisplayA.getText();
-        if ((graphType.equals(GraphType.LOWER) && displayALowerABS.isSelected() && DisplayAOption.isAbsOption(DisplayAOption.valueOf(displayA))) ||
-                (graphType.equals(GraphType.UPPER) && displayAUpperABS.isSelected() && DisplayAOption.isAbsOption(DisplayAOption.valueOf(displayA)))) {
-            displayA = DisplayAOption.getAbsOption(DisplayAOption.valueOf(displayA));
-        }
 
         newDisplayYY.setA(displayA);
         newDisplayYY.setB(selectedDisplayB.getText());
@@ -358,7 +363,7 @@ public class MainController implements Initializable {
         GraphType type = GraphType.UPPER;
         parametersTabPane.getSelectionModel().select(upperGraphTab);
         if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
-            AppMain.abortDataDialog.openDialog(type);
+            AppMain.abortDataDialog.openDialog(type, this);
             return;
         }
         gs.loadGraph(type);
@@ -372,7 +377,7 @@ public class MainController implements Initializable {
         GraphType type = GraphType.LOWER;
         parametersTabPane.getSelectionModel().select(lowerGraphTab);
         if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
-            AppMain.abortDataDialog.openDialog(type);
+            AppMain.abortDataDialog.openDialog(type, this);
             return;
         }
         gs.loadGraph(type);
@@ -485,11 +490,6 @@ public class MainController implements Initializable {
         System.out.println("upper -> " + ep.getByType(GraphType.UPPER).getDisplayYY().getA());
         String displayA = ep.getByType(GraphType.UPPER).getDisplayYY().getA();
 
-        if (DisplayAOption.isAbsOption(displayA)) {
-            displayAUpperABS.setSelected(true);
-            displayA = DisplayAOption.getOptionFromAbs(displayA).toString();
-        }
-
         String finalDisplayA = displayA;
         displayAUpper.getToggles().forEach(item -> {
             ToggleButton btn = (ToggleButton) item;
@@ -502,6 +502,10 @@ public class MainController implements Initializable {
             if (btn.getText().equals(ep.getByType(GraphType.UPPER).getDisplayYY().getB())) {
                 item.setSelected(true);
             }
+        });
+
+        commentInputUpper.textProperty().addListener((Observable, oldValue, newValue) -> {
+            ep.getByType(GraphType.UPPER).setComment(newValue);
         });
 
         frequencyStartUpper.setText("" + ep.getByType(GraphType.UPPER).getFrequencySweep().getStart());
@@ -531,11 +535,6 @@ public class MainController implements Initializable {
         System.out.println("lower -> " + ep.getByType(GraphType.LOWER).getDisplayYY().getA());
         String displayA = ep.getByType(GraphType.LOWER).getDisplayYY().getA();
 
-        if (DisplayAOption.isAbsOption(displayA)) {
-            displayALowerABS.setSelected(true);
-            displayA = DisplayAOption.getOptionFromAbs(displayA).toString();
-        }
-
         String finalDisplayA = displayA;
         displayALower.getToggles().forEach(item -> {
             ToggleButton btn = (ToggleButton) item;
@@ -548,6 +547,10 @@ public class MainController implements Initializable {
             if (btn.getText().equals(ep.getByType(GraphType.LOWER).getDisplayYY().getB())) {
                 item.setSelected(true);
             }
+        });
+
+        commentInputLower.textProperty().addListener((Observable, oldValue, newValue) -> {
+            ep.getByType(GraphType.LOWER).setComment(newValue);
         });
 
         frequencyStartLower.setText("" + ep.getByType(GraphType.LOWER).getFrequencySweep().getStart());

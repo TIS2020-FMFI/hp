@@ -37,28 +37,28 @@ public enum DisplayAOption {
     }
 
     public static DisplayAOption getOptionFromString(String text) {
+        if (text.contains("Γx")) {
+            return rx;
+        }
+        if (text.contains("Γ")) {
+            return r;
+        }
+        if (text.contains("Y")) {
+            return Y;
+        }
+        if (text.contains("Z")) {
+            return Z;
+        }
         return DisplayAOption.valueOf(text);
     }
 
-    public static boolean isAbsOption(DisplayAOption option) {
-        return new ArrayList<>(List.of(Z,Y,r)).contains(option);
-    }
-    public static boolean isAbsOption(String value) {
-        return value.charAt(0) == '|';
-    }
-
-    public static String getAbsOption(DisplayAOption option) {
-        if (isAbsOption(option)) {
-            return "|" + option + "|";
-        }
-        return null;
+    public String toString()
+    {
+        if (this == rx) return "Γx";
+        else if (this == r) return "Γ";
+        else if (this == Y) return "|Y|";
+        else if (this == Z) return "|Z|";
+        else return super.toString();
     }
 
-    public static DisplayAOption getOptionFromAbs(String value) {
-        try {
-            return DisplayAOption.valueOf(value.replaceAll("|", ""));
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-    }
 }

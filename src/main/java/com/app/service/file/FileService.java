@@ -135,6 +135,7 @@ public class FileService {
                     String string = "";
                     if (measurement.getData().size() > 0) {
                         for (SingleValue singleValue : measurement.getData()) {
+                            if (singleValue == null) break;
                             string = singleValue.getDisplayA() + " " + singleValue.getDisplayB() + " " + singleValue.getDisplayX() + "\n";
                             writer.write(string);
                         }
