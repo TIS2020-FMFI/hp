@@ -148,7 +148,7 @@ class JsonParserTest {
         measurement.addSingleValue(new SingleValue(1,0.5,111111.8));
 
         System.out.println(measurement.getIndexOfTheValueToSave());
-        JsonParser.writeNewMeasurement("measurementData.json", measurement);
+        JsonParser.writeNewMeasurement("hello","/measurementData.json", measurement);
         System.out.println(measurement.getIndexOfTheValueToSave());
     }
 
@@ -190,13 +190,13 @@ class JsonParserTest {
         measurement.addSingleValue(new SingleValue(0.1,30.5,8.66));
         measurement.addSingleValue(new SingleValue(1,0.5,18.8));
 
-        JsonParser.writeNewMeasurement("measurementNewData.json", measurement);
+        JsonParser.writeNewMeasurement("new/" ,"measurementNewData.json", measurement);
 
         measurement.setIndexOfTheValueToSave(2);
         measurement.addSingleValue(new SingleValue(5.0,5.0,28));
         measurement.addSingleValue(new SingleValue(155,15,38));
 
-        JsonParser.writeNewValues("measurementNewData.json", measurement);
+        JsonParser.writeNewValues("new/measurementNewData.json", measurement);
     }
 
     @Test

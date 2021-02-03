@@ -683,6 +683,7 @@ public class MainController implements Initializable {
 
     public void saveUpperGraph(MouseEvent mouseEvent) {
         if (gs.upperGraph.getMeasurement() != null) {
+            gs.upperGraph.getMeasurement().updateComment(commentInputUpper.getText());
             if (AppMain.fileService.saveAsMeasurement(gs.upperGraph.getMeasurement())) {
                 gs.upperGraph.getMeasurement().setState(MeasurementState.SAVED);
                 AppMain.notificationService.createNotification("The measurement in the upper graph was saved.", NotificationType.SUCCESS);
@@ -696,6 +697,7 @@ public class MainController implements Initializable {
 
     public void saveLowerGraph(MouseEvent mouseEvent) {
         if (gs.lowerGraph.getMeasurement() != null) {
+            gs.lowerGraph.getMeasurement().updateComment(commentInputLower.getText());
             if (AppMain.fileService.saveAsMeasurement(gs.lowerGraph.getMeasurement())) {
                 gs.lowerGraph.getMeasurement().setState(MeasurementState.SAVED);
                 AppMain.notificationService.createNotification("The measurement in the lower graph was saved.", NotificationType.SUCCESS);

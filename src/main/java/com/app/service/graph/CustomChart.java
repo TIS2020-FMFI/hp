@@ -4,6 +4,7 @@ import com.app.service.graph.dataset.AutoUpdatingDataset;
 import com.app.service.graph.dataset.DatasetType;
 import com.app.service.graph.dataset.StaticDataset;
 import com.app.service.measurement.Measurement;
+import com.app.service.measurement.MeasurementState;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
@@ -63,6 +64,7 @@ public class CustomChart extends ChartPanel {
     private static JFreeChart createChart(Measurement measurement) {
         series1 = new AutoUpdatingDataset(measurement, DatasetType.LEFT);
         series2 = new AutoUpdatingDataset(measurement, DatasetType.RIGHT);
+        measurement.setState(MeasurementState.STARTED);
         createChart(measurement.getParameters().getDisplayYY().getX().name(), measurement.getParameters().getDisplayYY().getA(), measurement.getParameters().getDisplayYY().getB());
 
         AutoUpdatingDataset as1 = (AutoUpdatingDataset) series1;

@@ -2,7 +2,6 @@ package com.app.machineCommunication;
 
 
 import com.app.service.AppMain;
-import com.app.service.calibration.CalibrationService;
 import com.app.service.calibration.CalibrationState;
 import com.app.service.calibration.CalibrationType;
 import com.app.service.file.parameters.EnvironmentParameters;
