@@ -240,6 +240,8 @@ public class Connection extends Thread {
                 toggleCmdMode();
             }
             displayFunctions();
+            capacitance();
+            electricalLength();
             sweepType();
             highSpeed();
             if (type == MeasuredQuantity.FREQUENCY) {
@@ -248,6 +250,14 @@ public class Connection extends Thread {
                 voltageSweep();
             }
         }
+    }
+
+    public void capacitance(){
+        write("s OC" + environmentParameters.getActive().getOther().getCapacitance() + "EN");
+    }
+
+    public void electricalLength() {
+        write("s EL" + environmentParameters.getActive().getOther().getElectricalLength() + "EN");
     }
 
     public void highSpeed() {
@@ -400,8 +410,6 @@ public class Connection extends Thread {
             if (cmd) {
                 if (!calibrationMode) {
                     write("s C1");
-                    write("s OC" + environmentParameters.getActive().getOther().getCapacitance() + "EN");
-                    write("s EL" + environmentParameters.getActive().getOther().getElectricalLength() + "EN");
                     highSpeed();
                     calibrationMode = !calibrationMode;
                 }
