@@ -66,7 +66,7 @@
                                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                        </padding>
                                     </Label>
-                                    <TextField fx:id="calibrationInput" />
+                                    <TextField fx:id="calibrationFromInput" />
                                     <Label text="(1 - 1000Mhz)">
                                        <padding>
                                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -87,7 +87,7 @@
                                           <Insets left="10.0" right="10.0" />
                                        </HBox.margin>
                                     </Label>
-                                    <TextField fx:id="electricalLengthInput" />
+                                    <TextField fx:id="calibrationToInput" />
                                     <Label text="(1 - 1000Mhz)">
                                        <padding>
                                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

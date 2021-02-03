@@ -13,8 +13,10 @@ import javafx.stage.Stage;
 
 import javax.naming.directory.NoSuchAttributeException;
 import java.io.IOException;
-import java.text.ParseException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Timer;
 
 
 public class CalibrationService {
@@ -24,8 +26,11 @@ public class CalibrationService {
     private Map<CalibrationType, RadioButton> calibrationButtons;
     private Map<CalibrationType, Boolean> calibrationStates;
     private Stage stage;
-    private double electricalLength;
-    private double capacitance;
+    private String from;
+    private String to;
+    private boolean isHighSpeed;
+    private Timer calibrationWatcher;
+    private CalibrationState oldCalibrationState;
 
     public CalibrationService(String controllerPath) {
         path = controllerPath;
@@ -53,6 +58,7 @@ public class CalibrationService {
                 throw new NoSuchElementException("Notification container not found in calibration window!");
             }
             notificationService = new NotificationService(notificationContainer);
+            oldCalibrationState = state;
             stage.show();
         } catch (NoSuchElementException | IOException e) {
             e.printStackTrace();
@@ -78,6 +84,24 @@ public class CalibrationService {
         if (state.equals(CalibrationState.READY)) {
             setAnotherActive();
         }
+    }
+
+    public CalibrationState getOldCalibrationState() { return oldCalibrationState; }
+    public void setOldCalibrationState(CalibrationState oldCalibrationState) { this.oldCalibrationState = oldCalibrationState; }
+
+    public Timer getCalibrationWatcher() { return calibrationWatcher; }
+    public void setCalibrationWatcher(Timer calibrationWatcher) { this.calibrationWatcher = calibrationWatcher; }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
+    }
+
+    public void setHighSpeed(boolean highSpeed) {
+        isHighSpeed = highSpeed;
     }
 
     public void closeCalibration() {
@@ -126,7 +150,13 @@ public class CalibrationService {
             }
             CalibrationType requestedCalibrationType = CalibrationType.getTypeFromString(calibrationType);
             state = CalibrationState.RUNNING;
-            AppMain.communicationService.runCalibration(requestedCalibrationType, Double.parseDouble(from), Double.parseDouble(to), isHighSpeed);
+            double fromFreq = Double.parseDouble(from);
+            double toFreq = Double.parseDouble(to);
+            if (toFreq < fromFreq) {
+                AppMain.notificationService.createNotification("End frequency cannot be smaller than starting frequency!", NotificationType.ERROR);
+            } else {
+                AppMain.communicationService.runCalibration(requestedCalibrationType, fromFreq, toFreq, isHighSpeed);
+            }
         } catch(NumberFormatException e) {
             AppMain.calibrationService.showNotification("Could not parse inputs, please, check their formats! -> " + e.getMessage(), NotificationType.ERROR);
         } catch (NoSuchAttributeException | RuntimeException e) {
