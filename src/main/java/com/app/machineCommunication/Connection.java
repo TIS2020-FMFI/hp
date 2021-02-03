@@ -2,7 +2,6 @@ package com.app.machineCommunication;
 
 
 import com.app.service.AppMain;
-import com.app.service.calibration.CalibrationService;
 import com.app.service.calibration.CalibrationState;
 import com.app.service.calibration.CalibrationType;
 import com.app.service.file.parameters.EnvironmentParameters;
@@ -27,6 +26,7 @@ public class Connection extends Thread {
     private EnvironmentParameters environmentParameters;
     private Vector<String> commands;
     private Timer timer;
+    private double finalCalibrationFrequency;
 
     public Connection() {
         /*try {
@@ -240,10 +240,8 @@ public class Connection extends Thread {
                 toggleCmdMode();
             }
             displayFunctions();
-            capacitance();
-            electricalLength();
             sweepType();
-            highSpeed();
+            highSpeed(environmentParameters.getActive().getOther().isHighSpeed());
             if (type == MeasuredQuantity.FREQUENCY) {
                 frequencySweep();
             } else {
@@ -252,16 +250,8 @@ public class Connection extends Thread {
         }
     }
 
-    public void capacitance(){
-        write("s OC" + environmentParameters.getActive().getOther().getCapacitance() + "EN");
-    }
-
-    public void electricalLength() {
-        write("s EL" + environmentParameters.getActive().getOther().getElectricalLength() + "EN");
-    }
-
-    public void highSpeed() {
-        if (environmentParameters.getActive().getOther().isHighSpeed())
+    public void highSpeed(boolean highspeed) {
+        if (highspeed)
             write("s H1");
         else {
             write("s H0");
@@ -374,8 +364,8 @@ public class Connection extends Thread {
                     char letter = (char) readEnd.read();
                     if ((letter == '\n') && (result.length() > 1)) {
                         try {
-                            if (Double.parseDouble(Utils.lineSplitAndExtractNumbers(result.toString(),",")[0]) == 600) {
-                                AppMain.calibrationService.setCalibrationState(CalibrationState.READY);
+                            if (Double.parseDouble(Utils.lineSplitAndExtractNumbers(result.toString(),",")[0]) == finalCalibrationFrequency) {
+                                AppMain.calibrationService.setCalibrationState(CalibrationState.DONE);
                                 Thread.currentThread().interrupt();
                                 return;
                             }
@@ -399,21 +389,24 @@ public class Connection extends Thread {
         }).start();
     }
 
-    public void leaveCalbration() {
+    public void leaveCalibration() {
         write("s C0");
         calibrationMode = !calibrationMode;
     }
 
-    public boolean calibrationHandler(CalibrationType calibrationType) {
+    public boolean calibrationHandler(CalibrationType calibrationType, double from, double to, boolean isHighSpeed) {
         if (connected) {
             if (!cmd) toggleCmdMode();
             if (cmd) {
                 if (!calibrationMode) {
                     write("s C1");
-                    highSpeed();
                     calibrationMode = !calibrationMode;
                 }
                 if (calibrationMode) {
+                    finalCalibrationFrequency = to;
+                    highSpeed(isHighSpeed);
+                    write("s TF" + from + "EN");
+                    write("s PF" + to + "EN");
                     switch (calibrationType) {
                         case OPEN:
                             openCalibration();
