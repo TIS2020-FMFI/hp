@@ -27,15 +27,6 @@ public class Measurement {
         System.out.println("new value added: " + singleValue);
         if(singleValue == null){
             state = MeasurementState.FINISHED;
-            if(AppMain.fileService.isAutoSave()){
-                boolean success = AppMain.fileService.autoSaveMeasurement(this);
-                if(success){
-                    state = MeasurementState.SAVED;
-                    AppMain.notificationService.createNotification("The measurement is saved.", NotificationType.SUCCESS);
-                }else{
-                    AppMain.notificationService.createNotification("The measurement was not saved.", NotificationType.WARNING);
-                }
-            }
         }
     }
 
