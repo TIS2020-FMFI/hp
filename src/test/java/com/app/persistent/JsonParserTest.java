@@ -142,7 +142,7 @@ class JsonParserTest {
         parameters.setVoltageSweep(voltageSweep);
 
         Measurement measurement = new Measurement(parameters);
-        measurement.updateComment("hello world");
+        measurement.getParameters().setComment("hello world");
 
         measurement.addSingleValue(new SingleValue(0.1,30.5,8.06666));
         measurement.addSingleValue(new SingleValue(1,0.5,111111.8));
@@ -185,7 +185,7 @@ class JsonParserTest {
         parameters.setOther(other);
 
         Measurement measurement = new Measurement(parameters);
-        measurement.updateComment("hello world");
+        measurement.getParameters().setComment("hello world");
 
         measurement.addSingleValue(new SingleValue(0.1,30.5,8.66));
         measurement.addSingleValue(new SingleValue(1,0.5,18.8));
@@ -203,7 +203,7 @@ class JsonParserTest {
     void readData() throws WrongDataFormatException {
         Measurement measurement = JsonParser.readMeasurement("measurementNewData.json");
 
-        assertEquals("hello world", measurement.getComment().toString());
+        assertEquals("hello world", measurement.getParameters().getComment().toString());
 
         Vector<SingleValue> data = measurement.getData();
 

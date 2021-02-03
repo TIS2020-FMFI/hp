@@ -11,7 +11,6 @@ import java.util.Vector;
 public class Measurement {
     Vector<SingleValue> data;
     Parameters parameters;
-    StringBuilder comment;
     int indexOfTheValueToSave = 0;
     MeasurementState state;
 
@@ -19,7 +18,6 @@ public class Measurement {
         this.data = new Vector<>();
         this.parameters = parameters;
         this.state = MeasurementState.WAITING;
-        comment = new StringBuilder();
     }
 
     public void addSingleValue(SingleValue singleValue){
@@ -56,15 +54,6 @@ public class Measurement {
 
     public MeasurementState getState() {
         return state;
-    }
-
-    public void updateComment(String newValue) {
-        comment = new StringBuilder(newValue);
-//na testoch pada        AppMain.notificationService.createNotification("Comment saved", NotificationType.ANNOUNCEMENT);
-    }
-
-    public StringBuilder getComment() {
-        return comment;
     }
 
     public boolean canLooseData() {
