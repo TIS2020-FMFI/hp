@@ -15,6 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.MissingFormatArgumentException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -24,7 +25,7 @@ public class FileService {
     private String autoSavingDir;
     private String fileName;
     private boolean autoSave;
-    Timer timerAutoSave = new Timer();
+    private final Timer timerAutoSave = new Timer();
 
 
     public FileService(String configPath) {
@@ -64,37 +65,33 @@ public class FileService {
         if (measurement != null && (measurement.getState().equals(MeasurementState.LOADED) || measurement.getState().equals(MeasurementState.FINISHED) ||
                 measurement.getState().equals(MeasurementState.SAVED))) {
             String path = chooseSavingDirectory();
-            if(!path.equals("")){
+            if (!path.equals("")) {
                 fileName = setTimeAndDisplayToPath(measurement) + ".json";
                 return JsonParser.writeNewMeasurement(path, fileName, measurement);
-            }else{
-                AppMain.notificationService.createNotification("Save path was not select.", NotificationType.ERROR);
             }
-        }else {
-            AppMain.notificationService.createNotification("Only the completed measurement can be saved.", NotificationType.ERROR);
+        } else {
+            AppMain.notificationService.createNotification("Only a completed measurement can be saved.", NotificationType.ERROR);
         }
         return false;
     }
 
-    public String setTimeAndDisplayToPath(Measurement measurement){
+    public String setTimeAndDisplayToPath(Measurement measurement) {
         LocalTime localTime = LocalTime.now();
-        String filename = "/" + localTime.getHour() + "-" + localTime.getMinute() +
+        return "/" + localTime.getHour() + "-" + localTime.getMinute() +
                 "-" + measurement.getParameters().getDisplayYY().getA() + "-" +
                 measurement.getParameters().getDisplayYY().getB() + "-" +
                 measurement.getParameters().getDisplayYY().getX().toString();
-        return filename;
     }
 
     public boolean autoSaveMeasurement(Measurement measurement) {
         if (MeasurementState.FINISHED.equals(measurement.getState()) || MeasurementState.STARTED.equals(measurement.getState())) {
-            fileName =  setTimeAndDisplayToPath(measurement) + ".json";
-            return JsonParser.writeNewMeasurement(autoSavingDir, fileName, measurement);
+            return JsonParser.writeNewMeasurement(autoSavingDir, setTimeAndDisplayToPath(measurement) + ".json", measurement);
         }
-        AppMain.notificationService.createNotification("Only completed measurement can be saved.", NotificationType.WARNING);
+        AppMain.notificationService.createNotification("Only a completed measurement can be saved.", NotificationType.WARNING);
         return false;
     }
 
-    public Measurement loadMeasurement(String path) {
+    public Measurement loadMeasurement(String path) throws MissingFormatArgumentException {
         try {
             return JsonParser.readMeasurement(path);
         } catch (WrongDataFormatException e) {
@@ -117,6 +114,7 @@ public class FileService {
 
     private String chooseSavingDirectory() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Choose directory to save the measurement");
         File dir = directoryChooser.showDialog(AppMain.ps);
         String newSavingDir = "";
         if (dir != null) {
@@ -126,11 +124,11 @@ public class FileService {
         return newSavingDir;
     }
 
-    public boolean exportAs(Measurement measurement){
-        if(measurement != null && (MeasurementState.FINISHED.equals(measurement.getState()) ||
+    public boolean exportAs(Measurement measurement) {
+        if (measurement != null && (MeasurementState.FINISHED.equals(measurement.getState()) ||
                 MeasurementState.SAVED.equals(measurement.getState()) || MeasurementState.LOADED.equals(measurement.getState()))) {
             String path = chooseSavingDirectory();
-            if(!path.equals("")) {
+            if (!path.equals("")) {
                 path = path + "/" + setTimeAndDisplayToPath(measurement) + ".txt";
                 try (FileWriter writer = new FileWriter(path, false)) {
                     String string = "";
@@ -143,21 +141,18 @@ public class FileService {
                         writer.flush();
                         return true;
                     }
-                }
-                catch(IOException ex){
+                } catch (IOException ex) {
                     return false;
                 }
-            }else{
-                AppMain.notificationService.createNotification("Export path was not select.", NotificationType.ERROR);
             }
-        }else {
-            AppMain.notificationService.createNotification("Only the completed measurement can be exported.", NotificationType.ERROR);
+        } else {
+            AppMain.notificationService.createNotification("Only a completed measurement can be exported.", NotificationType.ERROR);
         }
         return false;
     }
 
     public void autoSaveDuringMeasurement(Measurement measurement) {
-        String savedDir = "";
+        String savedDir;
         if (autoSave) {
             autoSaveMeasurement(measurement);
             savedDir = autoSavingDir + fileName;
@@ -181,7 +176,7 @@ public class FileService {
         }
     }
 
-    public void cancelTimer(){
+    public void cancelTimer() {
         timerAutoSave.cancel();
     }
 }

@@ -4,6 +4,8 @@ import com.app.service.AppMain;
 import com.app.service.notification.NotificationType;
 import javafx.scene.Parent;
 
+import java.util.MissingFormatArgumentException;
+
 
 public class GraphService {
     public Graph upperGraph;
@@ -101,6 +103,8 @@ public class GraphService {
             getGraphByType(type).load();
         } catch (NumberFormatException e) {
             AppMain.notificationService.createNotification("Could not parse loaded data -> " + e.getMessage(), NotificationType.ERROR);
+        } catch (MissingFormatArgumentException e) {
+            AppMain.notificationService.createNotification("File is missing required values -> " + e.getMessage(), NotificationType.ERROR);
         } catch (Exception e) {
             AppMain.notificationService.createNotification("Loading measurement failed -> " + e.getMessage(), NotificationType.ERROR);
         }

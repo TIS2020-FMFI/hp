@@ -335,7 +335,7 @@ public class MainController implements Initializable {
      *
      * @param graphType
      */
-    public void setParametersToEnvironmentParameters(GraphType graphType){
+    public void setParametersToEnvironmentParameters(GraphType graphType) {
         ep.setActiveGraphType(graphType);
         DisplayYY newDisplayYY = ep.getActive().getDisplayYY();
         RadioButton selectedDisplayA = (RadioButton) (graphType.equals(GraphType.UPPER) ? displayAUpper : displayALower).getSelectedToggle();
@@ -437,8 +437,8 @@ public class MainController implements Initializable {
      */
     public void triggerCalibration(MouseEvent event) {
         if (AppMain.communicationService.isConnected()) {
-            if(!gs.isRunningGraph()){
-                setParametersToEnvironmentParameters(parametersTabPane.getSelectionModel().isSelected(0) ? GraphType.UPPER:GraphType.LOWER);
+            if (!gs.isRunningGraph()) {
+                setParametersToEnvironmentParameters(parametersTabPane.getSelectionModel().isSelected(0) ? GraphType.UPPER : GraphType.LOWER);
                 AppMain.calibrationService.openCalibration();
             } else {
                 AppMain.notificationService.createNotification("Cannot trigger calibration while measuring!", NotificationType.ERROR);
@@ -463,7 +463,7 @@ public class MainController implements Initializable {
             }
         } else if ((gs.getGraphByType(GraphType.UPPER).getMeasurement() == null || !gs.getGraphByType(GraphType.UPPER).getMeasurement().canLooseData())
                 && (gs.getGraphByType(GraphType.LOWER).getMeasurement() == null || !gs.getGraphByType(GraphType.LOWER).getMeasurement().canLooseData())) {
-                Utils.closeApp();
+            Utils.closeApp();
         } else {
             AppMain.dataNotSavedDialog.openDialog();
         }
@@ -513,6 +513,7 @@ public class MainController implements Initializable {
 
     /**
      * Makes GraphWatcher which watches over graph state (disables buttons / deletes according to states)
+     *
      * @param type
      */
     private void createGraphWatcher(GraphType type) {
@@ -534,8 +535,6 @@ public class MainController implements Initializable {
 //                                lowerToolbar.getItems().remove(currentValueDisplay);
                             }
                         });
-                    }
-                    if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().getState().equals(MeasurementState.ABORTED)) {
                         cancel();
                     }
                 }
@@ -730,7 +729,7 @@ public class MainController implements Initializable {
     public void setAutoSaveDirectory(MouseEvent mouseEvent) {
         String newDirPath = AppMain.fileService.setNewAutoSaveDirectory();
         if (newDirPath.length() >= 50) {
-            newDirPath = newDirPath.substring(0,3)+ "..." + newDirPath.substring(newDirPath.length() - 50 + newDirPath.substring(newDirPath.length() - 50).indexOf("/"));
+            newDirPath = newDirPath.substring(0, 3) + "..." + newDirPath.substring(newDirPath.length() - 50 + newDirPath.substring(newDirPath.length() - 50).indexOf("/"));
         }
         savingDirMenu.setText(newDirPath);
     }
@@ -742,14 +741,12 @@ public class MainController implements Initializable {
      * @param mouseEvent
      */
     public void exportUpperGraph(MouseEvent mouseEvent) {
-        if(gs.upperGraph.getMeasurement() != null){
-            if(AppMain.fileService.exportAs(gs.upperGraph.getMeasurement())){
-                AppMain.notificationService.createNotification("The measurement in the upper graph was exported.", NotificationType.SUCCESS);
-            }else{
-                AppMain.notificationService.createNotification("The measurement in the upper graph failed to export.", NotificationType.ERROR);
+        if (gs.upperGraph.getMeasurement() != null) {
+            if (AppMain.fileService.exportAs(gs.upperGraph.getMeasurement())) {
+                AppMain.notificationService.createNotification("Measurement in the upper graph exported successfully.", NotificationType.SUCCESS);
             }
-        }else{
-            AppMain.notificationService.createNotification("Measurement not found in the upper graph", NotificationType.ERROR);
+        } else {
+            AppMain.notificationService.createNotification("There is nothing to export in the upper graph!", NotificationType.ERROR);
         }
     }
 
@@ -760,14 +757,12 @@ public class MainController implements Initializable {
      * @param mouseEvent
      */
     public void exportLowerGraph(MouseEvent mouseEvent) {
-        if(gs.lowerGraph.getMeasurement() != null){
-            if(AppMain.fileService.exportAs(gs.lowerGraph.getMeasurement())){
-                AppMain.notificationService.createNotification("The measurement in the lower graph was exported.", NotificationType.SUCCESS);
-            }else{
-                AppMain.notificationService.createNotification("The measurement in the lower graph failed to export.", NotificationType.ERROR);
+        if (gs.lowerGraph.getMeasurement() != null) {
+            if (AppMain.fileService.exportAs(gs.lowerGraph.getMeasurement())) {
+                AppMain.notificationService.createNotification("Measurement in the lower graph exported successfully.", NotificationType.SUCCESS);
             }
-        }else{
-            AppMain.notificationService.createNotification("Measurement not found in the lower graph", NotificationType.ERROR);
+        } else {
+            AppMain.notificationService.createNotification("There is nothing to export in the lower graph!", NotificationType.ERROR);
         }
     }
 
@@ -782,18 +777,17 @@ public class MainController implements Initializable {
             gs.upperGraph.getMeasurement().getParameters().setComment(commentInputUpper.getText());
             if (AppMain.fileService.saveAsMeasurement(gs.upperGraph.getMeasurement())) {
                 gs.upperGraph.getMeasurement().setState(MeasurementState.SAVED);
-                AppMain.notificationService.createNotification("The measurement in the upper graph was saved.", NotificationType.SUCCESS);
-            } else {
-                AppMain.notificationService.createNotification("The measurement in the upper graph failed to save.", NotificationType.ERROR);
+                AppMain.notificationService.createNotification("Measurement in the upper graph saved successfully.", NotificationType.SUCCESS);
             }
         } else {
-            AppMain.notificationService.createNotification("Measurement not found in the upper graph", NotificationType.ERROR);
+            AppMain.notificationService.createNotification("There is nothing to save in the upper graph!", NotificationType.ERROR);
         }
     }
 
     /**
      * Saves lower graph measurement data. (difference from export is in that it can save comments)
      * If it fails, creates notification.
+     *
      * @param mouseEvent
      */
     public void saveLowerGraph(MouseEvent mouseEvent) {
@@ -801,12 +795,10 @@ public class MainController implements Initializable {
             gs.lowerGraph.getMeasurement().getParameters().setComment(commentInputLower.getText());
             if (AppMain.fileService.saveAsMeasurement(gs.lowerGraph.getMeasurement())) {
                 gs.lowerGraph.getMeasurement().setState(MeasurementState.SAVED);
-                AppMain.notificationService.createNotification("The measurement in the lower graph was saved.", NotificationType.SUCCESS);
-            } else {
-                AppMain.notificationService.createNotification("The measurement in the lower graph failed to save.", NotificationType.ERROR);
+                AppMain.notificationService.createNotification("Measurement in the lower graph saved successfully.", NotificationType.SUCCESS);
             }
         } else {
-            AppMain.notificationService.createNotification("Measurement not found in the lower graph", NotificationType.ERROR);
+            AppMain.notificationService.createNotification("There is nothing to save in the lower graph!", NotificationType.ERROR);
         }
     }
 

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.MissingFormatArgumentException;
 
 
 public class JsonParser {
@@ -290,7 +291,7 @@ public class JsonParser {
             }
             measurement.setState(MeasurementState.LOADED);
         } catch (NullPointerException e) {
-            AppMain.notificationService.createNotification("Wrong measurement format, missing property! -> missing " + e.getMessage(), NotificationType.ERROR);
+            throw new MissingFormatArgumentException(e.getMessage());
         } catch (IOException | ParseException e) {
             if (AppMain.debugMode && AppMain.notificationService != null) {
                 AppMain.notificationService.createNotification("Failed to load measurement correctly -> " + e.getMessage(), NotificationType.ERROR);
