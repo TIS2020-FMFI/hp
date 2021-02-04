@@ -119,9 +119,12 @@ public class Connection extends Thread {
         }
     }
 
-    private StringBuilder read(boolean isStepMeasurement) throws IOException, InterruptedException {
+    private StringBuilder read(boolean isStepMeasurement) throws IOException, InterruptedException, NullPointerException {
         StringBuilder result = new StringBuilder();
         int count = 0;
+        if (readEnd == null) {
+            throw new NullPointerException("EndRead is null in debug mode, nothing to worry about :)");
+        }
         while (result.length() == 0 || result.toString().charAt(result.length()-1) != '\n') {
             if (!readEnd.ready() && !isStepMeasurement) {
                 System.out.println("readEnd not ready");
