@@ -3,7 +3,6 @@ package com.app.screen.controller;
 import com.app.service.AppMain;
 import com.app.service.calibration.CalibrationService;
 import com.app.service.calibration.CalibrationState;
-import com.app.service.calibration.CalibrationType;
 import com.app.service.notification.NotificationType;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -15,7 +14,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
-import java.util.*;
+import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class CalibrationController implements Initializable {
 

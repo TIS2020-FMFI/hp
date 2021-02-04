@@ -8,7 +8,6 @@ import org.jfree.data.xy.AbstractXYDataset;
 import java.util.List;
 
 
-
 public class StaticDataset extends AbstractXYDataset {
     private DatasetType type;
     private List<SingleValue> values;

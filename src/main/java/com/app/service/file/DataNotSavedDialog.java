@@ -1,7 +1,6 @@
 package com.app.service.file;
 
 import com.app.service.AppMain;
-import com.app.service.graph.GraphState;
 import com.app.service.notification.NotificationType;
 import com.app.service.utils.Utils;
 import javafx.fxml.FXMLLoader;

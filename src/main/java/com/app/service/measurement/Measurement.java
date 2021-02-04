@@ -1,8 +1,6 @@
 package com.app.service.measurement;
 
-import com.app.service.AppMain;
 import com.app.service.file.parameters.Parameters;
-import com.app.service.notification.NotificationType;
 
 import java.util.List;
 import java.util.Vector;

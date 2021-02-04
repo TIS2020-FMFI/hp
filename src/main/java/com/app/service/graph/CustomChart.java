@@ -50,6 +50,7 @@ public class CustomChart extends ChartPanel {
     private static JFreeChart loadChart(Measurement measurement) {
         series1 = new StaticDataset(measurement, DatasetType.LEFT);
         series2 = new StaticDataset(measurement, DatasetType.RIGHT);
+        measurement.setState(MeasurementState.LOADED);
         createChart(measurement.getParameters().getDisplayYY().getX().name(), measurement.getParameters().getDisplayYY().getA(), measurement.getParameters().getDisplayYY().getB());
         return chart;
     }
