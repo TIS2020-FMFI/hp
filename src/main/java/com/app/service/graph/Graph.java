@@ -5,11 +5,11 @@ import com.app.service.measurement.Measurement;
 import com.app.service.measurement.MeasurementState;
 import com.app.service.notification.NotificationType;
 import javafx.scene.Parent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.jfree.chart.fx.ChartViewer;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 

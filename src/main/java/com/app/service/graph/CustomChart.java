@@ -51,6 +51,11 @@ public class CustomChart extends ChartPanel {
         series1 = new StaticDataset(measurement, DatasetType.LEFT);
         series2 = new StaticDataset(measurement, DatasetType.RIGHT);
         createChart(measurement.getParameters().getDisplayYY().getX().name(), measurement.getParameters().getDisplayYY().getA(), measurement.getParameters().getDisplayYY().getB());
+
+        StaticDataset st1 = (StaticDataset) series1;
+        StaticDataset st2 = (StaticDataset) series2;
+        st1.start();
+        st2.start();
         return chart;
     }
 
@@ -136,7 +141,6 @@ public class CustomChart extends ChartPanel {
         chart.setBackgroundPaint(null);
         chart.setBorderVisible(false);
         chart.removeLegend();
-        chart.setElementHinting(true);
     }
 
     /**
@@ -155,5 +159,4 @@ public class CustomChart extends ChartPanel {
         as1.abortMeasurement();
         as2.abortMeasurement();
     }
-
 }

@@ -273,8 +273,6 @@ public class JsonParser {
             Object comment = jo.get("comment");
             if (comment != null) {
                 measurement.getParameters().setComment(comment.toString());
-            } else {
-                throw new NullPointerException("comment");
             }
 
             Object jsonArray = jo.get("values");
