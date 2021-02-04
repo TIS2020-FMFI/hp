@@ -90,8 +90,8 @@ public class CustomChart extends ChartPanel {
     private static void createChart(String Xname, String Y1name, String Y2name) {
         //construct the plot
         XYPlot plot = new XYPlot();
-        plot.setDataset(0, series1);
-        plot.setDataset(1, series2);
+        plot.setDataset(0, series2);
+        plot.setDataset(1, series1);
 
         //customize the plot with renderers and axis
         XYSplineRenderer splinerenderer1 = new XYSplineRenderer();
@@ -101,7 +101,7 @@ public class CustomChart extends ChartPanel {
         splinerenderer1.setDefaultItemLabelGenerator(new StandardXYItemLabelGenerator());
 
         XYSplineRenderer splinerenderer0 = new XYSplineRenderer();
-        splinerenderer0.setSeriesFillPaint(0, Color.BLUE);
+        splinerenderer0.setSeriesFillPaint(1, Color.BLUE);
         splinerenderer0.setSeriesItemLabelsVisible(0,true);
         plot.setRenderer(1, splinerenderer0);
         splinerenderer0.setAutoPopulateSeriesFillPaint(true);

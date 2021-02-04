@@ -443,7 +443,7 @@ public class Connection extends Thread {
         if (new Random().nextInt(100) > 95) {
             return null;
         }
-        return new SingleValue(Math.random() * 20 + 80, Math.random() * 20 + 80, X);
+        return new SingleValue(Math.random() * 20 + 80, Math.random() * 20 + 40, X);
     }
 }
 
