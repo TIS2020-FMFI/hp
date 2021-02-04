@@ -86,7 +86,7 @@ public class GraphService {
             AppMain.communicationService.runMeasurement(getRunningGraph().getMeasurement());
         } catch (Exception e) {
             AppMain.fileService.cancelTimer();
-            AppMain.notificationService.createNotification("Error occurred while running measurement -> " + e.getMessage(), NotificationType.ERROR);
+            AppMain.notificationService.createNotification("Running measurement failed -> " + e.getMessage(), NotificationType.ERROR);
         }
     }
 
@@ -102,7 +102,7 @@ public class GraphService {
         } catch (NumberFormatException e) {
             AppMain.notificationService.createNotification("Could not parse loaded data -> " + e.getMessage(), NotificationType.ERROR);
         } catch (Exception e) {
-            AppMain.notificationService.createNotification("Error occurred while loading measurement -> " + e.getMessage(), NotificationType.ERROR);
+            AppMain.notificationService.createNotification("Loading measurement failed -> " + e.getMessage(), NotificationType.ERROR);
         }
     }
 
@@ -117,7 +117,7 @@ public class GraphService {
             AppMain.communicationService.abortMeasurement();
             getGraphByType(type).abort();
         } catch (Exception e) {
-            AppMain.notificationService.createNotification("Error occurred while aborting measurement -> " + e.getMessage(), NotificationType.ERROR);
+            AppMain.notificationService.createNotification("Aborting measurement failed -> " + e.getMessage(), NotificationType.ERROR);
         }
     }
 

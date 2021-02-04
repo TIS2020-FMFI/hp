@@ -2,12 +2,8 @@ package com.app.service.file;
 
 import com.app.screen.controller.MainController;
 import com.app.service.AppMain;
-import com.app.service.graph.GraphState;
 import com.app.service.graph.GraphType;
-import com.app.service.measurement.Measurement;
-import com.app.service.measurement.MeasurementState;
 import com.app.service.notification.NotificationType;
-import com.app.service.utils.Utils;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -50,9 +46,9 @@ public class AbortDataDialog {
         AppMain.graphService.getGraphByType(graphType).abort();
         if (isRun) {
             if (graphType == GraphType.UPPER) {
-                mainController.startUpperGraphMeasurement();
+                mainController.runUpperGraph(null);
             } else {
-                mainController.startLowerGraphMeasurement();
+                mainController.runLowerGraph(null);
             }
         } else {
             if (graphType == GraphType.UPPER) {

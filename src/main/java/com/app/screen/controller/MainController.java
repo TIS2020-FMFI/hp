@@ -1,6 +1,7 @@
 package com.app.screen.controller;
 
 import com.app.service.AppMain;
+import com.app.service.calibration.CalibrationState;
 import com.app.service.file.parameters.*;
 import com.app.service.graph.GraphService;
 import com.app.service.graph.GraphState;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
+
 
 public class MainController implements Initializable {
 
@@ -172,8 +174,6 @@ public class MainController implements Initializable {
     @FXML
     Button savingDirMenu;
     @FXML
-    Button restartInstrumentMenu;
-    @FXML
     Button helpMenu;
     @FXML
     Button quitMenu;
@@ -218,20 +218,17 @@ public class MainController implements Initializable {
             upperToolbar.getItems().remove(upperPointNext);
 //            upperToolbar.getItems().remove(currentValueDisplay);
         } else if (!gs.isRunningGraph()) {
-            if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
+            if (AppMain.calibrationService.isCalibrationInProcess()) {
+                AppMain.notificationService.createNotification("Cannot start new measurement until calibration is finished.", NotificationType.ANNOUNCEMENT);
+            } else if (AppMain.calibrationService.getState().equals(CalibrationState.REQUIRED)) {
+                AppMain.notificationService.createNotification("Calibration is required, please calibrate the machine", NotificationType.ANNOUNCEMENT);
+            } else if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
                 AppMain.abortDataDialog.openDialog(type, this, true);
             } else {
-                startUpperGraphMeasurement();
+                parametersTabPane.getSelectionModel().select(upperGraphTab);
+                runMeasurement(GraphType.UPPER);
             }
         }
-    }
-
-    /**
-     * Runs Measurement and Displays Graph in Upper part of application.
-     */
-    public void startUpperGraphMeasurement() {
-        parametersTabPane.getSelectionModel().select(upperGraphTab);
-        runMeasurement(GraphType.UPPER);
     }
 
     /**
@@ -249,21 +246,17 @@ public class MainController implements Initializable {
             lowerToolbar.getItems().remove(lowerPointNext);
 //            lowerToolbar.getItems().remove(currentValueDisplay);
         } else if (!gs.isRunningGraph()) {
-            if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
+            if (AppMain.calibrationService.isCalibrationInProcess()) {
+                AppMain.notificationService.createNotification("Cannot start new measurement until calibration is finished.", NotificationType.ANNOUNCEMENT);
+            } else if (AppMain.calibrationService.getState().equals(CalibrationState.REQUIRED)) {
+                AppMain.notificationService.createNotification("Calibration is required, please calibrate the machine", NotificationType.ANNOUNCEMENT);
+            } else if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
                 AppMain.abortDataDialog.openDialog(type, this, true);
             } else {
-                startLowerGraphMeasurement();
+                parametersTabPane.getSelectionModel().select(lowerGraphTab);
+                runMeasurement(GraphType.LOWER);
             }
         }
-    }
-
-    /**
-     * Runs Measurement and Displays Graph in lower part of application.
-     */
-    public void startLowerGraphMeasurement()
-    {
-        parametersTabPane.getSelectionModel().select(lowerGraphTab);
-        runMeasurement(GraphType.LOWER);
     }
 
     /**
@@ -304,7 +297,6 @@ public class MainController implements Initializable {
             setParametersToEnvironmentParameters(graphType);
 
             if ((graphType.equals(GraphType.UPPER) ? otherAutoSweepUpper : otherAutoSweepLower).getValue().equals("OFF")) {
-                AppMain.notificationService.createNotification("Auto sweep is off", NotificationType.ANNOUNCEMENT);
                 Button pointButton = new Button("Next");
 //                currentValueDisplay = new TextArea();
 //                currentValueDisplay.setId("currentValueDisplay");
@@ -321,8 +313,6 @@ public class MainController implements Initializable {
 //                    lowerToolbar.getItems().add(currentValueDisplay);
 
                 }
-            } else {
-                AppMain.notificationService.createNotification("Auto sweep is on", NotificationType.ANNOUNCEMENT);
             }
             gs.run(graphType);
             toggleDisabling();
@@ -498,8 +488,6 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         AppMain.ps.setOnCloseRequest(request -> quitApp(null));
-
-
         gs = AppMain.graphService;
         ep = AppMain.environmentParameters;
 
