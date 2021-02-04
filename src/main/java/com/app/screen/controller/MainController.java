@@ -576,6 +576,10 @@ public class MainController implements Initializable {
             otherElectricalLengthUpper.setText("" + ep.getByType(graphType).getOther().getElectricalLength());
 
             commentInputUpper.setText(ep.getByType(graphType).getComment());
+
+            otherSweepTypeUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0 : 1);
+            otherHighSpeedUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isHighSpeed() ? 0 : 1);
+            otherAutoSweepUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isAutoSweep() ? 0 : 1);
         } else {
             frequencyStartLower.setText("" + ep.getByType(graphType).getFrequencySweep().getStart());
             frequencyStopLower.setText("" + ep.getByType(graphType).getFrequencySweep().getStop());
@@ -591,6 +595,10 @@ public class MainController implements Initializable {
             otherElectricalLengthLower.setText("" + ep.getByType(graphType).getOther().getElectricalLength());
 
             commentInputLower.setText(ep.getByType(graphType).getComment());
+
+            otherSweepTypeLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0 : 1);
+            otherHighSpeedLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isHighSpeed() ? 0 : 1);
+            otherAutoSweepLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isAutoSweep() ? 0 : 1);
         }
     }
 
@@ -599,41 +607,35 @@ public class MainController implements Initializable {
      * Initializes input parameters from GUI (upper Graph parameters)
      */
     private void initializeUpper() {
+        otherSweepTypeUpper.getItems().addAll("LINEAR", "LOG");
+        otherHighSpeedUpper.getItems().addAll("ON", "OFF");
+        otherAutoSweepUpper.getItems().addAll("ON", "OFF");
+
         setParam(GraphType.UPPER, displayAUpper, displayBUpper);
 
         commentInputUpper.textProperty().addListener((Observable, oldValue, newValue) -> {
             ep.getByType(GraphType.UPPER).setComment(newValue);
         });
 
-        otherSweepTypeUpper.getItems().addAll("LINEAR", "LOG");
-        otherSweepTypeUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0 : 1);
 
-        otherHighSpeedUpper.getItems().addAll("ON", "OFF");
-        otherHighSpeedUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isHighSpeed() ? 0 : 1);
-
-        otherAutoSweepUpper.getItems().addAll("ON", "OFF");
-        otherAutoSweepUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isAutoSweep() ? 0 : 1);
     }
 
     /**
      * Initializes input parameters from GUI (lower Graph parameters)
      */
     private void initializeLower() {
+        // ----- initialize all dropbox -> coz its not possible to do so in sceneBuilder yet
+        otherSweepTypeLower.getItems().addAll("LINEAR", "LOG");
+        otherHighSpeedLower.getItems().addAll("ON", "OFF");
+        otherAutoSweepLower.getItems().addAll("ON", "OFF");
+
         setParam(GraphType.LOWER, displayALower, displayBLower);
 
         commentInputLower.textProperty().addListener((Observable, oldValue, newValue) -> {
             ep.getByType(GraphType.LOWER).setComment(newValue);
         });
 
-        // ----- initialize all dropbox -> coz its not possible to do so in sceneBuilder yet
-        otherSweepTypeLower.getItems().addAll("LINEAR", "LOG");
-        otherSweepTypeLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0 : 1);
 
-        otherHighSpeedLower.getItems().addAll("ON", "OFF");
-        otherHighSpeedLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isHighSpeed() ? 0 : 1);
-
-        otherAutoSweepLower.getItems().addAll("ON", "OFF");
-        otherAutoSweepLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isAutoSweep() ? 0 : 1);
     }
 
     /**
