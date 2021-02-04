@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 import org.jfree.chart.fx.ChartViewer;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.util.MissingFormatArgumentException;
 
 
 public class Graph {
@@ -105,7 +105,7 @@ public class Graph {
      * Sets ChartViewer with CustomChart.
      * Clears AnchorPane and Adds ChartViewer to AnchorPane
      */
-    public void load() {
+    public void load() throws MissingFormatArgumentException {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File("../"));
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json");
