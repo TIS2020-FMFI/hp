@@ -191,7 +191,7 @@ public class JsonParser {
 
             JSONArray jsonArray = new JSONArray();
 
-            for (int i = 0; i < measurement.getData().size() - 1; i++) {
+            for (int i = 0; i < measurement.getData().size(); i++) {
                 JSONObject singleValue = new JSONObject();
                 SingleValue singleV = measurement.getData().get(i);
                 if (singleV != null) {
