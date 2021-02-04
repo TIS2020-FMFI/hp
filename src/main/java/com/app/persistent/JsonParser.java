@@ -198,8 +198,8 @@ public class JsonParser {
                     singleValue.put("valueDisplayA", singleV.getDisplayA());
                     singleValue.put("valueDisplayB", singleV.getDisplayB());
                     singleValue.put("valueDisplayX", singleV.getDisplayX());
+                    jsonArray.add(singleValue);
                 }
-                jsonArray.add(singleValue);
             }
             measurement.setIndexOfTheValueToSave(jsonArray.size());
 
@@ -236,8 +236,8 @@ public class JsonParser {
                     singleValue.put("valueDisplayA", singleV.getDisplayA());
                     singleValue.put("valueDisplayB", singleV.getDisplayB());
                     singleValue.put("valueDisplayX", singleV.getDisplayX());
+                    jsonArray.add(singleValue);
                 }
-                jsonArray.add(singleValue);
             }
             measurement.setIndexOfTheValueToSave(jsonArray.size());
 

@@ -77,7 +77,7 @@ public class FileService {
 
     public String setTimeAndDisplayToPath(Measurement measurement) {
         LocalTime localTime = LocalTime.now();
-        return "/" + localTime.getHour() + "-" + localTime.getMinute() +
+        return localTime.getHour() + "-" + localTime.getMinute() +
                 "-" + measurement.getParameters().getDisplayYY().getA() + "-" +
                 measurement.getParameters().getDisplayYY().getB() + "-" +
                 measurement.getParameters().getDisplayYY().getX().toString();
@@ -85,7 +85,8 @@ public class FileService {
 
     public boolean autoSaveMeasurement(Measurement measurement) {
         if (MeasurementState.FINISHED.equals(measurement.getState()) || MeasurementState.STARTED.equals(measurement.getState())) {
-            return JsonParser.writeNewMeasurement(autoSavingDir, setTimeAndDisplayToPath(measurement) + ".json", measurement);
+            fileName = setTimeAndDisplayToPath(measurement) + ".json";
+            return JsonParser.writeNewMeasurement(autoSavingDir, fileName, measurement);
         }
         AppMain.notificationService.createNotification("Only a completed measurement can be saved.", NotificationType.WARNING);
         return false;
@@ -172,7 +173,7 @@ public class FileService {
                     }
 
                 }
-            }, 100, 5000);
+            }, 100, 500);
         }
     }
 
