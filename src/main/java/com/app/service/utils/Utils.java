@@ -25,11 +25,7 @@ public class Utils {
             } else if (sign == ' ' || sign == '-') {
                 spacerFound = true;
                 stringBuilder.append(sign);
-
             }
-//            if (sign == '.'|| Character.isDigit(sign)) {
-//                stringBuilder.append(sign);
-//            }
         }
         return stringBuilder.toString();
     }

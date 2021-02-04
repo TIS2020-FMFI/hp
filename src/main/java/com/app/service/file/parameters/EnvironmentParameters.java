@@ -1,6 +1,5 @@
 package com.app.service.file.parameters;
 
-import com.app.service.graph.Graph;
 import com.app.service.graph.GraphType;
 
 public class EnvironmentParameters {

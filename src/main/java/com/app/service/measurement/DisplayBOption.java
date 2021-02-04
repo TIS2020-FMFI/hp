@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+
 public enum DisplayBOption {
     R,
     G,
@@ -46,6 +47,18 @@ public enum DisplayBOption {
         if (text.contains("Xs")) {
             return Xs;
         }
+        if (text.contains("Γy")) {
+            return ry;
+        }
         return DisplayBOption.valueOf(text);
+    }
+
+    public String toString()
+    {
+        if (this == deg) return "Θ(deg)";
+        else if (this == rad) return "Θ(rad)";
+        else if (this == Xs) return "Xs (Zplots)";
+        else if (this == ry) return "Γy";
+        else return super.toString();
     }
 }

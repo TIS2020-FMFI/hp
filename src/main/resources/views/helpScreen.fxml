@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="300.0" prefWidth="600.0" stylesheets="@styles/helpScreenStyles.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.screen.controller.HelpController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@styles/helpScreenStyles.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.screen.controller.HelpController">
    <children>
       <VBox fx:id="mainContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -23,10 +23,10 @@
                   <Insets />
                </opaqueInsets>
                <padding>
-                  <Insets left="30.0" />
+                  <Insets left="10.0" right="10.0" />
                </padding>
                <children>
-                  <TextArea prefHeight="186.0" prefWidth="399.0" text="This application was done as a school project to support physicist in research at the Commenius University in Slovakia.&#10;Application works with machine HP4191a.&#10;&#10;Graph functionality&#10;- press ALT and drag mouse to pan a chart&#10;- press ALT and wheel up/down mouse to zoom a chart&#10;- select with mouse some part of chart and it will zoom&#10;- zoom back with draging to up-left corner&#10;- save plot by right-clicking and select export as&#10;&#10;HP 4191a Manual&#10;https://doc.xdevs.com/doc/HP_Agilent_Keysight/HP%204191A%20Operation%20&amp;%20Service.pdf&#10;" />
+                  <TextArea maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="This application was done as a school project to support physicist in research &#10;at the Commenius University in Slovakia. &#10;&#10;Application is free-to-use and works with machine HP4191a.&#10;&#10;Credits belong to: &#10;Jakub Zak, Maryia Pikuleva, Richard Nagy, Jan Pastorek, Pavel Petrovic(supervisor)&#10;&#10;Machine tries to automatically connect GPIB, which can fail if hpctrl.exe&#10;is not on the correct adress/path within project. If this happens, you should check if the path&#10;is correct and if it is, try to connect manually by clicking on the GPIB connection button &#10;or try to reset the app. &#10;&#10;Measurement&#10;- runs by pressing run button, which also triggers graph visualization&#10;  * before pressing run you can set measurement input &#10;    parameters on the left and next to Save As button&#10;  * if autosweep is ON, the measurement will run automatically, &#10;    if it is OFF, the measurement will continue by one step if you click on the next button&#10;&#10;- can be loaded into graph by pressing Load Button and finding measurement file&#10;- measurement is saved using Save As / Export button. &#10;  When using Export button, you can include comments from comment area on the left.&#10;&#10;Graph functionality&#10;- press ALT and drag mouse to pan a chart&#10;- press ALT and wheel up/down mouse to zoom a chart&#10;- select with mouse some part of chart and it will zoom&#10;- zoom back with draging to up-left corner&#10;- save plot by right-clicking and select export as&#10;&#10;Calibration&#10;- user can calibrate using this app by pressing on the calibration button and running calibration&#10;  on short, open, load&#10;&#10;Directory for this project and contacts can be found here&#10;https://github.com/TIS2020-FMFI/hp&#10;&#10;HP 4191a Manual&#10;https://doc.xdevs.com/doc/HP_Agilent_Keysight/HP%204191A%20Operation%20&amp;%20Service.pdf&#10;&#10;" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
             <HBox fx:id="actionContainer" alignment="CENTER" minHeight="50.0" prefHeight="70.0" prefWidth="200.0">

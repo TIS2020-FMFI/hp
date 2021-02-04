@@ -1,16 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
 <?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="300.0" prefWidth="600.0" stylesheets="@styles/calibrationScreenStyles.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.screen.controller.CalibrationController">
+<AnchorPane prefHeight="350.0" prefWidth="600.0" stylesheets="@styles/calibrationScreenStyles.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.screen.controller.CalibrationController">
    <children>
-      <VBox fx:id="calibrationContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox fx:id="calibrationContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="289.0" prefWidth="600.0" AnchorPane.bottomAnchor="11.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <VBox fx:id="notificationContainer" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="70.0" stylesheets="@styles/notificationStyles.css">
+            <VBox fx:id="notificationContainer" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="100.0" prefWidth="600.0" stylesheets="@styles/notificationStyles.css">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
@@ -32,7 +45,7 @@
                             <RowConstraints maxHeight="-Infinity" minHeight="10.0" valignment="CENTER" vgrow="ALWAYS" />
                           </rowConstraints>
                            <children>
-                              <Label text="Calibration range">
+                              <Label text="From (Frequency)">
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
@@ -40,7 +53,7 @@
                                     <Insets left="10.0" right="10.0" />
                                  </GridPane.margin>
                               </Label>
-                              <Label text="Electrical length" GridPane.rowIndex="1">
+                              <Label text="To (Frequency)" GridPane.rowIndex="1">
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
@@ -58,7 +71,7 @@
                                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                        </padding>
                                     </Label>
-                                    <TextField fx:id="calibrationInput" />
+                                    <TextField fx:id="calibrationFromInput" />
                                     <Label text="(1 - 1000Mhz)">
                                        <padding>
                                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -79,8 +92,8 @@
                                           <Insets left="10.0" right="10.0" />
                                        </HBox.margin>
                                     </Label>
-                                    <TextField fx:id="electricalLengthInput" />
-                                    <Label text="pf">
+                                    <TextField fx:id="calibrationToInput" />
+                                    <Label text="(1 - 1000Mhz)">
                                        <padding>
                                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                        </padding>
@@ -92,22 +105,22 @@
                               </HBox>
                            </children>
                         </GridPane>
+                        <HBox alignment="CENTER" minHeight="50.0" prefHeight="30.0" prefWidth="200.0" spacing="30.0">
+                           <children>
+                              <Label fx:id="calibrationType" text="short" />
+                           </children>
+                        </HBox>
                         <HBox alignment="CENTER" minHeight="50.0" prefHeight="70.0" prefWidth="200.0" spacing="30.0">
                            <children>
-                              <RadioButton fx:id="shortType" mnemonicParsing="false" selected="true" text="short">
+                              <RadioButton fx:id="highSpeed" mnemonicParsing="false" selected="true" text="High speed">
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
                                  <toggleGroup>
-                                    <ToggleGroup fx:id="calibrationType" />
+                                    <ToggleGroup fx:id="calibrationSpeed" />
                                  </toggleGroup>
                               </RadioButton>
-                              <RadioButton fx:id="openType" mnemonicParsing="false" text="open" toggleGroup="$calibrationType">
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor>
-                              </RadioButton>
-                              <RadioButton fx:id="loadType" mnemonicParsing="false" text="load" toggleGroup="$calibrationType">
+                              <RadioButton fx:id="lowSpeed" mnemonicParsing="false" text="Low Speed" toggleGroup="$calibrationSpeed">
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
@@ -121,7 +134,7 @@
                   <Insets left="30.0" right="30.0" />
                </padding>
             </AnchorPane>
-            <HBox fx:id="actionContainer" alignment="CENTER" minHeight="50.0" prefHeight="70.0" prefWidth="200.0">
+            <HBox fx:id="actionContainer" alignment="CENTER" minHeight="34.0" prefHeight="34.0" prefWidth="604.0">
                <children>
                   <Button fx:id="runCalibrationBtn" mnemonicParsing="false" onMouseReleased="#runCalibration" styleClass="btn" text="Run calibration">
                      <cursor>

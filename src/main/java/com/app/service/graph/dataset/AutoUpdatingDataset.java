@@ -90,7 +90,7 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
                             fireDatasetChanged();
                             cancel();
                             if (AppMain.graphService.getRunningGraph() != null) {
-                                AppMain.graphService.getRunningGraph().setState(GraphState.DONE);
+                                AppMain.graphService.getRunningGraph().setState(GraphState.LOADED);
                             }
                             measurement.setState(MeasurementState.FINISHED);
                             return;

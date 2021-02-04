@@ -5,13 +5,13 @@ import com.app.service.measurement.Measurement;
 import com.app.service.measurement.MeasurementState;
 import com.app.service.notification.NotificationType;
 import javafx.scene.Parent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.jfree.chart.fx.ChartViewer;
-
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.util.MissingFormatArgumentException;
 
 
 public class Graph {
@@ -104,22 +104,22 @@ public class Graph {
      * Sets new CustomChart with loaded measurement.
      * Sets ChartViewer with CustomChart.
      * Clears AnchorPane and Adds ChartViewer to AnchorPane
-     *
-     * @throws FileNotFoundException
      */
-    public void load() throws FileNotFoundException {
+    public void load() throws MissingFormatArgumentException {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File("src/main/resources"));
+        fileChooser.setInitialDirectory(new File("../"));
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json");
         fileChooser.getExtensionFilters().add(extFilter);
         File selectedFile = fileChooser.showOpenDialog(new Stage());
         if (selectedFile != null) {
-            state = GraphState.LOADED;
             measurement = AppMain.fileService.loadMeasurement(selectedFile.getPath());
-            scene.getChildren().clear();
-            scene.getChildren().add(chartViewer);
-            chart = new CustomChart(measurement, true);
-            chartViewer.setChart(chart.getChart());
+            if (measurement != null) {
+                state = GraphState.LOADED;
+                scene.getChildren().clear();
+                scene.getChildren().add(chartViewer);
+                chart = new CustomChart(measurement, true);
+                chartViewer.setChart(chart.getChart());
+            }
         }
     }
 

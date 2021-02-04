@@ -6,7 +6,7 @@
 
     <groupId>com.app</groupId>
     <artifactId>hp</artifactId>
-    <version>0.0.7-SNAPSHOT</version>
+    <version>0.0.8-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>

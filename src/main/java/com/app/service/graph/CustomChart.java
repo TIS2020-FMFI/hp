@@ -4,11 +4,13 @@ import com.app.service.graph.dataset.AutoUpdatingDataset;
 import com.app.service.graph.dataset.DatasetType;
 import com.app.service.graph.dataset.StaticDataset;
 import com.app.service.measurement.Measurement;
+import com.app.service.measurement.MeasurementState;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.labels.StandardXYItemLabelGenerator;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.SamplingXYLineRenderer;
+import org.jfree.chart.renderer.xy.XYSplineRenderer;
 import org.jfree.data.xy.AbstractXYDataset;
 
 import java.awt.*;
@@ -48,7 +50,13 @@ public class CustomChart extends ChartPanel {
     private static JFreeChart loadChart(Measurement measurement) {
         series1 = new StaticDataset(measurement, DatasetType.LEFT);
         series2 = new StaticDataset(measurement, DatasetType.RIGHT);
+        measurement.setState(MeasurementState.LOADED);
         createChart(measurement.getParameters().getDisplayYY().getX().name(), measurement.getParameters().getDisplayYY().getA(), measurement.getParameters().getDisplayYY().getB());
+
+        StaticDataset st1 = (StaticDataset) series1;
+        StaticDataset st2 = (StaticDataset) series2;
+        st1.start();
+        st2.start();
         return chart;
     }
 
@@ -62,6 +70,7 @@ public class CustomChart extends ChartPanel {
     private static JFreeChart createChart(Measurement measurement) {
         series1 = new AutoUpdatingDataset(measurement, DatasetType.LEFT);
         series2 = new AutoUpdatingDataset(measurement, DatasetType.RIGHT);
+        measurement.setState(MeasurementState.STARTED);
         createChart(measurement.getParameters().getDisplayYY().getX().name(), measurement.getParameters().getDisplayYY().getA(), measurement.getParameters().getDisplayYY().getB());
 
         AutoUpdatingDataset as1 = (AutoUpdatingDataset) series1;
@@ -81,14 +90,24 @@ public class CustomChart extends ChartPanel {
     private static void createChart(String Xname, String Y1name, String Y2name) {
         //construct the plot
         XYPlot plot = new XYPlot();
-        plot.setDataset(0, series1);
-        plot.setDataset(1, series2);
+        plot.setDataset(0, series2);
+        plot.setDataset(1, series1);
 
         //customize the plot with renderers and axis
-        plot.setRenderer(0, new SamplingXYLineRenderer());//use default fill paint for first series
-        SamplingXYLineRenderer splinerenderer = new SamplingXYLineRenderer();
-        splinerenderer.setSeriesFillPaint(0, Color.BLUE);
-        plot.setRenderer(1, splinerenderer);
+        XYSplineRenderer splinerenderer1 = new XYSplineRenderer();
+        splinerenderer1.setSeriesItemLabelsVisible(0,true);
+        plot.setRenderer(0, splinerenderer1);
+        splinerenderer1.setAutoPopulateSeriesFillPaint(true);
+        splinerenderer1.setDefaultItemLabelGenerator(new StandardXYItemLabelGenerator());
+
+        XYSplineRenderer splinerenderer0 = new XYSplineRenderer();
+        splinerenderer0.setSeriesFillPaint(1, Color.BLUE);
+        splinerenderer0.setSeriesItemLabelsVisible(0,true);
+        plot.setRenderer(1, splinerenderer0);
+        splinerenderer0.setAutoPopulateSeriesFillPaint(true);
+        splinerenderer0.setDefaultItemLabelGenerator(new StandardXYItemLabelGenerator());
+        splinerenderer0.setDefaultItemLabelsVisible(true);
+        splinerenderer0.setItemLabelAnchorOffset(-8);
 
         NumberAxis yaxis1 = new NumberAxis(Y1name);
         NumberAxis yaxis2 = new NumberAxis(Y2name);
@@ -106,8 +125,6 @@ public class CustomChart extends ChartPanel {
         //Map the data to the appropriate axis
         plot.mapDatasetToRangeAxis(0, 0);
         plot.mapDatasetToRangeAxis(1, 1);
-
-        //((NumberAxis)plot.getRangeAxis(1)).setAutoRangeIncludesZero(false); // add
 
         //configure the chart
         plot.getRangeAxis(0).setLabelPaint(Color.BLUE);
@@ -143,5 +160,4 @@ public class CustomChart extends ChartPanel {
         as1.abortMeasurement();
         as2.abortMeasurement();
     }
-
 }

@@ -3,27 +3,24 @@ package com.app.screen.controller;
 import com.app.service.AppMain;
 import com.app.service.calibration.CalibrationService;
 import com.app.service.calibration.CalibrationState;
-import com.app.service.calibration.CalibrationType;
 import com.app.service.notification.NotificationType;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
-import java.util.*;
+import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class CalibrationController implements Initializable {
 
     CalibrationService cs;
-    Timer calibrationWatcher;
-    CalibrationState oldCalibrationState;
 
     @FXML
     VBox calibrationContainer;
@@ -39,18 +36,19 @@ public class CalibrationController implements Initializable {
 
     // contentContainer
     @FXML
-    TextField calibrationInput;
+    TextField calibrationFromInput;
     @FXML
-    TextField electricalLengthInput;
+    TextField calibrationToInput;
 
     @FXML
-    ToggleGroup calibrationType;
+    ToggleGroup calibrationSpeed;
     @FXML
-    RadioButton shortType;
+    RadioButton highSpeed;
     @FXML
-    RadioButton loadType;
+    RadioButton lowSpeed;
     @FXML
-    RadioButton openType;
+    Label calibrationType;
+
     // actionContainer
     @FXML
     Button runCalibrationBtn;
@@ -59,63 +57,61 @@ public class CalibrationController implements Initializable {
     public void runCalibration(MouseEvent event) {
         if (AppMain.calibrationService.isCalibrated()) {
             AppMain.calibrationService.closeCalibration();
+            return;
         }
-        RadioButton selectedRadioButton = (RadioButton) calibrationType.getSelectedToggle();
-        AppMain.calibrationService.runCalibration(selectedRadioButton.getText());
+
+        RadioButton selectedRadioButtonSpeed = (RadioButton) calibrationSpeed.getSelectedToggle();
+        AppMain.calibrationService.runCalibration(cs.getType().toString().toLowerCase(), calibrationFromInput.getText(), calibrationToInput.getText(), selectedRadioButtonSpeed == highSpeed);
         toggleButtons();
-        calibrationInput.setDisable(true);
-        electricalLengthInput.setDisable(true);
+
+        cs.setFrom(calibrationFromInput.getText());
+        cs.setTo(calibrationToInput.getText());
+        cs.setHighSpeed(selectedRadioButtonSpeed == highSpeed);
     }
 
     private void toggleButtons() {
         boolean isRunning = cs.getState().equals(CalibrationState.RUNNING);
-        boolean isDone = cs.getState().equals(CalibrationState.DONE);
-        boolean isShort = cs.getCalibrationStates().get(CalibrationType.SHORT);
-        boolean isOpen = cs.getCalibrationStates().get(CalibrationType.OPEN);
+        boolean inProcess = cs.isCalibrationInProcess();
 
-        runCalibrationBtn.setText(isDone ? "Close":"Run");
-        runCalibrationBtn.setDisable(isRunning);
-        shortType.setDisable(isRunning || isDone || isOpen || isShort);
-        openType.setDisable(isRunning || isDone || isOpen);
-        loadType.setDisable(isRunning || isDone);
+        Platform.runLater(() -> {
+            calibrationFromInput.setDisable(inProcess);
+            calibrationToInput.setDisable(inProcess);
+            calibrationType.setText(cs.getType().toString());
+            runCalibrationBtn.setText(cs.isCalibrated() ? "Close":"Run");
+            runCalibrationBtn.setDisable(isRunning);
+        });
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         cs = AppMain.calibrationService;
-        oldCalibrationState = cs.getState();
-        cs.addRadioButtons(new HashMap<>() {
-            {
-                put(CalibrationType.SHORT, shortType);
-                put(CalibrationType.OPEN, openType);
-                put(CalibrationType.LOAD, loadType);
-            }
-        });
 
-        toggleButtons();
-        calibrationInput.setText(AppMain.environmentParameters.getActive().getOther().getCapacitance() + "");
-        electricalLengthInput.setText(AppMain.environmentParameters.getActive().getOther().getElectricalLength() + "");
-        if (cs.isCalibrationInProcess()) {
-            calibrationInput.setDisable(true);
-            electricalLengthInput.setDisable(true);
-        }
+        calibrationType.setText(cs.getType().toString());
+        calibrationFromInput.setText(cs.getFrom() != null ? cs.getFrom():"");
+        calibrationToInput.setText(cs.getTo() != null ? cs.getTo():"");
+        highSpeed.setSelected(cs.isHighSpeed());
+        lowSpeed.setSelected(!cs.isHighSpeed());
 
         if (!cs.getState().equals(CalibrationState.DONE)) {
-            calibrationWatcher = new Timer();
-            calibrationWatcher.schedule(new TimerTask() {
+            Timer watcher = new Timer();
+            watcher.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    if (!oldCalibrationState.equals(cs.getState())) {
+                    if (!cs.getOldCalibrationState().equals(cs.getState())) {
+                        cs.setOldCalibrationState(cs.getState());
                         toggleButtons();
-                        oldCalibrationState = cs.getState();
-                        if (cs.getState().equals(CalibrationState.DONE)) {
-                            calibrationWatcher.cancel();
+                        if (cs.isCalibrated()) {
+                            cs.showNotification("Calibrating processed successfully. " + (cs.getState().equals(CalibrationState.DONE) ? "Check with machine, please!":"Change standard, please!"), NotificationType.SUCCESS);
+                            watcher.cancel();
+                        } else {
+                            cs.showNotification("Please, switch standards as required below.", NotificationType.ANNOUNCEMENT);
                         }
-                        cs.showNotification("Calibrating processed successfully. " + (cs.getState().equals(CalibrationState.DONE) ? "Check with machine, please!":"Change standard, please!"), NotificationType.SUCCESS);
                     }
                 }
             }, 100,10);
+            cs.setCalibrationWatcher(watcher);
         }
+        toggleButtons();
     }
 
 }

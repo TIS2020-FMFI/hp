@@ -2,17 +2,19 @@ package com.app.service.graph.dataset;
 
 import com.app.service.measurement.Measurement;
 import com.app.service.measurement.SingleValue;
+import javafx.application.Platform;
 import org.jfree.data.DomainOrder;
 import org.jfree.data.xy.AbstractXYDataset;
 
+import java.util.ArrayList;
 import java.util.List;
-
-
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class StaticDataset extends AbstractXYDataset {
     private DatasetType type;
     private List<SingleValue> values;
-    private int cursor = -1;
+    private int sizeData = 0;
     private Measurement measurement;
 
     /**
@@ -24,9 +26,7 @@ public class StaticDataset extends AbstractXYDataset {
     public StaticDataset(Measurement measurement, DatasetType type) {
         this.type = type;
         this.measurement = measurement;
-        this.values = measurement.getData();
-        this.cursor += measurement.getData().size()+1;
-        fireDatasetChanged();
+        this.values = new ArrayList<>();
     }
 
     public DomainOrder getDomainOrder() {
@@ -42,7 +42,7 @@ public class StaticDataset extends AbstractXYDataset {
     }
 
     public int getItemCount(int series) {
-        return cursor;
+        return sizeData;
     }
 
     public double getYValue(int series, int item) {
@@ -59,6 +59,23 @@ public class StaticDataset extends AbstractXYDataset {
 
     public Double getX(int series, int item) {
         return getXValue(series, item);
+    }
+
+    public void start() {
+        new Timer().schedule(new TimerTask() {
+            public void run() {
+                Platform.runLater(() -> {
+                    if (measurement.getData().size() == sizeData) {
+                        fireDatasetChanged();
+                        cancel();
+                        return;
+                    }
+                    values.add(measurement.getData().get(sizeData));
+                    sizeData++;
+                    fireDatasetChanged();
+                });
+            }
+        }, 2, 2);
     }
 
 }

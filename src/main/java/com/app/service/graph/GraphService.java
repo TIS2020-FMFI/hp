@@ -1,16 +1,10 @@
 package com.app.service.graph;
 
 import com.app.service.AppMain;
-import com.app.service.measurement.Measurement;
-import com.app.service.measurement.MeasurementState;
 import com.app.service.notification.NotificationType;
 import javafx.scene.Parent;
 
-import java.awt.*;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.MissingFormatArgumentException;
 
 
 public class GraphService {
@@ -83,28 +77,18 @@ public class GraphService {
     /**
      * Starts running Graph, which is got from getGraphByType(type), by calling Graph.run().
      * Runs the measurement.
-     * Sends notification if error occurs during measurment.
+     * Sends notification if error occurs during measurement.
      *
      * @param type
      */
     public void run(GraphType type) {
         try {
             getGraphByType(type).run();
+            AppMain.fileService.autoSaveDuringMeasurement(getRunningGraph().getMeasurement());
             AppMain.communicationService.runMeasurement(getRunningGraph().getMeasurement());
         } catch (Exception e) {
-            AppMain.notificationService.createNotification("Error occurred while running measurement -> " + e.getMessage(), NotificationType.ERROR);
-        }
-    }
-
-    /**
-     * Sends to CommunicationService notification that machine should do one next step of measurement.
-     * If IOException occurs during this, notifies that error occured.
-     */
-    public void runNextStep() {
-        try {
-            AppMain.communicationService.nextStep(getRunningGraph().getMeasurement());
-        } catch (IOException | InterruptedException e) {
-            AppMain.notificationService.createNotification("Error occurred while running next step -> " + e.getMessage(), NotificationType.ERROR);
+            AppMain.fileService.cancelTimer();
+            AppMain.notificationService.createNotification("Running measurement failed -> " + e.getMessage(), NotificationType.ERROR);
         }
     }
 
@@ -117,17 +101,17 @@ public class GraphService {
     public void loadGraph(GraphType type) {
         try {
             getGraphByType(type).load();
-        } catch (FileNotFoundException e) {
-            AppMain.notificationService.createNotification("File you are trying to load does not exist", NotificationType.ERROR);
         } catch (NumberFormatException e) {
             AppMain.notificationService.createNotification("Could not parse loaded data -> " + e.getMessage(), NotificationType.ERROR);
+        } catch (MissingFormatArgumentException e) {
+            AppMain.notificationService.createNotification("File is missing required values -> " + e.getMessage(), NotificationType.ERROR);
         } catch (Exception e) {
-            AppMain.notificationService.createNotification("Error occurred while loading measurement -> " + e.getMessage(), NotificationType.ERROR);
+            AppMain.notificationService.createNotification("Loading measurement failed -> " + e.getMessage(), NotificationType.ERROR);
         }
     }
 
     /**
-     * Aborts the measurment by sending appropriate command to machine, cancels dataset timers and destroys graph.
+     * Aborts the measurement by sending appropriate command to machine, cancels dataset timers and destroys graph.
      * If error occurs, notifies.
      *
      * @param type
@@ -137,21 +121,8 @@ public class GraphService {
             AppMain.communicationService.abortMeasurement();
             getGraphByType(type).abort();
         } catch (Exception e) {
-            AppMain.notificationService.createNotification("Error occurred while aborting measurement -> " + e.getMessage(), NotificationType.ERROR);
+            AppMain.notificationService.createNotification("Aborting measurement failed -> " + e.getMessage(), NotificationType.ERROR);
         }
-    }
-
-    /**
-     *
-     * @param type
-     * @return
-     */
-    public boolean isMeasurementSaved(GraphType type) {
-        Graph temp = getGraphByType(type);
-        if (temp.getState().equals(GraphState.EMPTY) || temp.getState().equals(GraphState.LOADED) || temp.getState().equals(GraphState.SAVED)) {
-            return true;
-        }
-        return !List.of(MeasurementState.WAITING, MeasurementState.STARTED, MeasurementState.FINISHED).contains(temp.getMeasurement().getState());
     }
 
 }

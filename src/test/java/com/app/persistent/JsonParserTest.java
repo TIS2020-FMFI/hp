@@ -1,6 +1,6 @@
 package com.app.persistent;
 
-import com.app.service.AppMain;
+import com.app.service.exceptions.WrongDataFormatException;
 import com.app.service.file.FileService;
 import com.app.service.file.parameters.*;
 import com.app.service.graph.GraphType;
@@ -8,18 +8,15 @@ import com.app.service.measurement.Measurement;
 import com.app.service.measurement.SingleValue;
 import org.junit.jupiter.api.Test;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.LinkedList;
 import java.util.Vector;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class JsonParserTest {
 
-    FileService fileService = new FileService("src/main/resources/persistent/config.json");
+    FileService fileService = new FileService("config.json");
     EnvironmentParameters ep = new EnvironmentParameters();
 
     @Test
@@ -145,13 +142,13 @@ class JsonParserTest {
         parameters.setVoltageSweep(voltageSweep);
 
         Measurement measurement = new Measurement(parameters);
-        measurement.updateComment("hello world");
+        measurement.getParameters().setComment("hello world");
 
         measurement.addSingleValue(new SingleValue(0.1,30.5,8.06666));
         measurement.addSingleValue(new SingleValue(1,0.5,111111.8));
 
         System.out.println(measurement.getIndexOfTheValueToSave());
-        JsonParser.writeNewMeasurement("measurementData.json", measurement);
+        JsonParser.writeNewMeasurement("hello","/measurementData.json", measurement);
         System.out.println(measurement.getIndexOfTheValueToSave());
     }
 
@@ -188,29 +185,29 @@ class JsonParserTest {
         parameters.setOther(other);
 
         Measurement measurement = new Measurement(parameters);
-        measurement.updateComment("hello world");
+        measurement.getParameters().setComment("hello world");
 
         measurement.addSingleValue(new SingleValue(0.1,30.5,8.66));
         measurement.addSingleValue(new SingleValue(1,0.5,18.8));
 
-        JsonParser.writeNewMeasurement("measurementNewData.json", measurement);
+        JsonParser.writeNewMeasurement("new/" ,"measurementNewData.json", measurement);
 
         measurement.setIndexOfTheValueToSave(2);
         measurement.addSingleValue(new SingleValue(5.0,5.0,28));
         measurement.addSingleValue(new SingleValue(155,15,38));
 
-        JsonParser.writeNewValues("measurementNewData.json", measurement);
+        JsonParser.writeNewValues("new/measurementNewData.json", measurement);
     }
 
     @Test
-    void readData() {
+    void readData() throws WrongDataFormatException {
         Measurement measurement = JsonParser.readMeasurement("measurementNewData.json");
 
-        assertEquals("hello world", measurement.getComment().toString());
+        assertEquals("hello world", measurement.getParameters().getComment().toString());
 
         Vector<SingleValue> data = measurement.getData();
 
-        assertEquals(data.get(0).getDisplayA(),0.1 );
-        assertEquals(data.get(3).getDisplayB(),15);
+        assertEquals(0.1, data.get(0).getDisplayA());
+        assertEquals(15, data.get(2).getDisplayB());
     }
 }
