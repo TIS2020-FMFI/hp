@@ -29,6 +29,7 @@ public class Connection extends Thread {
     private double finalCalibrationFrequency;
 
     public Connection() {
+
         /*try {
             process = Runtime.getRuntime().exec("C:/s/hp/hpctrl.exe -i"); // TODO: set to default within project
             readEnd = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -41,10 +42,12 @@ public class Connection extends Thread {
     }
 
     public boolean isConnected() {
+
         return connected;
     }
 
     public boolean reconnect(){
+
         try {
             process = Runtime.getRuntime().exec("C:/s/hp/hpctrl.exe -i"); // TODO: set to default within project
             readEnd = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -57,6 +60,7 @@ public class Connection extends Thread {
     }
 
     public boolean connect() throws RuntimeException, IOException, InterruptedException {
+
         if (!AppMain.debugMode) {
             if (connected) {
                 if (cmd) {
@@ -92,16 +96,19 @@ public class Connection extends Thread {
     }
 
     public boolean checkConnection() throws IOException, InterruptedException {
+
         write("a");
         StringBuilder result = read(false);
         return result.length() > 0;
     }
 
     public Process getCommunicator() {
+
         return process;
     }
 
     public void toggleCmdMode() {
+
         try {
             if (connected) {
                 write("cmd");
@@ -120,6 +127,7 @@ public class Connection extends Thread {
     }
 
     private StringBuilder read(boolean isStepMeasurement) throws IOException, InterruptedException, NullPointerException {
+
         StringBuilder result = new StringBuilder();
         int count = 0;
         if (readEnd == null) {
@@ -147,6 +155,7 @@ public class Connection extends Thread {
     }
 
     public void writer() {
+
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -167,11 +176,13 @@ public class Connection extends Thread {
     }
 
     public void abortMeasurement() {
+
         write("s AB");
         System.out.println("aborting measurement");
     }
 
     public void startAutoMeasurement(Measurement measurement) {
+
         if (AppMain.debugMode) {
             System.out.println("-- Running auto sweep measurement --");
             new Thread(() -> {
@@ -223,6 +234,7 @@ public class Connection extends Thread {
     }
 
     public void stepMeasurement(Measurement measurement) throws IOException, InterruptedException {
+
         if (AppMain.debugMode) {
             measurement.addSingleValue(generateRandomSingeValue(measurement.getData().size() + 2));
         } else {
@@ -238,6 +250,7 @@ public class Connection extends Thread {
     }
 
     public void initMeasurement(MeasuredQuantity type, Measurement measurement, boolean isAutoSweepOn) throws IOException, InterruptedException {
+
         if (connected) {
             if (!cmd) {
                 toggleCmdMode();
@@ -264,6 +277,7 @@ public class Connection extends Thread {
     }
 
     public void highSpeed(boolean highspeed) {
+
         if (highspeed)
             write("s H1");
         else {
@@ -272,6 +286,7 @@ public class Connection extends Thread {
     }
 
     public void sweepType() {
+
         if (environmentParameters.getActive().getOther().getSweepType() == SweepType.LINEAR)
             write("s G0");
         else
@@ -279,6 +294,7 @@ public class Connection extends Thread {
     }
 
     public void displayFunctions() {
+
         switch (environmentParameters.getActive().getDisplayYY().getA()) {
             case "L":
                 write("s A7");
@@ -305,6 +321,7 @@ public class Connection extends Thread {
                 write("s A4");
                 break;
         }
+
         switch (environmentParameters.getActive().getDisplayYY().getB()) {
             case "R":
                 write("s B1");
@@ -332,39 +349,50 @@ public class Connection extends Thread {
 
 
     public void frequencySweep() {
+
+        write("s BI" + environmentParameters.getActive().getVoltageSweep().getSpot() + "EN");
+        write("s FR" + environmentParameters.getActive().getFrequencySweep().getSpot() + "EN");
         write("s TF" + environmentParameters.getActive().getFrequencySweep().getStart() + "EN");
         write("s PF" + environmentParameters.getActive().getFrequencySweep().getStop() + "EN");
         write("s SF" + environmentParameters.getActive().getFrequencySweep().getStep() + "EN");
-        write("s FR" + environmentParameters.getActive().getFrequencySweep().getStart() + "EN");
+
     }
 
     public void voltageSweep() {
+
+        write("s FR" + environmentParameters.getActive().getFrequencySweep().getSpot() + "EN");
+        write("s BI" + environmentParameters.getActive().getVoltageSweep().getSpot() + "EN");
         write("s TB" + environmentParameters.getActive().getVoltageSweep().getStart() + "EN");
         write("s PB" + environmentParameters.getActive().getVoltageSweep().getStop() + "EN");
         write("s SB" + environmentParameters.getActive().getVoltageSweep().getStep() + "EN");
-        write("s BI" + environmentParameters.getActive().getVoltageSweep().getStart() + "EN");
+
     }
 
     public void openCalibration() {
+
         write("s A5");
         write("s CS");
         calibrationReader();
     }
 
     public void shortCalibration() {
+
         write("s A4");
         write("s CS");
         calibrationReader();
     }
 
     public void loadCalibration() {
+
         write("s A6");
         write("s CS");
         calibrationReader();
     }
 
     public void calibrationReader() {
+
         AppMain.calibrationService.setCalibrationState(CalibrationState.RUNNING);
+
         new Thread(() -> {
             StringBuilder result = new StringBuilder();
             write("a");
@@ -389,9 +417,6 @@ public class Connection extends Thread {
                         write("a");
                     } else {
                         result.append(letter);
-                        // toto nie je velmi rozumne to parsovat za kazdym znakom
-                        // nemozeme to parsovat az na konci riadku vzdy?
-
                     }
                     System.out.println("sb:" + result);
 
@@ -403,18 +428,25 @@ public class Connection extends Thread {
     }
 
     public void leaveCalibration() {
+
         write("s C0");
         calibrationMode = !calibrationMode;
+
     }
 
     public boolean calibrationHandler(CalibrationType calibrationType, double from, double to, boolean isHighSpeed) {
+
         if (connected) {
+
             if (!cmd) toggleCmdMode();
+
             if (cmd) {
+
                 if (!calibrationMode) {
                     write("s C1");
                     calibrationMode = !calibrationMode;
                 }
+
                 if (calibrationMode) {
                     finalCalibrationFrequency = to;
                     highSpeed(isHighSpeed);
@@ -433,13 +465,17 @@ public class Connection extends Thread {
                     }
                 }
             }
+
         } else {
+
             AppMain.notificationService.createNotification("Machine not connected!", NotificationType.ERROR);
         }
+
         return true;
     }
 
     private SingleValue generateRandomSingeValue(double X) {
+
         if (new Random().nextInt(100) > 95) {
             return null;
         }
