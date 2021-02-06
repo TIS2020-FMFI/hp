@@ -192,10 +192,15 @@ public class Connection extends Thread {
                         char letter = (char) readEnd.read();
                         if ((letter == '\n') && (result.length() > 1)) {
                             if ((result.charAt(1) == 'N') && some_data_arrived) {
+                                if (result.charAt(2) == 'X'){
+                                    result = new StringBuilder();
+                                }
+                                else{
                                 write("n");
                                 measurement.addSingleValue(null);
                                 Thread.currentThread().interrupt();
                                 return;
+                                }
                             } else {
                                 System.out.println("reading " + result.toString());
                                 if (result.charAt(1) != '9') {
@@ -443,4 +448,3 @@ public class Connection extends Thread {
         return new SingleValue(Math.random() * 20 + 80, Math.random() * 20 + 40, X);
     }
 }
-
