@@ -18,6 +18,10 @@ import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
 
+
+/**
+ * Controller for calibration
+ */
 public class CalibrationController implements Initializable {
 
     CalibrationService cs;
@@ -54,22 +58,30 @@ public class CalibrationController implements Initializable {
     Button runCalibrationBtn;
 
 
+    /**
+     * Calibration trigger
+     *
+     * @param event triggered mouse event
+     */
     public void runCalibration(MouseEvent event) {
         if (AppMain.calibrationService.isCalibrated()) {
-            AppMain.calibrationService.closeCalibration();
+            AppMain.calibrationService.close();
             return;
         }
 
         RadioButton selectedRadioButtonSpeed = (RadioButton) calibrationSpeed.getSelectedToggle();
         AppMain.calibrationService.runCalibration(cs.getType().toString().toLowerCase(), calibrationFromInput.getText(), calibrationToInput.getText(), selectedRadioButtonSpeed == highSpeed);
-        toggleButtons();
+        toggleForm();
 
         cs.setFrom(calibrationFromInput.getText());
         cs.setTo(calibrationToInput.getText());
         cs.setHighSpeed(selectedRadioButtonSpeed == highSpeed);
     }
 
-    private void toggleButtons() {
+    /**
+     * Toggles calibration form
+     */
+    private void toggleForm() {
         boolean isRunning = cs.getState().equals(CalibrationState.RUNNING);
         boolean inProcess = cs.isCalibrationInProcess();
 
@@ -82,6 +94,12 @@ public class CalibrationController implements Initializable {
         });
     }
 
+    /**
+     * Initializes controller
+     *
+     * @param location
+     * @param resources
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         cs = AppMain.calibrationService;
@@ -97,21 +115,21 @@ public class CalibrationController implements Initializable {
             watcher.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    if (!cs.getOldCalibrationState().equals(cs.getState())) {
-                        cs.setOldCalibrationState(cs.getState());
-                        toggleButtons();
+                    if (!cs.getOldState().equals(cs.getState())) {
+                        cs.setOldState(cs.getState());
+                        toggleForm();
                         if (cs.isCalibrated()) {
                             cs.showNotification("Calibrating processed successfully. " + (cs.getState().equals(CalibrationState.DONE) ? "Check with machine, please!":"Change standard, please!"), NotificationType.SUCCESS);
                             watcher.cancel();
-                        } else {
+                        } else if (!cs.getState().equals(CalibrationState.RUNNING)) {
                             cs.showNotification("Please, switch standards as required below.", NotificationType.ANNOUNCEMENT);
                         }
                     }
                 }
             }, 100,10);
-            cs.setCalibrationWatcher(watcher);
+            cs.setStateWatcher(watcher);
         }
-        toggleButtons();
+        toggleForm();
     }
 
 }

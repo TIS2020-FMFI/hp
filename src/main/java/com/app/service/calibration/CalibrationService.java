@@ -15,6 +15,9 @@ import java.util.NoSuchElementException;
 import java.util.Timer;
 
 
+/**
+ * Calibration service which handles everything about calibration
+ */
 public class CalibrationService {
     private final String path;
     private CalibrationState state;
@@ -24,16 +27,24 @@ public class CalibrationService {
     private String from;
     private String to;
     private boolean isHighSpeed;
-    private Timer calibrationWatcher;
-    private CalibrationState oldCalibrationState;
+    private Timer stateWatcher;
+    private CalibrationState oldState;
 
+    /**
+     * Initializes calibration service
+     *
+     * @param controllerPath Path of the view controller
+     */
     public CalibrationService(String controllerPath) {
         path = controllerPath;
         state = CalibrationState.READY;
         type = CalibrationType.SHORT;
     }
 
-    public void openCalibration() {
+    /**
+     * Opens calibration window
+     */
+    public void open() {
         try {
             stage = new Stage();
 
@@ -47,68 +58,146 @@ public class CalibrationService {
                 throw new NoSuchElementException("Notification container not found in calibration window!");
             }
             notificationService = new NotificationService(notificationContainer);
-            oldCalibrationState = state;
+            oldState = state;
             stage.show();
+            AppMain.communicationService.toggleCalibrationMode();
         } catch (NoSuchElementException | IOException e) {
             e.printStackTrace();
             AppMain.notificationService.createNotification(e.getMessage(), NotificationType.ERROR);
         }
     }
 
+    /**
+     * Current calibration state
+     *
+     * @return calibration state
+     */
     public CalibrationState getState() {
         return state;
     }
+
+    /**
+     * Current calibration type
+     *
+     * @return calibration type
+     */
     public CalibrationType getType() { return type; }
 
-    public void setCalibrationState(CalibrationState state) {
+    /**
+     * Sets new calibration state
+     *
+     * @param state new calibration state
+     */
+    public void setState(CalibrationState state) {
         this.state = state;
         if (state.equals(CalibrationState.DONE)) {
-            if (type.equals(CalibrationType.LOAD)) {
-                AppMain.communicationService.leaveCalibration();
-            } else {
+            if (!type.equals(CalibrationType.LOAD)) {
                 type = type.equals(CalibrationType.SHORT) ? CalibrationType.OPEN:CalibrationType.LOAD;
                 this.state = CalibrationState.READY;
             }
         }
     }
 
-    public CalibrationState getOldCalibrationState() { return oldCalibrationState; }
-    public void setOldCalibrationState(CalibrationState oldCalibrationState) { this.oldCalibrationState = oldCalibrationState; }
+    /**
+     * Returns previous calibration state
+     *
+     * @return previous calibration state
+     */
+    public CalibrationState getOldState() { return oldState; }
 
-    public Timer getCalibrationWatcher() { return calibrationWatcher; }
-    public void setCalibrationWatcher(Timer calibrationWatcher) { this.calibrationWatcher = calibrationWatcher; }
+    /**
+     * Sets previous calibration state
+     *
+     * @param oldState previous calibration state
+     */
+    public void setOldState(CalibrationState oldState) { this.oldState = oldState; }
 
+    /**
+     * Sets state watcher
+     *
+     * @param stateWatcher timer which watches state change
+     */
+    public void setStateWatcher(Timer stateWatcher) { this.stateWatcher = stateWatcher; }
+
+    /**
+     * Sets lower calibration boundary
+     *
+     * @param from lower boundary
+     */
     public void setFrom(String from) {
         this.from = from;
     }
 
+    /**
+     * Sets upper calibration boundary
+     *
+     * @param to upper boundary
+     */
     public void setTo(String to) {
         this.to = to;
     }
 
+    /**
+     * Sets is high speed on
+     *
+     * @param highSpeed high speed switch
+     */
     public void setHighSpeed(boolean highSpeed) {
         isHighSpeed = highSpeed;
     }
 
-    public void closeCalibration() {
-        calibrationWatcher.cancel();
-        stage.close();
+    /**
+     * Closes calibration window
+     */
+    public void close() {
+        if (isCalibrationInProcess()) {
+            showNotification("Please, finish up whole calibration process.", NotificationType.ANNOUNCEMENT);
+        } else {
+            AppMain.communicationService.toggleCalibrationMode();
+            stateWatcher.cancel();
+            stage.close();
+        }
     }
 
+    /**
+     * Notification visualizer for calibration window
+     *
+     * @param content Content to display with the messing
+     * @param type Type of notification to display
+     */
     public void showNotification(String content, NotificationType type) {
         notificationService.createNotification(content, type);
     }
 
+    /**
+     * Check if calibration has been done yet
+     *
+     * @return if calibration has been done
+     */
     public boolean isCalibrated() {
         return state.equals(CalibrationState.DONE) && type.equals(CalibrationType.LOAD);
     }
+
+    /**
+     * Check if calibration is in process
+     *
+     * @return if calibration is in process
+     */
     public boolean isCalibrationInProcess() {
-        return !(type.equals(CalibrationType.SHORT) && state.equals(CalibrationState.READY)) && !isCalibrated();
+        return state.equals(CalibrationState.RUNNING) || (!(type.equals(CalibrationType.SHORT) && state.equals(CalibrationState.READY)) && !isCalibrated());
     }
 
+    /**
+     * Triggers calibration process
+     *
+     * @param calibrationType required calibration type
+     * @param from lower boundary of calibration
+     * @param to upper boundary of calibration
+     * @param isHighSpeed is high speed on
+     */
     public void runCalibration(String calibrationType, String from, String to, boolean isHighSpeed) {
+        state = CalibrationState.RUNNING;
         try {
-            state = CalibrationState.RUNNING;
             double fromFreq = Double.parseDouble(from);
             double toFreq = Double.parseDouble(to);
             if (toFreq < fromFreq) {
@@ -116,26 +205,40 @@ public class CalibrationService {
                 state = CalibrationState.READY;
             } else {
                 if (AppMain.debugMode) {
-                    setCalibrationState(CalibrationState.DONE);
+                    setState(CalibrationState.DONE);
                 } else {
                     AppMain.communicationService.runCalibration(CalibrationType.valueOf(calibrationType.toUpperCase()), fromFreq, toFreq, isHighSpeed);
                 }
             }
         } catch(NumberFormatException e) {
             AppMain.calibrationService.showNotification("Could not parse inputs, please, check the formats! -> " + e.getMessage(), NotificationType.ERROR);
-        } catch (RuntimeException e) {
-            showNotification("upss! -> " + e.getMessage(), NotificationType.ERROR);
+            state = CalibrationState.READY;
         }
     }
 
+    /**
+     * Gets lower calibration boundary
+     *
+     * @return the lower boundary of calibration
+     */
     public String getFrom() {
         return from;
     }
 
+    /**
+     * Gets upper calibration boundary
+     *
+     * @return the upper boundary of calibration
+     */
     public String getTo() {
         return to;
     }
 
+    /**
+     * Gets is high speed on
+     *
+     * @return is high speed on
+     */
     public boolean isHighSpeed() {
         return isHighSpeed;
     }
