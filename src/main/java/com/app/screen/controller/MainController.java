@@ -439,7 +439,7 @@ public class MainController implements Initializable {
         if (AppMain.communicationService.isConnected()) {
             if (!gs.isRunningGraph()) {
                 setParametersToEnvironmentParameters(parametersTabPane.getSelectionModel().isSelected(0) ? GraphType.UPPER : GraphType.LOWER);
-                AppMain.calibrationService.openCalibration();
+                AppMain.calibrationService.open();
             } else {
                 AppMain.notificationService.createNotification("Cannot trigger calibration while measuring!", NotificationType.ERROR);
             }

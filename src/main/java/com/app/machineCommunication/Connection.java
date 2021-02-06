@@ -1,4 +1,5 @@
 package com.app.machineCommunication;
+
 import com.app.service.AppMain;
 import com.app.service.calibration.CalibrationState;
 import com.app.service.calibration.CalibrationType;
@@ -13,6 +14,7 @@ import com.app.service.utils.Utils;
 import java.io.*;
 import java.util.*;
 
+
 public class Connection extends Thread {
     boolean cmd = false;
     private boolean connected = false;
@@ -20,8 +22,8 @@ public class Connection extends Thread {
     private Process process;
     private BufferedReader readEnd;
     private BufferedWriter writeEnd;
-    private EnvironmentParameters environmentParameters;
-    private Vector<String> commands;
+    private final EnvironmentParameters environmentParameters;
+    private final Vector<String> commands;
     private Timer timer;
     private double finalCalibrationFrequency;
 
@@ -126,7 +128,7 @@ public class Connection extends Thread {
             }
         }
         if (result.length() > 1 && result.charAt(1) == 'U') {
-            AppMain.calibrationService.setCalibrationState(CalibrationState.REQUIRED);
+            AppMain.calibrationService.setState(CalibrationState.REQUIRED);
         }
         System.out.println("reading '" + result.toString() + "'");
         return result;
@@ -349,26 +351,7 @@ public class Connection extends Thread {
         write("s SB" + environmentParameters.getActive().getVoltageSweep().getStep() + "EN");
     }
 
-    public void openCalibration() {
-        write("s A5");
-        write("s CS");
-        calibrationReader();
-    }
-
-    public void shortCalibration() {
-        write("s A4");
-        write("s CS");
-        calibrationReader();
-    }
-
-    public void loadCalibration() {
-        write("s A6");
-        write("s CS");
-        calibrationReader();
-    }
-
     public void calibrationReader() {
-        AppMain.calibrationService.setCalibrationState(CalibrationState.RUNNING);
         new Thread(() -> {
             StringBuilder result = new StringBuilder();
             write("a");
@@ -382,7 +365,7 @@ public class Connection extends Thread {
                     if ((letter == '\n') && (result.length() > 1)) {
                         try {
                             if (Double.parseDouble(Utils.lineSplitAndExtractNumbers(result.toString(),",")[0]) == finalCalibrationFrequency) {
-                                AppMain.calibrationService.setCalibrationState(CalibrationState.DONE);
+                                AppMain.calibrationService.setState(CalibrationState.DONE);
                                 Thread.currentThread().interrupt();
                                 return;
                             }
@@ -394,8 +377,7 @@ public class Connection extends Thread {
                     } else {
                         result.append(letter);
                     }
-                    System.out.println("sb:" + result);
-
+//                    System.out.println("sb:" + result);
                 } catch (IOException | InterruptedException e) {
                     AppMain.notificationService.createNotification("Problem at calibration -> " + e.getMessage(), NotificationType.ERROR);
                 }
@@ -403,42 +385,43 @@ public class Connection extends Thread {
         }).start();
     }
 
-    public void leaveCalibration() {
-        write("s C0");
+    public void toggleCalibrationMode() {
+        if (calibrationMode) {
+            write("s C0");
+        } else {
+            write("s C1");
+        }
         calibrationMode = !calibrationMode;
-
     }
 
-    public boolean calibrationHandler(CalibrationType calibrationType, double from, double to, boolean isHighSpeed) {
+    public void calibrationHandler(CalibrationType calibrationType, double from, double to, boolean isHighSpeed) {
         if (connected) {
             if (!cmd) toggleCmdMode();
             if (cmd) {
-                if (!calibrationMode) {
-                    write("s C1");
-                    calibrationMode = !calibrationMode;
-                }
+                if (!calibrationMode) toggleCalibrationMode();
                 if (calibrationMode) {
                     finalCalibrationFrequency = to;
                     highSpeed(isHighSpeed);
                     write("s TF" + from + "EN");
                     write("s PF" + to + "EN");
                     switch (calibrationType) {
-                        case OPEN:
-                            openCalibration();
-                            break;
                         case SHORT:
-                            shortCalibration();
+                            write("s A4");
+                            break;
+                        case OPEN:
+                            write("s A5");
                             break;
                         case LOAD:
-                            loadCalibration();
+                            write("s A6");
                             break;
                     }
+                    write("s CS");
+                    calibrationReader();
                 }
             }
         } else {
             AppMain.notificationService.createNotification("Machine not connected!", NotificationType.ERROR);
         }
-        return true;
     }
 
     private SingleValue generateRandomSingeValue(double X) {
