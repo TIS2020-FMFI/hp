@@ -3,6 +3,7 @@ package com.app.service.calibration;
 import com.app.service.AppMain;
 import com.app.service.notification.NotificationService;
 import com.app.service.notification.NotificationType;
+import com.app.service.Window;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -18,7 +19,7 @@ import java.util.Timer;
 /**
  * Calibration service which handles everything about calibration
  */
-public class CalibrationService {
+public class CalibrationService implements Window {
     private final String path;
     private CalibrationState state;
     private CalibrationType type;
@@ -33,7 +34,7 @@ public class CalibrationService {
     /**
      * Initializes calibration service
      *
-     * @param controllerPath Path of the view controller
+     * @param controllerPath path of the view controller
      */
     public CalibrationService(String controllerPath) {
         path = controllerPath;
@@ -41,9 +42,7 @@ public class CalibrationService {
         type = CalibrationType.SHORT;
     }
 
-    /**
-     * Opens calibration window
-     */
+    @Override
     public void open() {
         try {
             stage = new Stage();
@@ -67,13 +66,49 @@ public class CalibrationService {
         }
     }
 
+    @Override
+    public void close() {
+        if (isCalibrationInProcess()) {
+            showNotification("Please, finish up whole calibration process.", NotificationType.ANNOUNCEMENT);
+        } else {
+            AppMain.communicationService.toggleCalibrationMode();
+            stateWatcher.cancel();
+            stage.close();
+        }
+    }
+
     /**
      * Current calibration state
      *
      * @return calibration state
      */
-    public CalibrationState getState() {
+    public synchronized CalibrationState getState() {
         return state;
+    }
+
+    /**
+     * Returns previous calibration state
+     *
+     * @return previous calibration state
+     */
+    public CalibrationState getOldState() { return oldState; }
+
+    /**
+     * Check if calibration has been done yet
+     *
+     * @return if calibration has been done
+     */
+    public boolean isCalibrated() {
+        return state.equals(CalibrationState.DONE) && type.equals(CalibrationType.LOAD);
+    }
+
+    /**
+     * Check if calibration is in process
+     *
+     * @return if calibration is in process
+     */
+    public boolean isCalibrationInProcess() {
+        return state.equals(CalibrationState.RUNNING) || (!(type.equals(CalibrationType.SHORT) && state.equals(CalibrationState.READY)) && !isCalibrated());
     }
 
     /**
@@ -84,26 +119,57 @@ public class CalibrationService {
     public CalibrationType getType() { return type; }
 
     /**
+     * Gets lower calibration boundary
+     *
+     * @return the lower boundary of calibration
+     */
+    public String getFrom() {
+        return from;
+    }
+
+    /**
+     * Gets upper calibration boundary
+     *
+     * @return the upper boundary of calibration
+     */
+    public String getTo() {
+        return to;
+    }
+
+    /**
+     * Gets is high speed on
+     *
+     * @return is high speed on
+     */
+    public boolean isHighSpeed() {
+        return isHighSpeed;
+    }
+
+    /**
      * Sets new calibration state
      *
      * @param state new calibration state
      */
-    public void setState(CalibrationState state) {
+    public synchronized void setState(CalibrationState state) {
+        this.oldState = this.state;
         this.state = state;
         if (state.equals(CalibrationState.DONE)) {
             if (!type.equals(CalibrationType.LOAD)) {
                 type = type.equals(CalibrationType.SHORT) ? CalibrationType.OPEN:CalibrationType.LOAD;
+                this.oldState = this.state;
                 this.state = CalibrationState.READY;
             }
         }
     }
 
     /**
-     * Returns previous calibration state
+     * Sets new calibration type
      *
-     * @return previous calibration state
+     * @param type new calibration type
      */
-    public CalibrationState getOldState() { return oldState; }
+    public void setType(CalibrationType type) {
+        this.type = type;
+    }
 
     /**
      * Sets previous calibration state
@@ -147,19 +213,6 @@ public class CalibrationService {
     }
 
     /**
-     * Closes calibration window
-     */
-    public void close() {
-        if (isCalibrationInProcess()) {
-            showNotification("Please, finish up whole calibration process.", NotificationType.ANNOUNCEMENT);
-        } else {
-            AppMain.communicationService.toggleCalibrationMode();
-            stateWatcher.cancel();
-            stage.close();
-        }
-    }
-
-    /**
      * Notification visualizer for calibration window
      *
      * @param content Content to display with the messing
@@ -167,24 +220,6 @@ public class CalibrationService {
      */
     public void showNotification(String content, NotificationType type) {
         notificationService.createNotification(content, type);
-    }
-
-    /**
-     * Check if calibration has been done yet
-     *
-     * @return if calibration has been done
-     */
-    public boolean isCalibrated() {
-        return state.equals(CalibrationState.DONE) && type.equals(CalibrationType.LOAD);
-    }
-
-    /**
-     * Check if calibration is in process
-     *
-     * @return if calibration is in process
-     */
-    public boolean isCalibrationInProcess() {
-        return state.equals(CalibrationState.RUNNING) || (!(type.equals(CalibrationType.SHORT) && state.equals(CalibrationState.READY)) && !isCalibrated());
     }
 
     /**
@@ -196,13 +231,14 @@ public class CalibrationService {
      * @param isHighSpeed is high speed on
      */
     public void runCalibration(String calibrationType, String from, String to, boolean isHighSpeed) {
-        state = CalibrationState.RUNNING;
         try {
+            if (from.isEmpty() || to.isEmpty()) {
+                throw new NumberFormatException("Empty input");
+            }
             double fromFreq = Double.parseDouble(from);
             double toFreq = Double.parseDouble(to);
             if (toFreq < fromFreq) {
                 AppMain.calibrationService.showNotification("End frequency cannot be smaller than starting frequency!", NotificationType.WARNING);
-                state = CalibrationState.READY;
             } else {
                 if (AppMain.debugMode) {
                     setState(CalibrationState.DONE);
@@ -212,34 +248,6 @@ public class CalibrationService {
             }
         } catch(NumberFormatException e) {
             AppMain.calibrationService.showNotification("Could not parse inputs, please, check the formats! -> " + e.getMessage(), NotificationType.ERROR);
-            state = CalibrationState.READY;
         }
-    }
-
-    /**
-     * Gets lower calibration boundary
-     *
-     * @return the lower boundary of calibration
-     */
-    public String getFrom() {
-        return from;
-    }
-
-    /**
-     * Gets upper calibration boundary
-     *
-     * @return the upper boundary of calibration
-     */
-    public String getTo() {
-        return to;
-    }
-
-    /**
-     * Gets is high speed on
-     *
-     * @return is high speed on
-     */
-    public boolean isHighSpeed() {
-        return isHighSpeed;
     }
 }

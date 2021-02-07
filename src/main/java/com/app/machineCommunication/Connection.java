@@ -369,15 +369,14 @@ public class Connection extends Thread {
                                 Thread.currentThread().interrupt();
                                 return;
                             }
-                        } catch (NumberFormatException ignore) {
-                        }
+                        } catch (NumberFormatException ignore) {}
                         System.out.println("reading cal" + result.toString());
                         result = new StringBuilder();
                         write("a");
                     } else {
                         result.append(letter);
                     }
-//                    System.out.println("sb:" + result);
+                    System.out.println("sb:" + result);
                 } catch (IOException | InterruptedException e) {
                     AppMain.notificationService.createNotification("Problem at calibration -> " + e.getMessage(), NotificationType.ERROR);
                 }
@@ -400,6 +399,7 @@ public class Connection extends Thread {
             if (cmd) {
                 if (!calibrationMode) toggleCalibrationMode();
                 if (calibrationMode) {
+                    AppMain.calibrationService.setState(CalibrationState.RUNNING);
                     finalCalibrationFrequency = to;
                     highSpeed(isHighSpeed);
                     write("s TF" + from + "EN");

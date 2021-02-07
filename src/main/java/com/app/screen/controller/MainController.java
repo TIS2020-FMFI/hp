@@ -27,6 +27,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
+/**
+ * Controller for main screen
+ */
 public class MainController implements Initializable {
 
     GraphService gs;
@@ -183,7 +186,7 @@ public class MainController implements Initializable {
 
 
     /**
-     * Disables buttons according based on states of Graph and Connection.
+     * Disables buttons according to states of Graph and Connection.
      */
     private void toggleDisabling() {
         boolean isConnected = AppMain.communicationService != null && AppMain.communicationService.isConnected();
@@ -223,7 +226,7 @@ public class MainController implements Initializable {
             } else if (AppMain.calibrationService.getState().equals(CalibrationState.REQUIRED)) {
                 AppMain.notificationService.createNotification("Calibration is required, please calibrate the machine", NotificationType.ANNOUNCEMENT);
             } else if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
-                AppMain.abortDataDialog.openDialog(type, this, true);
+                AppMain.abortDataWindow.open(type, this, true);
             } else {
                 parametersTabPane.getSelectionModel().select(upperGraphTab);
                 runMeasurement(GraphType.UPPER);
@@ -251,7 +254,7 @@ public class MainController implements Initializable {
             } else if (AppMain.calibrationService.getState().equals(CalibrationState.REQUIRED)) {
                 AppMain.notificationService.createNotification("Calibration is required, please calibrate the machine", NotificationType.ANNOUNCEMENT);
             } else if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
-                AppMain.abortDataDialog.openDialog(type, this, true);
+                AppMain.abortDataWindow.open(type, this, true);
             } else {
                 parametersTabPane.getSelectionModel().select(lowerGraphTab);
                 runMeasurement(GraphType.LOWER);
@@ -391,7 +394,7 @@ public class MainController implements Initializable {
         GraphType type = GraphType.UPPER;
         parametersTabPane.getSelectionModel().select(upperGraphTab);
         if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
-            AppMain.abortDataDialog.openDialog(type, this, false);
+            AppMain.abortDataWindow.open(type, this, false);
             return;
         }
         gs.loadGraph(type);
@@ -412,7 +415,7 @@ public class MainController implements Initializable {
         GraphType type = GraphType.LOWER;
         parametersTabPane.getSelectionModel().select(lowerGraphTab);
         if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
-            AppMain.abortDataDialog.openDialog(type, this, false);
+            AppMain.abortDataWindow.open(type, this, false);
             return;
         }
         gs.loadGraph(type);
@@ -469,7 +472,7 @@ public class MainController implements Initializable {
                 && (gs.getGraphByType(GraphType.LOWER).getMeasurement() == null || !gs.getGraphByType(GraphType.LOWER).getMeasurement().canLooseData())) {
             Utils.closeApp();
         } else {
-            AppMain.dataNotSavedDialog.openDialog();
+            AppMain.dataNotSavedWindow.open();
         }
     }
 
@@ -479,7 +482,7 @@ public class MainController implements Initializable {
      * @param event
      */
     public void showHelpWindow(MouseEvent event) {
-        AppMain.helpService.openHelp();
+        AppMain.helpWindow.open();
     }
 
     /**

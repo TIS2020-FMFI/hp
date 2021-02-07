@@ -2,13 +2,13 @@ package com.app.service;
 
 import com.app.service.calibration.CalibrationService;
 import com.app.service.communication.CommunicationService;
-import com.app.service.file.DataNotSavedDialog;
 import com.app.service.file.FileService;
-import com.app.service.file.AbortDataDialog;
 import com.app.service.file.parameters.EnvironmentParameters;
 import com.app.service.graph.GraphService;
-import com.app.service.help.HelpService;
+import com.app.service.help.HelpWindow;
 import com.app.service.notification.NotificationService;
+import com.app.service.measurement.AbortDataWindow;
+import com.app.service.measurement.DataNotSavedWindow;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -22,9 +22,9 @@ public class AppMain extends Application {
     public static Stage ps;
     public static NotificationService notificationService;
     public static CalibrationService calibrationService;
-    public static HelpService helpService;
-    public static DataNotSavedDialog dataNotSavedDialog;
-    public static AbortDataDialog abortDataDialog;
+    public static HelpWindow helpWindow;
+    public static DataNotSavedWindow dataNotSavedWindow;
+    public static AbortDataWindow abortDataWindow;
     public static FileService fileService;
     public static GraphService graphService;
     public static CommunicationService communicationService;
@@ -56,9 +56,9 @@ public class AppMain extends Application {
         communicationService = new CommunicationService();
 
         calibrationService = new CalibrationService("/views/calibrationScreen.fxml");
-        helpService = new HelpService("/views/helpScreen.fxml");
-        dataNotSavedDialog = new DataNotSavedDialog("/views/dataNotSavedDialog.fxml");
-        abortDataDialog = new AbortDataDialog("/views/abortDataDialog.fxml");
+        helpWindow = new HelpWindow("/views/helpScreen.fxml");
+        dataNotSavedWindow = new DataNotSavedWindow("/views/dataNotSavedDialog.fxml");
+        abortDataWindow = new AbortDataWindow("/views/abortDataDialog.fxml");
 
 
         // if all runs successfully then show

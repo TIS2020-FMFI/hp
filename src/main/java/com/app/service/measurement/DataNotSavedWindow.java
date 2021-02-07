@@ -1,8 +1,9 @@
-package com.app.service.file;
+package com.app.service.measurement;
 
 import com.app.service.AppMain;
 import com.app.service.notification.NotificationType;
 import com.app.service.utils.Utils;
+import com.app.service.Window;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -12,15 +13,25 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 
-public class DataNotSavedDialog {
+/**
+ * Window that's triggered when closing the app but unsaved data is present
+ */
+public class DataNotSavedWindow implements Window {
     private final String path;
     private Stage stage;
 
-    public DataNotSavedDialog(String controllerPath) {
+
+    /**
+     * Initializes data not saved window
+     *
+     * @param controllerPath path to the view
+     */
+    public DataNotSavedWindow(String controllerPath) {
         path = controllerPath;
     }
 
-    public void openDialog() {
+    @Override
+    public void open() {
         try {
             stage = new Stage();
 
@@ -35,7 +46,16 @@ public class DataNotSavedDialog {
         }
     }
 
-    public void saveAndCloseDialog() {
+    @Override
+    public void close() {
+        stage.close();
+        Utils.closeApp();
+    }
+
+    /**
+     * Saves all unsaved data and closes the app
+     */
+    public void saveAndClose() {
         boolean success = true;
         if (AppMain.graphService.upperGraph.getMeasurement() != null) {
             if (AppMain.fileService.isAutoSave()) {
@@ -53,13 +73,9 @@ public class DataNotSavedDialog {
         }
         if (success) {
             AppMain.notificationService.createNotification("Data saved successfully.", NotificationType.SUCCESS);
+            close();
             Utils.closeApp();
         }
-    }
-
-    public void closeWithoutSaving() {
-        stage.close();
-        Utils.closeApp();
     }
 
 }
