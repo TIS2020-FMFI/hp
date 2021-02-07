@@ -11,6 +11,10 @@ import javafx.scene.layout.VBox;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+
+/**
+ * Controller for data not saved pupup
+ */
 public class DataNotSavedDialogController implements Initializable {
 
     @FXML
@@ -28,14 +32,30 @@ public class DataNotSavedDialogController implements Initializable {
     @FXML
     Button saveAndCloseBtn;
 
+    /**
+     * Close window request
+     *
+     * @param event event that triggered the request
+     */
     public void closeWindow(MouseEvent event) {
-        AppMain.dataNotSavedDialog.closeWithoutSaving();
+        AppMain.dataNotSavedWindow.close();
     }
 
+    /**
+     * Save and close app request
+     *
+     * @param event event that triggered the request
+     */
     public void saveAndCloseWindow(MouseEvent event) {
-        AppMain.dataNotSavedDialog.saveAndCloseDialog();
+        AppMain.dataNotSavedWindow.saveAndClose();
     }
 
+    /**
+     * Initializes controller
+     *
+     * @param location
+     * @param resources
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
     }

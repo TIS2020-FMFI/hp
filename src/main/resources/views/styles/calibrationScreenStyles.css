@@ -6,9 +6,13 @@
 }
 
 .btn {
-    -fx-min-width: 30px;
+    -fx-min-width: 100px;
     -fx-start-margin: 10px;
     -fx-end-margin: 10px;
+}
+
+.invalid-input {
+    -fx-background-color: #f17474;
 }
 
 .menuBtn:hover {
