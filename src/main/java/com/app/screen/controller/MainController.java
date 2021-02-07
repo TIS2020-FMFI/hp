@@ -397,6 +397,7 @@ public class MainController implements Initializable {
         gs.loadGraph(type);
         if (gs.upperGraph.getState().equals(GraphState.LOADED)) {
             upperGraphSave.setDisable(false);
+            upperGraphExport.setDisable(false);
             ep.setUpperGraphParameters(gs.upperGraph.getMeasurement().getParameters());
             setParam(GraphType.UPPER, displayAUpper, displayBUpper);
         }
@@ -417,6 +418,7 @@ public class MainController implements Initializable {
         gs.loadGraph(type);
         if (gs.lowerGraph.getState().equals(GraphState.LOADED)) {
             lowerGraphSave.setDisable(false);
+            lowerGraphExport.setDisable(false);
             ep.setLowerGraphParameters(gs.lowerGraph.getMeasurement().getParameters());
             setParam(GraphType.LOWER, displayALower, displayBLower);
         }
