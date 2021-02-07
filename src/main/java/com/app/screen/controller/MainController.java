@@ -393,10 +393,11 @@ public class MainController implements Initializable {
     public void loadUpperGraph(MouseEvent event) {
         GraphType type = GraphType.UPPER;
         parametersTabPane.getSelectionModel().select(upperGraphTab);
-        if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
-            AppMain.abortDataWindow.open(type, this, false);
-            return;
-        }
+        //TODO: abortDataWindow sposobuje chyby
+//        if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
+//            AppMain.abortDataWindow.open(type, this, false);
+//            return;
+//        }
         gs.loadGraph(type);
         if (gs.upperGraph.getState().equals(GraphState.LOADED)) {
             upperGraphSave.setDisable(false);
@@ -414,10 +415,11 @@ public class MainController implements Initializable {
     public void loadLowerGraph(MouseEvent event) {
         GraphType type = GraphType.LOWER;
         parametersTabPane.getSelectionModel().select(lowerGraphTab);
-        if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
-            AppMain.abortDataWindow.open(type, this, false);
-            return;
-        }
+        //TODO: abortDataWindow sposobuje chyby
+//        if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
+//            AppMain.abortDataWindow.open(type, this, false);
+//            return;
+//        }
         gs.loadGraph(type);
         if (gs.lowerGraph.getState().equals(GraphState.LOADED)) {
             lowerGraphSave.setDisable(false);
