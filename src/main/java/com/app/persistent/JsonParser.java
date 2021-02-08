@@ -24,6 +24,14 @@ import java.util.MissingFormatArgumentException;
 
 public class JsonParser {
 
+    /**
+     * Saves parameters of the upper and lower graphs to .json.
+     *
+     * @param fileName
+     * @param ep
+     * @return
+     * @throws IOException
+     */
     public static boolean saveEnvironmentParameters(String fileName, EnvironmentParameters ep) throws IOException {
         ep.getByType(GraphType.UPPER).checkAll();
         ep.getByType(GraphType.LOWER).checkAll();
@@ -40,6 +48,12 @@ public class JsonParser {
         return true;
     }
 
+    /**
+     * Creates map of parameters and values.
+     *
+     * @param params
+     * @return
+     */
     private static Map<String, Object> getParametersMap(Parameters params) {
         Map<String, Object> temp = new HashMap<>();
 
@@ -72,6 +86,13 @@ public class JsonParser {
         return temp;
     }
 
+    /**
+     * Reads .json and sets upper and lower graph parameters to EnvironmentParameters.
+     * Sends notification and sets default parameters if error occurs during reading.
+     *
+     * @param filePath
+     * @return
+     */
     public static EnvironmentParameters readEnvironmentParameters(String filePath) {
         EnvironmentParameters ep = new EnvironmentParameters();
         Parameters paramsUpper = new Parameters();
@@ -130,6 +151,15 @@ public class JsonParser {
         return ep;
     }
 
+    /**
+     * Reads parameters from map and sets to Parameters.
+     * Sends notification if error occurs during reading.
+     *
+     * @param graphParams
+     * @return
+     * @throws WrongDataFormatException
+     */
+
     private static Parameters readParameters(Map<String, Object> graphParams) throws WrongDataFormatException {
         Parameters params = new Parameters();
         try {
@@ -177,6 +207,16 @@ public class JsonParser {
         return params;
     }
 
+    /**
+     * Saves measurement with given name to .json.
+     * If not all folders exist on the selected path, it will create the missing ones.
+     * Sends notification if error occurs during saving.
+     *
+     * @param autoSavingDir
+     * @param fileName
+     * @param measurement
+     * @return
+     */
     public static boolean writeNewMeasurement(String autoSavingDir, String fileName, Measurement measurement) {
         try {
             JSONObject jo = new JSONObject();
@@ -222,6 +262,15 @@ public class JsonParser {
         return false;
     }
 
+    /**
+     * Writes new intention values to an existing .json file.
+     * Sends notification if error occurs during writing.
+     *
+     * @param autoSavingDir
+     * @param measurement
+     * @return
+     */
+
     public static boolean writeNewValues(String autoSavingDir, Measurement measurement) {
         try {
             Object obj = new JSONParser().parse(new FileReader(autoSavingDir));
@@ -257,6 +306,14 @@ public class JsonParser {
         return false;
     }
 
+    /**
+     * Reads a measurement from .json file.
+     * Sends notification if error occur during reading.
+     *
+     * @param fileName
+     * @return
+     * @throws WrongDataFormatException
+     */
     public static Measurement readMeasurement(String fileName) throws WrongDataFormatException {
         Measurement measurement = new Measurement(new Parameters());
         try {
