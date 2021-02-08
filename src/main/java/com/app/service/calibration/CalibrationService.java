@@ -110,7 +110,9 @@ public class CalibrationService implements Window {
      * @return if calibration is in process
      */
     public boolean isCalibrationInProcess() {
-        return state.equals(CalibrationState.RUNNING) || (!(type.equals(CalibrationType.SHORT) && state.equals(CalibrationState.READY)) && !isCalibrated());
+        return !state.equals(CalibrationState.REQUIRED) &&
+                (state.equals(CalibrationState.RUNNING)
+                || (!(type.equals(CalibrationType.SHORT) && state.equals(CalibrationState.READY)) && !isCalibrated()));
     }
 
     /**

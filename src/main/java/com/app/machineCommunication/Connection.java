@@ -68,6 +68,7 @@ public class Connection extends Thread {
             } else {
                 if (!reconnect()) return connected;
                 write("connect 19");
+                write("LOGON");
                 write("cmd");
                 if (timer == null) {
                     writer();
@@ -181,6 +182,10 @@ public class Connection extends Thread {
             }).start();
         } else {
             write("s WU");
+            try {
+                while (readEnd.ready()) readEnd.read();
+            } catch (Exception e) {}
+
             write("c");
             new Thread(() -> {
                 boolean some_data_arrived = false;
@@ -192,25 +197,32 @@ public class Connection extends Thread {
                             continue;
                         }
                         char letter = (char) readEnd.read();
-                        if ((letter == '\n') && (result.length() > 1)) {
-                            if ((result.charAt(1) == 'N') && some_data_arrived) {
-                                if (result.charAt(2) == 'X'){
-                                    result = new StringBuilder();
-                                }
-                                else{
-                                write("n");
-                                measurement.addSingleValue(null);
-                                Thread.currentThread().interrupt();
-                                return;
-                                }
+                        if ((letter == '\n') && (result.length() > 2)) {
+                            if ((result.charAt(1) != 'F') && (result.charAt(2) != 'F') && (result.charAt(1) != 'V') && (result.charAt(2) != 'V')){ //&& some_data_arrived) {
+//                                if (result.charAt(2) == 'X') {
+//                                    result = new StringBuilder();
+//                                } else {
+                                    System.out.println("result: " + result.toString());
+                                    System.out.flush();
+                                    write("n");
+                                    measurement.addSingleValue(null);
+                                    Thread.currentThread().interrupt();
+                                    return;
+//                                }
                             } else {
                                 System.out.println("reading " + result.toString());
-                                if (result.charAt(1) != '9') {
-                                    measurement.addSingleValue(new SingleValue(result.toString()));
+                                System.out.flush();
+                                if (!result.toString().startsWith(" ULN 9.999")) {
+                                    SingleValue newValue = new SingleValue(result.toString());
+                                    measurement.addSingleValue(newValue);
                                     result = new StringBuilder();
-                                }
-                                else{
+//                                    if (AppMain.graphService.getRunningGraph().getMeasurement().getnewValue.getDisplayX())
+                                } else {
                                     AppMain.notificationService.createNotification("Measurement in non-calibrated range", NotificationType.WARNING);
+                                    write("n");
+                                    measurement.addSingleValue(null);
+                                    Thread.currentThread().interrupt();
+                                    return;
                                 }
                                 some_data_arrived = true;
                             }
@@ -337,18 +349,20 @@ public class Connection extends Thread {
 
     public void frequencySweep() {
         write("s BI" + environmentParameters.getActive().getVoltageSweep().getSpot() + "EN");
-        write("s FR" + environmentParameters.getActive().getFrequencySweep().getSpot() + "EN");
         write("s TF" + environmentParameters.getActive().getFrequencySweep().getStart() + "EN");
         write("s PF" + environmentParameters.getActive().getFrequencySweep().getStop() + "EN");
         write("s SF" + environmentParameters.getActive().getFrequencySweep().getStep() + "EN");
+        if (!environmentParameters.getActive().getOther().isAutoSweep())
+            write("s FR" + environmentParameters.getActive().getFrequencySweep().getStart() + "EN");
     }
 
     public void voltageSweep() {
         write("s FR" + environmentParameters.getActive().getFrequencySweep().getSpot() + "EN");
-        write("s BI" + environmentParameters.getActive().getVoltageSweep().getSpot() + "EN");
         write("s TB" + environmentParameters.getActive().getVoltageSweep().getStart() + "EN");
         write("s PB" + environmentParameters.getActive().getVoltageSweep().getStop() + "EN");
         write("s SB" + environmentParameters.getActive().getVoltageSweep().getStep() + "EN");
+        if (!environmentParameters.getActive().getOther().isAutoSweep())
+            write("s BI" + environmentParameters.getActive().getVoltageSweep().getStart() + "EN");
     }
 
     public void calibrationReader() {

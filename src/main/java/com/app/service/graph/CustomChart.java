@@ -96,12 +96,15 @@ public class CustomChart extends ChartPanel {
         //customize the plot with renderers and axis
         XYSplineRenderer splinerenderer1 = new XYSplineRenderer();
 //        splinerenderer1.setSeriesItemLabelsVisible(0,true);
+        splinerenderer1.setSeriesPaint(0, Color.BLUE);
+        splinerenderer1.setSeriesFillPaint(0, Color.BLUE);
         plot.setRenderer(0, splinerenderer1);
 //        splinerenderer1.setAutoPopulateSeriesFillPaint(true);
 //        splinerenderer1.setDefaultItemLabelGenerator(new StandardXYItemLabelGenerator());
 
         XYSplineRenderer splinerenderer0 = new XYSplineRenderer();
-        splinerenderer0.setSeriesFillPaint(1, Color.BLUE);
+        splinerenderer0.setSeriesFillPaint(1, Color.RED);
+        splinerenderer0.setSeriesPaint(1, Color.RED);
 //        splinerenderer0.setSeriesItemLabelsVisible(0,true);
         plot.setRenderer(1, splinerenderer0);
 //        splinerenderer0.setAutoPopulateSeriesFillPaint(true);

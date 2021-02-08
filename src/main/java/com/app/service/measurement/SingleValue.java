@@ -32,7 +32,7 @@ public class SingleValue {
     public SingleValue(String input) throws NumberFormatException {
         String[] values = Utils.lineSplitAndExtractNumbers(input, ",");
         if (values.length != 3) {
-            throw new ArrayStoreException("Parsed measurement line does not hold 3 values -> length: " + values.length);
+            throw new ArrayStoreException("Parsed measurement line does not hold 3 values -> length: " + values.length +"; " + (input == null));
         }
         this.displayX = Double.parseDouble(values[0]);
         this.displayA = Double.parseDouble(values[1]);
@@ -57,14 +57,14 @@ public class SingleValue {
             if  (measurement.getData().size() == 0) {
                 this.displayX = measurement.getParameters().getFrequencySweep().getStart();
             } else {
-                this.displayX = measurement.getData().get(measurement.getData().size()-1).displayX + measurement.getParameters().getFrequencySweep().getStep();
+                this.displayX = Math.min(measurement.getData().get(measurement.getData().size()-1).displayX + measurement.getParameters().getFrequencySweep().getStep(), measurement.getParameters().getFrequencySweep().getStop());
             }
 
         } else {
             if  (measurement.getData().size() == 0) {
                 this.displayX = measurement.getParameters().getVoltageSweep().getStart();
             } else {
-                this.displayX = measurement.getData().get(measurement.getData().size()-1).displayX + measurement.getParameters().getVoltageSweep().getStep();
+                this.displayX = Math.min(measurement.getData().get(measurement.getData().size()-1).displayX + measurement.getParameters().getVoltageSweep().getStep(), measurement.getParameters().getVoltageSweep().getStop());
             }
         }
         this.displayA = Double.parseDouble(values[0]);

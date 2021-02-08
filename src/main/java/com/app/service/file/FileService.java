@@ -25,7 +25,7 @@ public class FileService {
     private String autoSavingDir;
     private String fileName;
     private boolean autoSave;
-    private final Timer timerAutoSave = new Timer();
+    private Timer timerAutoSave;
     private int autosavingInterval = 500;
 
     /**
@@ -249,20 +249,18 @@ public class FileService {
             autoSaveMeasurement(measurement);
             savedDir = autoSavingDir + fileName;
             String finalSavedDir = savedDir;
+            System.out.println("creating new timer");
+            timerAutoSave = new Timer();
             timerAutoSave.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    if (measurement.getState().equals(MeasurementState.STARTED)) {
-                        if (measurement.getState().equals(MeasurementState.FINISHED) && measurement.getIndexOfTheValueToSave() == measurement.getData().size() - 1) {
+                    if (measurement.getData().size() > measurement.getIndexOfTheValueToSave()) {
+                        JsonParser.writeNewValues(finalSavedDir, measurement);
+                        if (measurement.getData().elementAt(measurement.getData().size() - 1) == null) {
                             measurement.setState(MeasurementState.SAVED);
                             timerAutoSave.cancel();
-                            return;
-                        }
-                        if (measurement.getData().size() > measurement.getIndexOfTheValueToSave()) {
-                            JsonParser.writeNewValues(finalSavedDir, measurement);
                         }
                     }
-
                 }
             }, 100, autosavingInterval);
         }

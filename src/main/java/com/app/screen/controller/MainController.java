@@ -41,6 +41,8 @@ public class MainController implements Initializable {
     Timer connectionWatcher = new Timer();
     Boolean oldConnectionState;
 
+    boolean runOnce = true;
+
     @FXML
     VBox VBox1;
 
@@ -190,17 +192,18 @@ public class MainController implements Initializable {
      */
     private void toggleDisabling() {
         boolean isConnected = AppMain.communicationService != null && AppMain.communicationService.isConnected();
+        boolean isCalRequired = AppMain.calibrationService != null && AppMain.calibrationService.getState().equals(CalibrationState.REQUIRED);
         boolean isUpperEmpty = gs.getGraphByType(GraphType.UPPER) == null || gs.getGraphByType(GraphType.UPPER).getState().equals(GraphState.EMPTY);
         boolean isLowerEmpty = gs.getGraphByType(GraphType.LOWER) == null || gs.getGraphByType(GraphType.LOWER).getState().equals(GraphState.EMPTY);
         boolean isUpperRunning = gs.getRunningGraph() != null && gs.getRunningGraph().getType().equals(GraphType.UPPER);
         boolean isLowerRunning = gs.getRunningGraph() != null && gs.getRunningGraph().getType().equals(GraphType.LOWER);
 
-        upperGraphRun.setDisable(isLowerRunning || !isConnected);
+        upperGraphRun.setDisable(isCalRequired || isLowerRunning || !isConnected);
         upperGraphSave.setDisable(isUpperRunning || isUpperEmpty);
         upperGraphLoad.setDisable(isUpperRunning);
         upperGraphExport.setDisable(isUpperRunning || isUpperEmpty);
 
-        lowerGraphRun.setDisable(isUpperRunning || !isConnected);
+        lowerGraphRun.setDisable(isCalRequired || isUpperRunning || !isConnected);
         lowerGraphSave.setDisable(isLowerRunning || isLowerEmpty);
         lowerGraphLoad.setDisable(isLowerRunning);
         lowerGraphExport.setDisable(isLowerRunning || isLowerEmpty);
@@ -395,7 +398,6 @@ public class MainController implements Initializable {
     public void loadUpperGraph(MouseEvent event) {
         GraphType type = GraphType.UPPER;
         parametersTabPane.getSelectionModel().select(upperGraphTab);
-        //TODO: abortDataWindow sposobuje chyby
         if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
             AppMain.abortDataWindow.open(type, this, false);
             return;
@@ -417,7 +419,6 @@ public class MainController implements Initializable {
     public void loadLowerGraph(MouseEvent event) {
         GraphType type = GraphType.LOWER;
         parametersTabPane.getSelectionModel().select(lowerGraphTab);
-        //TODO: abortDataWindow sposobuje chyby
         if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
             AppMain.abortDataWindow.open(type, this, false);
             return;
@@ -517,6 +518,11 @@ public class MainController implements Initializable {
                     oldConnectionState = AppMain.communicationService.isConnected();
                     updateGpibMenu(AppMain.communicationService.isConnected());
                     toggleDisabling();
+                } else if (runOnce && AppMain.calibrationService != null
+                        //&& (AppMain.calibrationService.getState().equals(CalibrationState.REQUIRED) || (AppMain.calibrationService.getOldState() != null && AppMain.calibrationService.getOldState().equals(CalibrationState.REQUIRED)))) {
+                && AppMain.calibrationService.isCalibrated()) {
+                toggleDisabling();
+                runOnce = false;
                 }
             }
         }, 100, 100);
@@ -591,6 +597,7 @@ public class MainController implements Initializable {
             otherSweepTypeUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0 : 1);
             otherHighSpeedUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isHighSpeed() ? 0 : 1);
             otherAutoSweepUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isAutoSweep() ? 0 : 1);
+            toggleUpperXAxis.selectToggle(ep.getByType(GraphType.UPPER).getDisplayYY().getX().equals(MeasuredQuantity.FREQUENCY) ? toggleUpperXAxis.getToggles().get(0):toggleUpperXAxis.getToggles().get(1));
         } else {
             frequencyStartLower.setText("" + ep.getByType(graphType).getFrequencySweep().getStart());
             frequencyStopLower.setText("" + ep.getByType(graphType).getFrequencySweep().getStop());
@@ -610,6 +617,7 @@ public class MainController implements Initializable {
             otherSweepTypeLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0 : 1);
             otherHighSpeedLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isHighSpeed() ? 0 : 1);
             otherAutoSweepLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isAutoSweep() ? 0 : 1);
+            toggleLowerXAxis.selectToggle(ep.getByType(GraphType.LOWER).getDisplayYY().getX().equals(MeasuredQuantity.FREQUENCY) ? toggleLowerXAxis.getToggles().get(0):toggleLowerXAxis.getToggles().get(1));
         }
     }
 
