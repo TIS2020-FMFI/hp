@@ -5,7 +5,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-
+/**
+ * Values for display B.
+ *
+ */
 public enum DisplayBOption {
     R,
     G,
@@ -17,6 +20,12 @@ public enum DisplayBOption {
     B,
     Xs;
 
+    /**
+     * Selects possible values for display B by display A value.
+     *
+     * @param aOption
+     * @return
+     */
     public static List<DisplayBOption> getBOptionsByA(DisplayAOption aOption) {
         switch (aOption) {
             case L:
@@ -37,6 +46,12 @@ public enum DisplayBOption {
         }
     }
 
+    /**
+     * Returns value by string.
+     *
+     * @param text
+     * @return
+     */
     public static DisplayBOption getOptionFromString(String text) {
         if (text.contains("deg")) {
             return deg;
@@ -53,6 +68,11 @@ public enum DisplayBOption {
         return DisplayBOption.valueOf(text);
     }
 
+    /**
+     * Creates string by value.
+     *
+     * @return
+     */
     public String toString()
     {
         if (this == deg) return "Θ(deg)";
