@@ -14,7 +14,9 @@ import com.app.service.utils.Utils;
 import java.io.*;
 import java.util.*;
 
-
+/**
+ * Connection class which handles everything about communication with machine
+ */
 public class Connection extends Thread {
     boolean cmd = false;
     private boolean connected = false;
@@ -27,15 +29,28 @@ public class Connection extends Thread {
     private Timer timer;
     private double finalCalibrationFrequency;
 
+    /**
+     * Initialize Connection
+     */
     public Connection() {
         environmentParameters = AppMain.environmentParameters;
         commands = new Vector<>();
     }
 
+    /**
+     * Current connection state
+     *
+     * @return connection state
+     */
     public boolean isConnected() {
         return connected;
     }
 
+    /**
+     * Initialize connection with file witch contains hpctrl.exe for communication with machine
+     *
+     * @return if connection with file was successful
+     */
     public boolean reconnect(){
         try {
             process = Runtime.getRuntime().exec("C:/s/hp/hpctrl.exe -i"); // TODO: set to default within project
@@ -48,6 +63,12 @@ public class Connection extends Thread {
         return false;
     }
 
+    /**
+     * Initialize connection with machine through the hpctrl.exe
+     * Enters the cmd mode
+     *
+     * @return connected state
+     */
     public boolean connect() throws RuntimeException, IOException, InterruptedException {
         if (!AppMain.debugMode) {
             if (connected) {
@@ -83,16 +104,29 @@ public class Connection extends Thread {
         return connected;
     }
 
+    /**
+     * Checks if connection is active by sending command and waiting for appropriate respond
+     *
+     * @return if connection was successful
+     */
     public boolean checkConnection() throws IOException, InterruptedException {
         write("a");
         StringBuilder result = read(false);
         return result.length() > 0;
     }
 
+    /**
+     *
+     * @return process state
+     */
     public Process getCommunicator() {
         return process;
     }
 
+    /**
+     * Enters the cmd mode
+     * If there is some problem, throws exception
+     */
     public void toggleCmdMode() {
         try {
             if (connected) {
@@ -110,7 +144,13 @@ public class Connection extends Thread {
             AppMain.notificationService.createNotification("Attempted to toggle cmd mode, but failed!", NotificationType.ERROR);
         }
     }
-
+    /**
+     * Reads the incoming string
+     *
+     * @param isStepMeasurement state if step measurement is active
+     *
+     * @return read string
+     */
     private StringBuilder read(boolean isStepMeasurement) throws IOException, InterruptedException, NullPointerException {
         StringBuilder result = new StringBuilder();
         int count = 0;
@@ -134,10 +174,18 @@ public class Connection extends Thread {
         return result;
     }
 
+    /**
+     * Sends incoming commands to stack
+     *
+     * @param text command
+     */
     private void write(String text) {
         commands.add(text);
     }
 
+    /**
+     * Sends all commands which are waiting in stack to the machine
+     */
     public void writer() {
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -158,11 +206,21 @@ public class Connection extends Thread {
         }, 0, 10);
     }
 
+    /**
+     * Sends command to abort measurement
+     */
     public void abortMeasurement() {
         write("s AB");
         System.out.println("aborting measurement");
     }
 
+    /**
+     * Starts auto-measurement
+     * Reads incoming values
+     * Sends read values to shared-array in measurement for graph
+     *
+     * @param measurement active measurement class
+     */
     public void startAutoMeasurement(Measurement measurement) {
         if (AppMain.debugMode) {
             System.out.println("-- Running auto sweep measurement --");
@@ -224,6 +282,13 @@ public class Connection extends Thread {
         }
     }
 
+    /**
+     * Starts step-measurement
+     * Reads incoming value
+     * Send sread value to shared-array in measurement for graph
+     *
+     * @param measurement active measurement class
+     */
     public void stepMeasurement(Measurement measurement) throws IOException, InterruptedException {
         if (AppMain.debugMode) {
             measurement.addSingleValue(generateRandomSingeValue(measurement.getData().size() + 2));
@@ -241,6 +306,13 @@ public class Connection extends Thread {
         }
     }
 
+    /**
+     * Initialize the measurement by sending all the settings to the machine
+     *
+     * @param type measurement type (frequency or voltage)
+     * @param measurement active measurement class
+     * @param isAutoSweepOn auto-sweep state
+     */
     public void initMeasurement(MeasuredQuantity type, Measurement measurement, boolean isAutoSweepOn) throws IOException, InterruptedException {
         if (connected) {
             if (!cmd) {
@@ -267,6 +339,11 @@ public class Connection extends Thread {
         }
     }
 
+    /**
+     * Sends chosen high-speed state to machine (on/off)
+     *
+     * @param highspeed high-speed state
+     */
     public void highSpeed(boolean highspeed) {
         if (highspeed)
             write("s H1");
@@ -275,6 +352,9 @@ public class Connection extends Thread {
         }
     }
 
+    /**
+     * Sends chosen sweep-type to machine (linear/log)
+     */
     public void sweepType() {
         if (environmentParameters.getActive().getOther().getSweepType() == SweepType.LINEAR)
             write("s G0");
@@ -282,6 +362,9 @@ public class Connection extends Thread {
             write("s G1");
     }
 
+    /**
+     * Sends chosen display settings to machine (A∧B)
+     */
     public void displayFunctions() {
         switch (environmentParameters.getActive().getDisplayYY().getA()) {
             case "L":
@@ -334,7 +417,10 @@ public class Connection extends Thread {
         }
     }
 
-
+    /**
+     * Sends frequency measurement settings to machine from gui
+     * FrequencyStart, FrequencyStep, FrequencyStop, FrequencySpot, VoltageSpot
+     */
     public void frequencySweep() {
         write("s BI" + environmentParameters.getActive().getVoltageSweep().getSpot() + "EN");
         write("s FR" + environmentParameters.getActive().getFrequencySweep().getSpot() + "EN");
@@ -343,6 +429,10 @@ public class Connection extends Thread {
         write("s SF" + environmentParameters.getActive().getFrequencySweep().getStep() + "EN");
     }
 
+    /**
+     * Sends voltage measurement settings to machine from gui
+     * VoltageStart, VoltageStep, VoltageStop, VoltageSpot, FrequencySpot
+     */
     public void voltageSweep() {
         write("s FR" + environmentParameters.getActive().getFrequencySweep().getSpot() + "EN");
         write("s BI" + environmentParameters.getActive().getVoltageSweep().getSpot() + "EN");
@@ -351,6 +441,10 @@ public class Connection extends Thread {
         write("s SB" + environmentParameters.getActive().getVoltageSweep().getStep() + "EN");
     }
 
+    /**
+     * Reads incoming calibration results
+     * Throws notification if there is some problem
+     */
     public void calibrationReader() {
         new Thread(() -> {
             StringBuilder result = new StringBuilder();
@@ -384,6 +478,9 @@ public class Connection extends Thread {
         }).start();
     }
 
+    /**
+     * Enters calibration mode
+     */
     public void toggleCalibrationMode() {
         if (calibrationMode) {
             write("s C0");
@@ -393,6 +490,14 @@ public class Connection extends Thread {
         calibrationMode = !calibrationMode;
     }
 
+    /**
+     * Handles chosen calibration type
+     *
+     * @param calibrationType chosen calibration type
+     * @param from start range of calibration
+     * @param to end range of calibration
+     * @param isHighSpeed high-speed state
+     */
     public void calibrationHandler(CalibrationType calibrationType, double from, double to, boolean isHighSpeed) {
         if (connected) {
             if (!cmd) toggleCmdMode();
