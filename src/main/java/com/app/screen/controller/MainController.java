@@ -217,6 +217,7 @@ public class MainController implements Initializable {
         if (gs.isRunningGraph() && gs.getGraphByType(type).getState().equals(GraphState.RUNNING)) {
             gs.abortGraph(type);
             toggleDisabling();
+            gs.upperGraph.setState(GraphState.EMPTY);
             upperGraphRun.setText("Run");
             upperToolbar.getItems().remove(upperPointNext);
 //            upperToolbar.getItems().remove(currentValueDisplay);
@@ -245,6 +246,7 @@ public class MainController implements Initializable {
         if (gs.isRunningGraph() && gs.getGraphByType(type).getState().equals(GraphState.RUNNING)) {
             gs.abortGraph(type);
             toggleDisabling();
+            gs.lowerGraph.setState(GraphState.EMPTY);
             lowerGraphRun.setText("Run");
             lowerToolbar.getItems().remove(lowerPointNext);
 //            lowerToolbar.getItems().remove(currentValueDisplay);
@@ -394,10 +396,10 @@ public class MainController implements Initializable {
         GraphType type = GraphType.UPPER;
         parametersTabPane.getSelectionModel().select(upperGraphTab);
         //TODO: abortDataWindow sposobuje chyby
-//        if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
-//            AppMain.abortDataWindow.open(type, this, false);
-//            return;
-//        }
+        if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
+            AppMain.abortDataWindow.open(type, this, false);
+            return;
+        }
         gs.loadGraph(type);
         if (gs.upperGraph.getState().equals(GraphState.LOADED)) {
             upperGraphSave.setDisable(false);
@@ -416,10 +418,10 @@ public class MainController implements Initializable {
         GraphType type = GraphType.LOWER;
         parametersTabPane.getSelectionModel().select(lowerGraphTab);
         //TODO: abortDataWindow sposobuje chyby
-//        if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
-//            AppMain.abortDataWindow.open(type, this, false);
-//            return;
-//        }
+        if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
+            AppMain.abortDataWindow.open(type, this, false);
+            return;
+        }
         gs.loadGraph(type);
         if (gs.lowerGraph.getState().equals(GraphState.LOADED)) {
             lowerGraphSave.setDisable(false);

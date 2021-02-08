@@ -164,9 +164,13 @@ public class CustomChart extends ChartPanel {
      * Aborts measurement by canceling DatasetTimer in AutoUpdatingDataset
      */
     public void abortMeasurement() {
-        AutoUpdatingDataset as1 = (AutoUpdatingDataset) series1;
-        AutoUpdatingDataset as2 = (AutoUpdatingDataset) series2;
-        as1.abortMeasurement();
-        as2.abortMeasurement();
+        try {
+            AutoUpdatingDataset as1 = (AutoUpdatingDataset) series1;
+            AutoUpdatingDataset as2 = (AutoUpdatingDataset) series2;
+            as1.abortMeasurement();
+            as2.abortMeasurement();
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+        }
     }
 }
