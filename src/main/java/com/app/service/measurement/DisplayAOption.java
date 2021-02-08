@@ -5,6 +5,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Values for display A.
+ *
+ */
 public enum DisplayAOption {
     L,
     C,
@@ -15,6 +19,12 @@ public enum DisplayAOption {
     G,
     R;
 
+    /**
+     * Selects possible values for display A by display B value.
+     *
+     * @param bOption
+     * @return
+     */
     public static List<DisplayAOption> getAOptionsByB(DisplayBOption bOption) {
         switch (bOption) {
             case R:
@@ -36,6 +46,12 @@ public enum DisplayAOption {
         }
     }
 
+    /**
+     * Returns value by string.
+     *
+     * @param text
+     * @return
+     */
     public static DisplayAOption getOptionFromString(String text) {
         if (text.contains("Γx")) {
             return rx;
@@ -52,6 +68,11 @@ public enum DisplayAOption {
         return DisplayAOption.valueOf(text);
     }
 
+    /**
+     * Creates string by value.
+     *
+     * @return
+     */
     public String toString()
     {
         if (this == rx) return "Γx";
