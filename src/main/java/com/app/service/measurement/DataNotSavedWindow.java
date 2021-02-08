@@ -48,6 +48,7 @@ public class DataNotSavedWindow implements Window {
 
     @Override
     public void close() {
+        AppMain.fileService.saveConfig();
         stage.close();
         Utils.closeApp();
     }
@@ -73,6 +74,7 @@ public class DataNotSavedWindow implements Window {
         }
         if (success) {
             AppMain.notificationService.createNotification("Data saved successfully.", NotificationType.SUCCESS);
+            AppMain.fileService.saveConfig();
             close();
             Utils.closeApp();
         }

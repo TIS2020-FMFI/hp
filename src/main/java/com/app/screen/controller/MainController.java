@@ -470,11 +470,17 @@ public class MainController implements Initializable {
         if (gs.isRunningGraph()) {
             AppMain.notificationService.createNotification("There is a measurement in process, either wait or abort it.", NotificationType.WARNING);
         } else if (AppMain.fileService.isAutoSave()) {
-            if (AppMain.fileService.saveConfig()) {
-                Utils.closeApp();
+            if (gs.getGraphByType(GraphType.UPPER).getMeasurement() != null && MeasurementState.FINISHED.equals(gs.getGraphByType(GraphType.UPPER).getMeasurement().getState())) {
+                AppMain.fileService.autoSaveMeasurement(gs.getGraphByType(GraphType.UPPER).getMeasurement());
             }
+            if (gs.getGraphByType(GraphType.LOWER).getMeasurement() != null && MeasurementState.FINISHED.equals(gs.getGraphByType(GraphType.LOWER).getMeasurement().getState())) {
+                AppMain.fileService.autoSaveMeasurement(gs.getGraphByType(GraphType.LOWER).getMeasurement());
+            }
+            AppMain.fileService.saveConfig();
+            Utils.closeApp();
         } else if ((gs.getGraphByType(GraphType.UPPER).getMeasurement() == null || !gs.getGraphByType(GraphType.UPPER).getMeasurement().canLooseData())
                 && (gs.getGraphByType(GraphType.LOWER).getMeasurement() == null || !gs.getGraphByType(GraphType.LOWER).getMeasurement().canLooseData())) {
+            AppMain.fileService.saveConfig();
             Utils.closeApp();
         } else {
             AppMain.dataNotSavedWindow.open();
