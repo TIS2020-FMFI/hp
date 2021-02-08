@@ -16,9 +16,7 @@ import java.util.NoSuchElementException;
 import java.util.Timer;
 
 
-/**
- * Calibration service which handles everything about calibration
- */
+
 public class CalibrationService implements Window {
     private final String path;
     private CalibrationState state;
