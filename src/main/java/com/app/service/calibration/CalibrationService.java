@@ -72,7 +72,9 @@ public class CalibrationService implements Window {
             showNotification("Please, finish up whole calibration process.", NotificationType.ANNOUNCEMENT);
         } else {
             AppMain.communicationService.toggleCalibrationMode();
-            stateWatcher.cancel();
+            if (stateWatcher != null) {
+                stateWatcher.cancel();
+            }
             stage.close();
         }
     }
