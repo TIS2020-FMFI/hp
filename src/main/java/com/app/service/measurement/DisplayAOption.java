@@ -22,7 +22,7 @@ public enum DisplayAOption {
     /**
      * Selects possible values for display A by display B value.
      *
-     * @param bOption
+     * @param bOption   Display B value.
      * @return
      */
     public static List<DisplayAOption> getAOptionsByB(DisplayBOption bOption) {

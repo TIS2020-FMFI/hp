@@ -24,9 +24,9 @@ public class SingleValue {
 
     /**
      * Constructor extracts three values from a string.
-     * Creates exception if the number of values are less than three.
+     * Creates exception if the number of values is not equals to three.
      *
-     * @param input
+     * @param input String received from the machine.
      * @throws NumberFormatException
      */
     public SingleValue(String input) throws NumberFormatException {
@@ -44,7 +44,7 @@ public class SingleValue {
      * creates a third value from parameters and sets to displayX.
      * Creates exception if the number of values is not equal to two.
      *
-     * @param input
+     * @param input     String received from the machine.
      * @param measurement
      * @throws NumberFormatException
      */

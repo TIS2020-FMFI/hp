@@ -21,14 +21,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.MissingFormatArgumentException;
 
-
+/**
+ * Class for writing and reading .json files.
+ */
 public class JsonParser {
 
     /**
      * Saves parameters of the upper and lower graphs to .json.
      *
-     * @param fileName
-     * @param ep
+     * @param fileName  Path to save.
+     * @param ep    Upper and lower graph parameters.
      * @return
      * @throws IOException
      */
@@ -51,7 +53,7 @@ public class JsonParser {
     /**
      * Creates map of parameters and values.
      *
-     * @param params
+     * @param params    Graph parameters.
      * @return
      */
     private static Map<String, Object> getParametersMap(Parameters params) {
@@ -90,7 +92,7 @@ public class JsonParser {
      * Reads .json and sets upper and lower graph parameters to EnvironmentParameters.
      * Sends notification and sets default parameters if error occurs during reading.
      *
-     * @param filePath
+     * @param filePath  Reading path.
      * @return
      */
     public static EnvironmentParameters readEnvironmentParameters(String filePath) {
@@ -155,7 +157,7 @@ public class JsonParser {
      * Reads parameters from map and sets to Parameters.
      * Sends notification if error occurs during reading.
      *
-     * @param graphParams
+     * @param graphParams Graph parameters.
      * @return
      * @throws WrongDataFormatException
      */
@@ -212,7 +214,7 @@ public class JsonParser {
      * If not all folders exist on the selected path, it will create the missing ones.
      * Sends notification if error occurs during saving.
      *
-     * @param autoSavingDir
+     * @param autoSavingDir     Path to save.
      * @param fileName
      * @param measurement
      * @return
@@ -266,7 +268,7 @@ public class JsonParser {
      * Writes new intention values to an existing .json file.
      * Sends notification if error occurs during writing.
      *
-     * @param autoSavingDir
+     * @param autoSavingDir     Path to save.
      * @param measurement
      * @return
      */
