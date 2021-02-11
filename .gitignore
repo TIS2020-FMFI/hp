@@ -1,6 +1,9 @@
 .idea
 measurements
 target
+deploy
+hpctrl
 
 .dependency-reduced-pom.xml
 *.iml
+*.zip

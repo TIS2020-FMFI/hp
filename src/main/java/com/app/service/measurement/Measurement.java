@@ -31,7 +31,7 @@ public class Measurement {
      */
     public void addSingleValue(SingleValue singleValue){
         data.add(singleValue);
-        System.out.println("new value added: " + singleValue);
+//        System.out.println("new value added: " + singleValue);
         if(singleValue == null){
             state = MeasurementState.FINISHED;
         }

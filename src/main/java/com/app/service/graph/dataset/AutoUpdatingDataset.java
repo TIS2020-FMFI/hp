@@ -85,7 +85,7 @@ public class AutoUpdatingDataset extends AbstractXYDataset {
                     }
                     if (measurement.getData().size() > sizeData) {
                         SingleValue newValue = measurement.getData().get(sizeData);
-                        System.out.println("read " + type + ": " + newValue);
+//                        System.out.println("read " + type + ": " + newValue);
                         if (newValue == null) {
                             fireDatasetChanged();
                             cancel();

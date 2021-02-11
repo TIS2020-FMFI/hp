@@ -160,7 +160,7 @@ public class Connection extends Thread {
         }
         while (result.length() == 0 || result.toString().charAt(result.length()-1) != '\n') {
             if (!readEnd.ready() && !isStepMeasurement) {
-                System.out.println("readEnd not ready");
+//                System.out.println("readEnd not ready");
                 Thread.sleep(500);
                 count++;
                 if (count > 12) break;
@@ -171,7 +171,7 @@ public class Connection extends Thread {
         if (result.length() > 1 && result.charAt(1) == 'U') {
             AppMain.calibrationService.setState(CalibrationState.REQUIRED);
         }
-        System.out.println("reading '" + result.toString() + "'");
+//        System.out.println("reading '" + result.toString() + "'");
         return result;
     }
 
@@ -195,7 +195,7 @@ public class Connection extends Thread {
                 if (!commands.isEmpty()) {
                     try {
                         String temp = commands.remove(0);
-                        System.out.println("sending '" + temp + "'");
+//                        System.out.println("sending '" + temp + "'");
                         writeEnd.write(temp);
                         writeEnd.newLine();
                         writeEnd.flush();
@@ -212,7 +212,7 @@ public class Connection extends Thread {
      */
     public void abortMeasurement() {
         write("s AB");
-        System.out.println("aborting measurement");
+//        System.out.println("aborting measurement");
     }
 
     /**
@@ -260,7 +260,7 @@ public class Connection extends Thread {
 //                                if (result.charAt(2) == 'X') {
 //                                    result = new StringBuilder();
 //                                } else {
-                                    System.out.println("result: " + result.toString());
+//                                    System.out.println("result: " + result.toString());
                                     System.out.flush();
                                     write("n");
                                     measurement.addSingleValue(null);
@@ -268,7 +268,7 @@ public class Connection extends Thread {
                                     return;
 //                                }
                             } else {
-                                System.out.println("reading " + result.toString());
+//                                System.out.println("reading " + result.toString());
                                 System.out.flush();
                                 if (!result.toString().startsWith(" ULN 9.999")) {
                                     SingleValue newValue = new SingleValue(result.toString());
@@ -307,7 +307,7 @@ public class Connection extends Thread {
         } else {
             write("q SU");
             StringBuilder result = read(true);
-            System.out.println("reading " + result.toString());
+//            System.out.println("reading " + result.toString());
             if (result.charAt(1) != '9'){
                 SingleValue next = new SingleValue(result.toString(),measurement);
                 measurement.addSingleValue(next);
@@ -341,7 +341,7 @@ public class Connection extends Thread {
             if (!isAutoSweepOn) {
                 write("a");
                 StringBuilder result = read(true);
-                System.out.println("reading " + result.toString());
+//                System.out.println("reading " + result.toString());
                 SingleValue next = new SingleValue(result.toString(),measurement);
                 measurement.addSingleValue(next);
                 if (Double.compare(next.getDisplayX(), (measurement.getParameters().getDisplayYY().getX().equals(MeasuredQuantity.FREQUENCY) ? measurement.getParameters().getFrequencySweep().getStop() : measurement.getParameters().getVoltageSweep().getStop())) >= 0) {
@@ -478,13 +478,13 @@ public class Connection extends Thread {
                                 return;
                             }
                         } catch (NumberFormatException ignore) {}
-                        System.out.println("reading cal" + result.toString());
+//                        System.out.println("reading cal" + result.toString());
                         result = new StringBuilder();
                         write("a");
                     } else {
                         result.append(letter);
                     }
-                    System.out.println("sb:" + result);
+//                    System.out.println("sb:" + result);
                 } catch (IOException | InterruptedException e) {
                     AppMain.notificationService.createNotification("Problem at calibration -> " + e.getMessage(), NotificationType.ERROR);
                 }

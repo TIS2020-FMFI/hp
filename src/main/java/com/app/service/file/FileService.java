@@ -249,7 +249,7 @@ public class FileService {
             autoSaveMeasurement(measurement);
             savedDir = autoSavingDir + fileName;
             String finalSavedDir = savedDir;
-            System.out.println("creating new timer");
+//            System.out.println("creating new timer");
             timerAutoSave = new Timer();
             timerAutoSave.schedule(new TimerTask() {
                 @Override
