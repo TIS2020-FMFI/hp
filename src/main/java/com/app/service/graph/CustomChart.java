@@ -8,12 +8,12 @@ import com.app.service.measurement.MeasurementState;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.labels.StandardXYItemLabelGenerator;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYSplineRenderer;
 import org.jfree.data.xy.AbstractXYDataset;
 
 import java.awt.*;
+import java.text.DecimalFormat;
 
 
 public class CustomChart extends ChartPanel {
@@ -87,7 +87,7 @@ public class CustomChart extends ChartPanel {
      * @param Y1name
      * @param Y2name
      */
-    private static void createChart(String Xname, String Y1name, String Y2name) {
+    private static void createChart(String Xname, String Y2name, String Y1name) {
         //construct the plot
         XYPlot plot = new XYPlot();
         plot.setDataset(0, series2);
@@ -95,19 +95,26 @@ public class CustomChart extends ChartPanel {
 
         //customize the plot with renderers and axis
         XYSplineRenderer splinerenderer1 = new XYSplineRenderer();
-        splinerenderer1.setSeriesItemLabelsVisible(0,true);
+//        splinerenderer1.setSeriesItemLabelsVisible(0,true);
+        splinerenderer1.setSeriesPaint(0, Color.BLUE);
+        splinerenderer1.setSeriesFillPaint(0, Color.BLUE);
         plot.setRenderer(0, splinerenderer1);
-        splinerenderer1.setAutoPopulateSeriesFillPaint(true);
-        splinerenderer1.setDefaultItemLabelGenerator(new StandardXYItemLabelGenerator());
+//        splinerenderer1.setAutoPopulateSeriesFillPaint(true);
+//        splinerenderer1.setDefaultItemLabelGenerator(new StandardXYItemLabelGenerator());
 
         XYSplineRenderer splinerenderer0 = new XYSplineRenderer();
-        splinerenderer0.setSeriesFillPaint(1, Color.BLUE);
-        splinerenderer0.setSeriesItemLabelsVisible(0,true);
+        splinerenderer0.setSeriesFillPaint(1, Color.RED);
+        splinerenderer0.setSeriesPaint(1, Color.RED);
+//        splinerenderer0.setSeriesItemLabelsVisible(0,true);
         plot.setRenderer(1, splinerenderer0);
-        splinerenderer0.setAutoPopulateSeriesFillPaint(true);
-        splinerenderer0.setDefaultItemLabelGenerator(new StandardXYItemLabelGenerator());
-        splinerenderer0.setDefaultItemLabelsVisible(true);
-        splinerenderer0.setItemLabelAnchorOffset(-8);
+//        splinerenderer0.setAutoPopulateSeriesFillPaint(true);
+//        splinerenderer0.setDefaultItemLabelGenerator(new StandardXYItemLabelGenerator());
+//        splinerenderer0.setDefaultItemLabelsVisible(true);
+//        splinerenderer0.setItemLabelAnchorOffset(-8);
+
+        plot.setRangeCrosshairVisible(true);
+        plot.setDomainCrosshairVisible(true);
+
 
         NumberAxis yaxis1 = new NumberAxis(Y1name);
         NumberAxis yaxis2 = new NumberAxis(Y2name);
@@ -121,6 +128,11 @@ public class CustomChart extends ChartPanel {
         NumberAxis xaxis = new NumberAxis(Xname);
         xaxis.setAutoRangeIncludesZero(false);
         plot.setDomainAxis(xaxis);
+
+        DecimalFormat decimalFormat = new DecimalFormat("0.#############E0");
+        xaxis.setNumberFormatOverride(decimalFormat);
+        yaxis1.setNumberFormatOverride(decimalFormat);
+        yaxis2.setNumberFormatOverride(decimalFormat);
 
         //Map the data to the appropriate axis
         plot.mapDatasetToRangeAxis(0, 0);
@@ -155,9 +167,11 @@ public class CustomChart extends ChartPanel {
      * Aborts measurement by canceling DatasetTimer in AutoUpdatingDataset
      */
     public void abortMeasurement() {
-        AutoUpdatingDataset as1 = (AutoUpdatingDataset) series1;
-        AutoUpdatingDataset as2 = (AutoUpdatingDataset) series2;
-        as1.abortMeasurement();
-        as2.abortMeasurement();
+        if (series1 instanceof AutoUpdatingDataset) {
+            AutoUpdatingDataset as1 = (AutoUpdatingDataset) series1;
+            AutoUpdatingDataset as2 = (AutoUpdatingDataset) series2;
+            as1.abortMeasurement();
+            as2.abortMeasurement();
+        }
     }
 }

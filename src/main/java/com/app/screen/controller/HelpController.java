@@ -27,7 +27,7 @@ public class HelpController implements Initializable {
     Button closeBtn;
 
     public void closeWindow(MouseEvent event) {
-        AppMain.helpService.closeHelp();
+        AppMain.helpWindow.close();
     }
 
     @Override

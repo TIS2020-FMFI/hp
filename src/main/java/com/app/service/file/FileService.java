@@ -25,8 +25,15 @@ public class FileService {
     private String autoSavingDir;
     private String fileName;
     private boolean autoSave;
-    private final Timer timerAutoSave = new Timer();
+    private Timer timerAutoSave;
+    private int autosavingInterval = 500;
 
+    /**
+     * Constructor sets the path to the parameters
+     * and sets the user's current working directory as the path for auto save measurements.
+     *
+     * @param configPath
+     */
 
     public FileService(String configPath) {
         this.configPath = configPath;
@@ -36,18 +43,39 @@ public class FileService {
         autoSavingDir = dir + "/" + localDate.getYear() + "/" + localDate.getMonthValue() + "/" + localDate.getDayOfMonth() + "/";
     }
 
+
+    /**
+     *
+     * @return
+     */
+
     public String getAutoSavingDir() {
         return autoSavingDir;
     }
+
+    /**
+     *
+     * @return
+     */
 
     public boolean isAutoSave() {
         return autoSave;
     }
 
+    /**
+     *
+     * @param autoSave
+     */
     public void setAutoSave(boolean autoSave) {
         this.autoSave = autoSave;
     }
 
+    /**
+     * Writes parameters to .json.
+     * Sends notification if error occurs during saving.
+     *
+     * @return
+     */
     public boolean saveConfig() {
         try {
             return JsonParser.saveEnvironmentParameters(configPath, AppMain.environmentParameters);
@@ -57,10 +85,22 @@ public class FileService {
         return false;
     }
 
+    /**
+     *
+     * @return
+     */
+
     public EnvironmentParameters loadConfig() {
         return JsonParser.readEnvironmentParameters(configPath);
     }
 
+    /**
+     * Saves a finished, saved or loaded measurement to .json along the selected path.
+     * Sends notification if measurement state is different.
+     *
+     * @param measurement
+     * @return
+     */
     public boolean saveAsMeasurement(Measurement measurement) {
         if (measurement != null && (measurement.getState().equals(MeasurementState.LOADED) || measurement.getState().equals(MeasurementState.FINISHED) ||
                 measurement.getState().equals(MeasurementState.SAVED))) {
@@ -75,6 +115,13 @@ public class FileService {
         return false;
     }
 
+    /**
+     * Creates a measurement from the current time and values of the selected displays A, B, X.
+     *
+     * @param measurement
+     * @return
+     */
+
     public String setTimeAndDisplayToPath(Measurement measurement) {
         LocalTime localTime = LocalTime.now();
         return localTime.getHour() + "-" + localTime.getMinute() +
@@ -82,6 +129,14 @@ public class FileService {
                 measurement.getParameters().getDisplayYY().getB() + "-" +
                 measurement.getParameters().getDisplayYY().getX().toString();
     }
+
+    /**
+     * Saves finished or started measurement to .json.
+     * Sends notification if measurement state is different.
+     *
+     * @param measurement
+     * @return
+     */
 
     public boolean autoSaveMeasurement(Measurement measurement) {
         if (MeasurementState.FINISHED.equals(measurement.getState()) || MeasurementState.STARTED.equals(measurement.getState())) {
@@ -92,6 +147,15 @@ public class FileService {
         return false;
     }
 
+    /**
+     * Loads measurement from .json.
+     * Sends notification if error occurs during loading.
+     *
+     * @param path
+     * @return
+     * @throws MissingFormatArgumentException
+     */
+
     public Measurement loadMeasurement(String path) throws MissingFormatArgumentException {
         try {
             return JsonParser.readMeasurement(path);
@@ -101,6 +165,12 @@ public class FileService {
         return null;
     }
 
+
+    /**
+     * Creates a new path for auto saving measurement.
+     *
+     * @return
+     */
     public String setNewAutoSaveDirectory() {
         String newAutoSavingDir = chooseSavingDirectory();
         if (!newAutoSavingDir.isEmpty()) {
@@ -113,6 +183,12 @@ public class FileService {
         return autoSavingDir;
     }
 
+    /**
+     * Opens a window for choosing a path.
+     *
+     * @return
+     */
+
     private String chooseSavingDirectory() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Choose directory to save the measurement");
@@ -124,6 +200,15 @@ public class FileService {
         newSavingDir = newSavingDir.replaceAll("\\\\", "/");
         return newSavingDir;
     }
+
+    /**
+     * Writes measured values to .txt along the selected path.
+     * Only finished, saved or loaded measurement can be used.
+     * Sends notification if measurement state is different.
+     *
+     * @param measurement
+     * @return
+     */
 
     public boolean exportAs(Measurement measurement) {
         if (measurement != null && (MeasurementState.FINISHED.equals(measurement.getState()) ||
@@ -152,31 +237,39 @@ public class FileService {
         return false;
     }
 
+    /**
+     * Creates a new .json file and writes there new intention values
+     * until the end of the measurement.
+     *
+     * @param measurement
+     */
     public void autoSaveDuringMeasurement(Measurement measurement) {
         String savedDir;
         if (autoSave) {
             autoSaveMeasurement(measurement);
             savedDir = autoSavingDir + fileName;
             String finalSavedDir = savedDir;
+            System.out.println("creating new timer");
+            timerAutoSave = new Timer();
             timerAutoSave.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    if (measurement.getState().equals(MeasurementState.STARTED)) {
-                        if (measurement.getState().equals(MeasurementState.FINISHED) && measurement.getIndexOfTheValueToSave() == measurement.getData().size() - 1) {
+                    if (measurement.getData().size() > measurement.getIndexOfTheValueToSave()) {
+                        JsonParser.writeNewValues(finalSavedDir, measurement);
+                        if (measurement.getData().elementAt(measurement.getData().size() - 1) == null) {
                             measurement.setState(MeasurementState.SAVED);
                             timerAutoSave.cancel();
-                            return;
-                        }
-                        if (measurement.getData().size() > measurement.getIndexOfTheValueToSave()) {
-                            JsonParser.writeNewValues(finalSavedDir, measurement);
                         }
                     }
-
                 }
-            }, 100, 500);
+            }, 100, autosavingInterval);
         }
     }
 
+    /**
+     * Ends the auto save timer.
+     *
+     */
     public void cancelTimer() {
         timerAutoSave.cancel();
     }

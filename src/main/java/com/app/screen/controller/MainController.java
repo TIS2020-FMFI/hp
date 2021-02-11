@@ -27,6 +27,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
+/**
+ * Controller for main screen
+ */
 public class MainController implements Initializable {
 
     GraphService gs;
@@ -37,6 +40,8 @@ public class MainController implements Initializable {
 
     Timer connectionWatcher = new Timer();
     Boolean oldConnectionState;
+
+    boolean runOnce = true;
 
     @FXML
     VBox VBox1;
@@ -183,21 +188,22 @@ public class MainController implements Initializable {
 
 
     /**
-     * Disables buttons according based on states of Graph and Connection.
+     * Disables buttons according to states of Graph and Connection.
      */
     private void toggleDisabling() {
         boolean isConnected = AppMain.communicationService != null && AppMain.communicationService.isConnected();
+        boolean isCalRequired = AppMain.calibrationService != null && AppMain.calibrationService.getState().equals(CalibrationState.REQUIRED);
         boolean isUpperEmpty = gs.getGraphByType(GraphType.UPPER) == null || gs.getGraphByType(GraphType.UPPER).getState().equals(GraphState.EMPTY);
         boolean isLowerEmpty = gs.getGraphByType(GraphType.LOWER) == null || gs.getGraphByType(GraphType.LOWER).getState().equals(GraphState.EMPTY);
         boolean isUpperRunning = gs.getRunningGraph() != null && gs.getRunningGraph().getType().equals(GraphType.UPPER);
         boolean isLowerRunning = gs.getRunningGraph() != null && gs.getRunningGraph().getType().equals(GraphType.LOWER);
 
-        upperGraphRun.setDisable(isLowerRunning || !isConnected);
+        upperGraphRun.setDisable(isCalRequired || isLowerRunning || !isConnected);
         upperGraphSave.setDisable(isUpperRunning || isUpperEmpty);
         upperGraphLoad.setDisable(isUpperRunning);
         upperGraphExport.setDisable(isUpperRunning || isUpperEmpty);
 
-        lowerGraphRun.setDisable(isUpperRunning || !isConnected);
+        lowerGraphRun.setDisable(isCalRequired || isUpperRunning || !isConnected);
         lowerGraphSave.setDisable(isLowerRunning || isLowerEmpty);
         lowerGraphLoad.setDisable(isLowerRunning);
         lowerGraphExport.setDisable(isLowerRunning || isLowerEmpty);
@@ -214,6 +220,7 @@ public class MainController implements Initializable {
         if (gs.isRunningGraph() && gs.getGraphByType(type).getState().equals(GraphState.RUNNING)) {
             gs.abortGraph(type);
             toggleDisabling();
+            gs.upperGraph.setState(GraphState.EMPTY);
             upperGraphRun.setText("Run");
             upperToolbar.getItems().remove(upperPointNext);
 //            upperToolbar.getItems().remove(currentValueDisplay);
@@ -223,7 +230,7 @@ public class MainController implements Initializable {
             } else if (AppMain.calibrationService.getState().equals(CalibrationState.REQUIRED)) {
                 AppMain.notificationService.createNotification("Calibration is required, please calibrate the machine", NotificationType.ANNOUNCEMENT);
             } else if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
-                AppMain.abortDataDialog.openDialog(type, this, true);
+                AppMain.abortDataWindow.open(type, this, true);
             } else {
                 parametersTabPane.getSelectionModel().select(upperGraphTab);
                 runMeasurement(GraphType.UPPER);
@@ -242,6 +249,7 @@ public class MainController implements Initializable {
         if (gs.isRunningGraph() && gs.getGraphByType(type).getState().equals(GraphState.RUNNING)) {
             gs.abortGraph(type);
             toggleDisabling();
+            gs.lowerGraph.setState(GraphState.EMPTY);
             lowerGraphRun.setText("Run");
             lowerToolbar.getItems().remove(lowerPointNext);
 //            lowerToolbar.getItems().remove(currentValueDisplay);
@@ -251,7 +259,7 @@ public class MainController implements Initializable {
             } else if (AppMain.calibrationService.getState().equals(CalibrationState.REQUIRED)) {
                 AppMain.notificationService.createNotification("Calibration is required, please calibrate the machine", NotificationType.ANNOUNCEMENT);
             } else if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
-                AppMain.abortDataDialog.openDialog(type, this, true);
+                AppMain.abortDataWindow.open(type, this, true);
             } else {
                 parametersTabPane.getSelectionModel().select(lowerGraphTab);
                 runMeasurement(GraphType.LOWER);
@@ -391,11 +399,13 @@ public class MainController implements Initializable {
         GraphType type = GraphType.UPPER;
         parametersTabPane.getSelectionModel().select(upperGraphTab);
         if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
-            AppMain.abortDataDialog.openDialog(type, this, false);
+            AppMain.abortDataWindow.open(type, this, false);
             return;
         }
         gs.loadGraph(type);
         if (gs.upperGraph.getState().equals(GraphState.LOADED)) {
+            upperGraphSave.setDisable(false);
+            upperGraphExport.setDisable(false);
             ep.setUpperGraphParameters(gs.upperGraph.getMeasurement().getParameters());
             setParam(GraphType.UPPER, displayAUpper, displayBUpper);
         }
@@ -410,11 +420,13 @@ public class MainController implements Initializable {
         GraphType type = GraphType.LOWER;
         parametersTabPane.getSelectionModel().select(lowerGraphTab);
         if (gs.getGraphByType(type).getMeasurement() != null && gs.getGraphByType(type).getMeasurement().canLooseData()) {
-            AppMain.abortDataDialog.openDialog(type, this, false);
+            AppMain.abortDataWindow.open(type, this, false);
             return;
         }
         gs.loadGraph(type);
         if (gs.lowerGraph.getState().equals(GraphState.LOADED)) {
+            lowerGraphSave.setDisable(false);
+            lowerGraphExport.setDisable(false);
             ep.setLowerGraphParameters(gs.lowerGraph.getMeasurement().getParameters());
             setParam(GraphType.LOWER, displayALower, displayBLower);
         }
@@ -439,7 +451,7 @@ public class MainController implements Initializable {
         if (AppMain.communicationService.isConnected()) {
             if (!gs.isRunningGraph()) {
                 setParametersToEnvironmentParameters(parametersTabPane.getSelectionModel().isSelected(0) ? GraphType.UPPER : GraphType.LOWER);
-                AppMain.calibrationService.openCalibration();
+                AppMain.calibrationService.open();
             } else {
                 AppMain.notificationService.createNotification("Cannot trigger calibration while measuring!", NotificationType.ERROR);
             }
@@ -458,14 +470,20 @@ public class MainController implements Initializable {
         if (gs.isRunningGraph()) {
             AppMain.notificationService.createNotification("There is a measurement in process, either wait or abort it.", NotificationType.WARNING);
         } else if (AppMain.fileService.isAutoSave()) {
-            if (AppMain.fileService.saveConfig()) {
-                Utils.closeApp();
+            if (gs.getGraphByType(GraphType.UPPER).getMeasurement() != null && MeasurementState.FINISHED.equals(gs.getGraphByType(GraphType.UPPER).getMeasurement().getState())) {
+                AppMain.fileService.autoSaveMeasurement(gs.getGraphByType(GraphType.UPPER).getMeasurement());
             }
+            if (gs.getGraphByType(GraphType.LOWER).getMeasurement() != null && MeasurementState.FINISHED.equals(gs.getGraphByType(GraphType.LOWER).getMeasurement().getState())) {
+                AppMain.fileService.autoSaveMeasurement(gs.getGraphByType(GraphType.LOWER).getMeasurement());
+            }
+            AppMain.fileService.saveConfig();
+            Utils.closeApp();
         } else if ((gs.getGraphByType(GraphType.UPPER).getMeasurement() == null || !gs.getGraphByType(GraphType.UPPER).getMeasurement().canLooseData())
                 && (gs.getGraphByType(GraphType.LOWER).getMeasurement() == null || !gs.getGraphByType(GraphType.LOWER).getMeasurement().canLooseData())) {
+            AppMain.fileService.saveConfig();
             Utils.closeApp();
         } else {
-            AppMain.dataNotSavedDialog.openDialog();
+            AppMain.dataNotSavedWindow.open();
         }
     }
 
@@ -475,7 +493,7 @@ public class MainController implements Initializable {
      * @param event
      */
     public void showHelpWindow(MouseEvent event) {
-        AppMain.helpService.openHelp();
+        AppMain.helpWindow.open();
     }
 
     /**
@@ -506,6 +524,11 @@ public class MainController implements Initializable {
                     oldConnectionState = AppMain.communicationService.isConnected();
                     updateGpibMenu(AppMain.communicationService.isConnected());
                     toggleDisabling();
+                } else if (runOnce && AppMain.calibrationService != null
+                        //&& (AppMain.calibrationService.getState().equals(CalibrationState.REQUIRED) || (AppMain.calibrationService.getOldState() != null && AppMain.calibrationService.getOldState().equals(CalibrationState.REQUIRED)))) {
+                && AppMain.calibrationService.isCalibrated()) {
+                toggleDisabling();
+                runOnce = false;
                 }
             }
         }, 100, 100);
@@ -576,6 +599,11 @@ public class MainController implements Initializable {
             otherElectricalLengthUpper.setText("" + ep.getByType(graphType).getOther().getElectricalLength());
 
             commentInputUpper.setText(ep.getByType(graphType).getComment());
+
+            otherSweepTypeUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0 : 1);
+            otherHighSpeedUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isHighSpeed() ? 0 : 1);
+            otherAutoSweepUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isAutoSweep() ? 0 : 1);
+            toggleUpperXAxis.selectToggle(ep.getByType(GraphType.UPPER).getDisplayYY().getX().equals(MeasuredQuantity.FREQUENCY) ? toggleUpperXAxis.getToggles().get(0):toggleUpperXAxis.getToggles().get(1));
         } else {
             frequencyStartLower.setText("" + ep.getByType(graphType).getFrequencySweep().getStart());
             frequencyStopLower.setText("" + ep.getByType(graphType).getFrequencySweep().getStop());
@@ -591,6 +619,11 @@ public class MainController implements Initializable {
             otherElectricalLengthLower.setText("" + ep.getByType(graphType).getOther().getElectricalLength());
 
             commentInputLower.setText(ep.getByType(graphType).getComment());
+
+            otherSweepTypeLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0 : 1);
+            otherHighSpeedLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isHighSpeed() ? 0 : 1);
+            otherAutoSweepLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isAutoSweep() ? 0 : 1);
+            toggleLowerXAxis.selectToggle(ep.getByType(GraphType.LOWER).getDisplayYY().getX().equals(MeasuredQuantity.FREQUENCY) ? toggleLowerXAxis.getToggles().get(0):toggleLowerXAxis.getToggles().get(1));
         }
     }
 
@@ -599,41 +632,35 @@ public class MainController implements Initializable {
      * Initializes input parameters from GUI (upper Graph parameters)
      */
     private void initializeUpper() {
+        otherSweepTypeUpper.getItems().addAll("LINEAR", "LOG");
+        otherHighSpeedUpper.getItems().addAll("ON", "OFF");
+        otherAutoSweepUpper.getItems().addAll("ON", "OFF");
+
         setParam(GraphType.UPPER, displayAUpper, displayBUpper);
 
         commentInputUpper.textProperty().addListener((Observable, oldValue, newValue) -> {
             ep.getByType(GraphType.UPPER).setComment(newValue);
         });
 
-        otherSweepTypeUpper.getItems().addAll("LINEAR", "LOG");
-        otherSweepTypeUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0 : 1);
 
-        otherHighSpeedUpper.getItems().addAll("ON", "OFF");
-        otherHighSpeedUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isHighSpeed() ? 0 : 1);
-
-        otherAutoSweepUpper.getItems().addAll("ON", "OFF");
-        otherAutoSweepUpper.getSelectionModel().select(ep.getByType(GraphType.UPPER).getOther().isAutoSweep() ? 0 : 1);
     }
 
     /**
      * Initializes input parameters from GUI (lower Graph parameters)
      */
     private void initializeLower() {
+        // ----- initialize all dropbox -> coz its not possible to do so in sceneBuilder yet
+        otherSweepTypeLower.getItems().addAll("LINEAR", "LOG");
+        otherHighSpeedLower.getItems().addAll("ON", "OFF");
+        otherAutoSweepLower.getItems().addAll("ON", "OFF");
+
         setParam(GraphType.LOWER, displayALower, displayBLower);
 
         commentInputLower.textProperty().addListener((Observable, oldValue, newValue) -> {
             ep.getByType(GraphType.LOWER).setComment(newValue);
         });
 
-        // ----- initialize all dropbox -> coz its not possible to do so in sceneBuilder yet
-        otherSweepTypeLower.getItems().addAll("LINEAR", "LOG");
-        otherSweepTypeLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().getSweepType().equals(SweepType.LINEAR) ? 0 : 1);
 
-        otherHighSpeedLower.getItems().addAll("ON", "OFF");
-        otherHighSpeedLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isHighSpeed() ? 0 : 1);
-
-        otherAutoSweepLower.getItems().addAll("ON", "OFF");
-        otherAutoSweepLower.getSelectionModel().select(ep.getByType(GraphType.LOWER).getOther().isAutoSweep() ? 0 : 1);
     }
 
     /**

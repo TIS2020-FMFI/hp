@@ -1,6 +1,5 @@
 package com.app.machineCommunication;
 
-
 import com.app.service.AppMain;
 import com.app.service.calibration.CalibrationState;
 import com.app.service.calibration.CalibrationType;
@@ -12,10 +11,12 @@ import com.app.service.measurement.MeasurementState;
 import com.app.service.measurement.SingleValue;
 import com.app.service.notification.NotificationType;
 import com.app.service.utils.Utils;
-
 import java.io.*;
 import java.util.*;
 
+/**
+ * Connection class which handles everything about communication with machine
+ */
 public class Connection extends Thread {
     boolean cmd = false;
     private boolean connected = false;
@@ -23,27 +24,33 @@ public class Connection extends Thread {
     private Process process;
     private BufferedReader readEnd;
     private BufferedWriter writeEnd;
-    private EnvironmentParameters environmentParameters;
-    private Vector<String> commands;
+    private final EnvironmentParameters environmentParameters;
+    private final Vector<String> commands;
     private Timer timer;
     private double finalCalibrationFrequency;
 
+    /**
+     * Initialize Connection
+     */
     public Connection() {
-        /*try {
-            process = Runtime.getRuntime().exec("C:/s/hp/hpctrl.exe -i"); // TODO: set to default within project
-            readEnd = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            writeEnd = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
-        } catch (IOException e) {
-            AppMain.notificationService.createNotification("hpctrl.exe missing, read help for more info", NotificationType.ERROR);
-        }*/
         environmentParameters = AppMain.environmentParameters;
         commands = new Vector<>();
     }
 
+    /**
+     * Current connection state
+     *
+     * @return connection state
+     */
     public boolean isConnected() {
         return connected;
     }
 
+    /**
+     * Initialize connection with file witch contains hpctrl.exe for communication with machine
+     *
+     * @return if connection with file was successful
+     */
     public boolean reconnect(){
         try {
             process = Runtime.getRuntime().exec("C:/s/hp/hpctrl.exe -i"); // TODO: set to default within project
@@ -56,6 +63,12 @@ public class Connection extends Thread {
         return false;
     }
 
+    /**
+     * Initialize connection with machine through the hpctrl.exe
+     * Enters the cmd mode
+     *
+     * @return connected state
+     */
     public boolean connect() throws RuntimeException, IOException, InterruptedException {
         if (!AppMain.debugMode) {
             if (connected) {
@@ -76,6 +89,7 @@ public class Connection extends Thread {
             } else {
                 if (!reconnect()) return connected;
                 write("connect 19");
+                write("LOGON");
                 write("cmd");
                 if (timer == null) {
                     writer();
@@ -91,16 +105,29 @@ public class Connection extends Thread {
         return connected;
     }
 
+    /**
+     * Checks if connection is active by sending command and waiting for appropriate respond
+     *
+     * @return if connection was successful
+     */
     public boolean checkConnection() throws IOException, InterruptedException {
         write("a");
         StringBuilder result = read(false);
         return result.length() > 0;
     }
 
+    /**
+     *
+     * @return process state
+     */
     public Process getCommunicator() {
         return process;
     }
 
+    /**
+     * Enters the cmd mode
+     * If there is some problem, throws exception
+     */
     public void toggleCmdMode() {
         try {
             if (connected) {
@@ -118,7 +145,13 @@ public class Connection extends Thread {
             AppMain.notificationService.createNotification("Attempted to toggle cmd mode, but failed!", NotificationType.ERROR);
         }
     }
-
+    /**
+     * Reads the incoming string
+     *
+     * @param isStepMeasurement state if step measurement is active
+     *
+     * @return read string
+     */
     private StringBuilder read(boolean isStepMeasurement) throws IOException, InterruptedException, NullPointerException {
         StringBuilder result = new StringBuilder();
         int count = 0;
@@ -136,16 +169,24 @@ public class Connection extends Thread {
             }
         }
         if (result.length() > 1 && result.charAt(1) == 'U') {
-            AppMain.calibrationService.setCalibrationState(CalibrationState.REQUIRED);
+            AppMain.calibrationService.setState(CalibrationState.REQUIRED);
         }
         System.out.println("reading '" + result.toString() + "'");
         return result;
     }
 
+    /**
+     * Sends incoming commands to stack
+     *
+     * @param text command
+     */
     private void write(String text) {
         commands.add(text);
     }
 
+    /**
+     * Sends all commands which are waiting in stack to the machine
+     */
     public void writer() {
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -166,11 +207,21 @@ public class Connection extends Thread {
         }, 0, 10);
     }
 
+    /**
+     * Sends command to abort measurement
+     */
     public void abortMeasurement() {
         write("s AB");
         System.out.println("aborting measurement");
     }
 
+    /**
+     * Starts auto-measurement
+     * Reads incoming values
+     * Sends read values to shared-array in measurement for graph
+     *
+     * @param measurement active measurement class
+     */
     public void startAutoMeasurement(Measurement measurement) {
         if (AppMain.debugMode) {
             System.out.println("-- Running auto sweep measurement --");
@@ -189,6 +240,10 @@ public class Connection extends Thread {
             }).start();
         } else {
             write("s WU");
+            try {
+                while (readEnd.ready()) readEnd.read();
+            } catch (Exception e) {}
+
             write("c");
             new Thread(() -> {
                 boolean some_data_arrived = false;
@@ -200,16 +255,33 @@ public class Connection extends Thread {
                             continue;
                         }
                         char letter = (char) readEnd.read();
-                        if ((letter == '\n') && (result.length() > 1)) {
-                            if ((result.charAt(1) == 'N') && some_data_arrived) {
-                                write("n");
-                                measurement.addSingleValue(null);
-                                Thread.currentThread().interrupt();
-                                return;
+                        if ((letter == '\n') && (result.length() > 2)) {
+                            if ((result.charAt(1) != 'F') && (result.charAt(2) != 'F') && (result.charAt(1) != 'V') && (result.charAt(2) != 'V')){ //&& some_data_arrived) {
+//                                if (result.charAt(2) == 'X') {
+//                                    result = new StringBuilder();
+//                                } else {
+                                    System.out.println("result: " + result.toString());
+                                    System.out.flush();
+                                    write("n");
+                                    measurement.addSingleValue(null);
+                                    Thread.currentThread().interrupt();
+                                    return;
+//                                }
                             } else {
                                 System.out.println("reading " + result.toString());
-                                measurement.addSingleValue(new SingleValue(result.toString()));
-                                result = new StringBuilder();
+                                System.out.flush();
+                                if (!result.toString().startsWith(" ULN 9.999")) {
+                                    SingleValue newValue = new SingleValue(result.toString());
+                                    measurement.addSingleValue(newValue);
+                                    result = new StringBuilder();
+//                                    if (AppMain.graphService.getRunningGraph().getMeasurement().getnewValue.getDisplayX())
+                                } else {
+                                    AppMain.notificationService.createNotification("Measurement in non-calibrated range", NotificationType.WARNING);
+                                    write("n");
+                                    measurement.addSingleValue(null);
+                                    Thread.currentThread().interrupt();
+                                    return;
+                                }
                                 some_data_arrived = true;
                             }
                         } else
@@ -222,6 +294,13 @@ public class Connection extends Thread {
         }
     }
 
+    /**
+     * Starts step-measurement
+     * Reads incoming value
+     * Send sread value to shared-array in measurement for graph
+     *
+     * @param measurement active measurement class
+     */
     public void stepMeasurement(Measurement measurement) throws IOException, InterruptedException {
         if (AppMain.debugMode) {
             measurement.addSingleValue(generateRandomSingeValue(measurement.getData().size() + 2));
@@ -229,14 +308,23 @@ public class Connection extends Thread {
             write("q SU");
             StringBuilder result = read(true);
             System.out.println("reading " + result.toString());
-            SingleValue next = new SingleValue(result.toString(),measurement);
-            measurement.addSingleValue(next);
-            if (Double.compare(next.getDisplayX(), (measurement.getParameters().getDisplayYY().getX().equals(MeasuredQuantity.FREQUENCY) ? measurement.getParameters().getFrequencySweep().getStop() : measurement.getParameters().getVoltageSweep().getStop())) >= 0) {
-                measurement.addSingleValue(null);
+            if (result.charAt(1) != '9'){
+                SingleValue next = new SingleValue(result.toString(),measurement);
+                measurement.addSingleValue(next);
+                if (Double.compare(next.getDisplayX(), (measurement.getParameters().getDisplayYY().getX().equals(MeasuredQuantity.FREQUENCY) ? measurement.getParameters().getFrequencySweep().getStop() : measurement.getParameters().getVoltageSweep().getStop())) >= 0) {
+                    measurement.addSingleValue(null);
+                }
             }
         }
     }
 
+    /**
+     * Initialize the measurement by sending all the settings to the machine
+     *
+     * @param type measurement type (frequency or voltage)
+     * @param measurement active measurement class
+     * @param isAutoSweepOn auto-sweep state
+     */
     public void initMeasurement(MeasuredQuantity type, Measurement measurement, boolean isAutoSweepOn) throws IOException, InterruptedException {
         if (connected) {
             if (!cmd) {
@@ -263,6 +351,11 @@ public class Connection extends Thread {
         }
     }
 
+    /**
+     * Sends chosen high-speed state to machine (on/off)
+     *
+     * @param highspeed high-speed state
+     */
     public void highSpeed(boolean highspeed) {
         if (highspeed)
             write("s H1");
@@ -271,6 +364,9 @@ public class Connection extends Thread {
         }
     }
 
+    /**
+     * Sends chosen sweep-type to machine (linear/log)
+     */
     public void sweepType() {
         if (environmentParameters.getActive().getOther().getSweepType() == SweepType.LINEAR)
             write("s G0");
@@ -278,6 +374,9 @@ public class Connection extends Thread {
             write("s G1");
     }
 
+    /**
+     * Sends chosen display settings to machine (A∧B)
+     */
     public void displayFunctions() {
         switch (environmentParameters.getActive().getDisplayYY().getA()) {
             case "L":
@@ -330,41 +429,37 @@ public class Connection extends Thread {
         }
     }
 
-
+    /**
+     * Sends frequency measurement settings to machine from gui
+     * FrequencyStart, FrequencyStep, FrequencyStop, FrequencySpot, VoltageSpot
+     */
     public void frequencySweep() {
+        write("s BI" + environmentParameters.getActive().getVoltageSweep().getSpot() + "EN");
         write("s TF" + environmentParameters.getActive().getFrequencySweep().getStart() + "EN");
         write("s PF" + environmentParameters.getActive().getFrequencySweep().getStop() + "EN");
         write("s SF" + environmentParameters.getActive().getFrequencySweep().getStep() + "EN");
-        write("s FR" + environmentParameters.getActive().getFrequencySweep().getStart() + "EN");
+        if (!environmentParameters.getActive().getOther().isAutoSweep())
+            write("s FR" + environmentParameters.getActive().getFrequencySweep().getStart() + "EN");
     }
 
+    /**
+     * Sends voltage measurement settings to machine from gui
+     * VoltageStart, VoltageStep, VoltageStop, VoltageSpot, FrequencySpot
+     */
     public void voltageSweep() {
+        write("s FR" + environmentParameters.getActive().getFrequencySweep().getSpot() + "EN");
         write("s TB" + environmentParameters.getActive().getVoltageSweep().getStart() + "EN");
         write("s PB" + environmentParameters.getActive().getVoltageSweep().getStop() + "EN");
         write("s SB" + environmentParameters.getActive().getVoltageSweep().getStep() + "EN");
-        write("s BI" + environmentParameters.getActive().getVoltageSweep().getStart() + "EN");
+        if (!environmentParameters.getActive().getOther().isAutoSweep())
+            write("s BI" + environmentParameters.getActive().getVoltageSweep().getStart() + "EN");
     }
 
-    public void openCalibration() {
-        write("s A5");
-        write("s CS");
-        calibrationReader();
-    }
-
-    public void shortCalibration() {
-        write("s A4");
-        write("s CS");
-        calibrationReader();
-    }
-
-    public void loadCalibration() {
-        write("s A6");
-        write("s CS");
-        calibrationReader();
-    }
-
+    /**
+     * Reads incoming calibration results
+     * Throws notification if there is some problem
+     */
     public void calibrationReader() {
-        AppMain.calibrationService.setCalibrationState(CalibrationState.RUNNING);
         new Thread(() -> {
             StringBuilder result = new StringBuilder();
             write("a");
@@ -378,23 +473,18 @@ public class Connection extends Thread {
                     if ((letter == '\n') && (result.length() > 1)) {
                         try {
                             if (Double.parseDouble(Utils.lineSplitAndExtractNumbers(result.toString(),",")[0]) == finalCalibrationFrequency) {
-                                AppMain.calibrationService.setCalibrationState(CalibrationState.DONE);
+                                AppMain.calibrationService.setState(CalibrationState.DONE);
                                 Thread.currentThread().interrupt();
                                 return;
                             }
-                        } catch (NumberFormatException ignore) {
-                        }
+                        } catch (NumberFormatException ignore) {}
                         System.out.println("reading cal" + result.toString());
                         result = new StringBuilder();
                         write("a");
                     } else {
                         result.append(letter);
-                        // toto nie je velmi rozumne to parsovat za kazdym znakom
-                        // nemozeme to parsovat az na konci riadku vzdy?
-
                     }
                     System.out.println("sb:" + result);
-
                 } catch (IOException | InterruptedException e) {
                     AppMain.notificationService.createNotification("Problem at calibration -> " + e.getMessage(), NotificationType.ERROR);
                 }
@@ -402,41 +492,55 @@ public class Connection extends Thread {
         }).start();
     }
 
-    public void leaveCalibration() {
-        write("s C0");
+    /**
+     * Enters calibration mode
+     */
+    public void toggleCalibrationMode() {
+        if (calibrationMode) {
+            write("s C0");
+        } else {
+            write("s C1");
+        }
         calibrationMode = !calibrationMode;
     }
 
-    public boolean calibrationHandler(CalibrationType calibrationType, double from, double to, boolean isHighSpeed) {
+    /**
+     * Handles chosen calibration type
+     *
+     * @param calibrationType chosen calibration type
+     * @param from start range of calibration
+     * @param to end range of calibration
+     * @param isHighSpeed high-speed state
+     */
+    public void calibrationHandler(CalibrationType calibrationType, double from, double to, boolean isHighSpeed) {
         if (connected) {
             if (!cmd) toggleCmdMode();
             if (cmd) {
-                if (!calibrationMode) {
-                    write("s C1");
-                    calibrationMode = !calibrationMode;
-                }
+                if (!calibrationMode) toggleCalibrationMode();
                 if (calibrationMode) {
+                    AppMain.calibrationService.setState(CalibrationState.RUNNING);
                     finalCalibrationFrequency = to;
                     highSpeed(isHighSpeed);
                     write("s TF" + from + "EN");
                     write("s PF" + to + "EN");
                     switch (calibrationType) {
-                        case OPEN:
-                            openCalibration();
-                            break;
                         case SHORT:
-                            shortCalibration();
+                            write("s A4");
+                            break;
+                        case OPEN:
+                            write("s A5");
                             break;
                         case LOAD:
-                            loadCalibration();
+                            write("s A6");
                             break;
                     }
+                    write("s CS");
+                    calibrationReader();
                 }
             }
         } else {
             AppMain.notificationService.createNotification("Machine not connected!", NotificationType.ERROR);
         }
-        return true;
     }
 
     private SingleValue generateRandomSingeValue(double X) {
@@ -446,4 +550,3 @@ public class Connection extends Thread {
         return new SingleValue(Math.random() * 20 + 80, Math.random() * 20 + 40, X);
     }
 }
-

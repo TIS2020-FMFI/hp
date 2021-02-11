@@ -1,6 +1,7 @@
 package com.app.service.help;
 
 import com.app.service.AppMain;
+import com.app.service.Window;
 import com.app.service.notification.NotificationType;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,15 +12,24 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 
-public class HelpService {
+/**
+ * Help window to show so called 'about' information
+ */
+public class HelpWindow implements Window {
     private final String path;
     private Stage stage;
 
-    public HelpService(String controllerPath) {
+    /**
+     * Initializes help service
+     *
+     * @param controllerPath path of the view controller
+     */
+    public HelpWindow(String controllerPath) {
         path = controllerPath;
     }
 
-    public void openHelp() {
+    @Override
+    public void open() {
         try {
             stage = new Stage();
 
@@ -34,7 +44,8 @@ public class HelpService {
         }
     }
 
-    public void closeHelp() {
+    @Override
+    public void close() {
         stage.close();
     }
 

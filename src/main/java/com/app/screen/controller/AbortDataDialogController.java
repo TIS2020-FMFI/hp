@@ -29,11 +29,11 @@ public class AbortDataDialogController implements Initializable {
     Button closeBtn;
 
     public void closeWindow(MouseEvent event) {
-        AppMain.abortDataDialog.close();
+        AppMain.abortDataWindow.close();
     }
 
     public void abortMeasurement(MouseEvent event) {
-        AppMain.abortDataDialog.abortMeasurement();
+        AppMain.abortDataWindow.abort();
     }
 
 
