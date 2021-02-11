@@ -573,6 +573,7 @@ public class MainController implements Initializable {
     public void setParam(GraphType graphType, ToggleGroup displayA, ToggleGroup displayB) {
         displayA.getToggles().forEach(item -> {
             ToggleButton btn = (ToggleButton) item;
+//            System.out.println("setParam ep.getByType(" + graphType + ").getDisplayYY() -> " + ep.getByType(graphType).getDisplayYY());
             if (btn.getText().equals(ep.getByType(graphType).getDisplayYY().getA())) {
                 item.setSelected(true);
             }
