@@ -14,3 +14,10 @@ git clone https://github.com/TIS2020-FMFI/hpctrl.git
 
 # final product version 1.0
 https://kempelen.dai.fmph.uniba.sk/HP.zip
+
+# App preview
+**cal**
+<img width="1024" alt="calibration_example" src="https://user-images.githubusercontent.com/45845462/107849561-67777400-6dfc-11eb-8c21-97c4bab8a8ef.png">
+
+**measurement**
+<img width="1124" alt="measurement_example" src="https://user-images.githubusercontent.com/45845462/107849587-90980480-6dfc-11eb-8078-978c8c6409db.png">
