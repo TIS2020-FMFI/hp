@@ -13,6 +13,7 @@ import com.app.service.notification.NotificationType;
 import com.app.service.utils.Utils;
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Connection class which handles everything about communication with machine
@@ -47,17 +48,20 @@ public class Connection extends Thread {
     }
 
     /**
-     * Initialize connection with file witch contains hpctrl.exe for communication with machine
+     * Tries to connect to the machine running hpctrl.exe placed in the root of very same folder
      *
      * @return if connection with file was successful
      */
     public boolean reconnect(){
+        String path = Connection.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         try {
-            process = Runtime.getRuntime().exec("C:/s/hp/hpctrl.exe -i"); // TODO: set to default within project
+            process = Runtime.getRuntime().exec(path.substring(0, path.lastIndexOf('/')) + "/hpctrl.exe -i");
             readEnd = new BufferedReader(new InputStreamReader(process.getInputStream()));
             writeEnd = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
             return true;
         } catch (IOException e) {
+//            e.printStackTrace();
+            System.out.println("final path: " + path.substring(0, path.lastIndexOf('/')) + "/hpctrl.exe");
             AppMain.notificationService.createNotification("hpctrl.exe missing, read help for more info", NotificationType.ERROR);
         }
         return false;

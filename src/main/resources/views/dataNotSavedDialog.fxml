@@ -18,7 +18,7 @@
          <children>
             <HBox fx:id="titleContainer" alignment="CENTER" minHeight="50.0" prefHeight="70.0" prefWidth="200.0">
                <children>
-                  <Label styleClass="title" text="Super machine 1.0" />
+                  <Label styleClass="title" text="HP controller 1.0" />
                </children>
             </HBox>
             <VBox fx:id="contentContainer" alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
