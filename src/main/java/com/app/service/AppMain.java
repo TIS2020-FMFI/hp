@@ -41,7 +41,7 @@ public class AppMain extends Application {
         graphService = new GraphService();
 
         Parent root = FXMLLoader.load(getClass().getResource("/views/mainScreen.fxml"));
-        primaryStage.setTitle("Super machine");
+        primaryStage.setTitle("HP controller");
         primaryStage.setScene(new Scene(root));
         primaryStage.setResizable(false);
 
