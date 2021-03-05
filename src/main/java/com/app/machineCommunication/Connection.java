@@ -53,15 +53,12 @@ public class Connection extends Thread {
      * @return if connection with file was successful
      */
     public boolean reconnect(){
-        String path = Connection.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         try {
-            process = Runtime.getRuntime().exec(path.substring(0, path.lastIndexOf('/')) + "/hpctrl.exe -i");
+            process = Runtime.getRuntime().exec("hpctrl.exe -i");
             readEnd = new BufferedReader(new InputStreamReader(process.getInputStream()));
             writeEnd = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
             return true;
         } catch (IOException e) {
-//            e.printStackTrace();
-            System.out.println("final path: " + path.substring(0, path.lastIndexOf('/')) + "/hpctrl.exe");
             AppMain.notificationService.createNotification("hpctrl.exe missing, read help for more info", NotificationType.ERROR);
         }
         return false;
